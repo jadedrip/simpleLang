@@ -1,0 +1,6 @@
+package si
+
+@CLang("si_String")
+class String{
+	func at(int index) : char;
+}

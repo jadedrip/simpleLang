@@ -1,0 +1,311 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="CodeGenerate">
+      <UniqueIdentifier>{c84de0de-dfb9-4e01-8ecf-1aaa261b53dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="limbo">
+      <UniqueIdentifier>{6efd92d2-b271-4fcb-b67f-742c08c489b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lex">
+      <UniqueIdentifier>{1574fa64-4835-4967-a3c3-0fc5a1d2a8d9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\CodeGenerate\BinaryGen.cpp">
+      <Filter>CodeGenerate</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CodeGenerate\BlockGen.cpp">
+      <Filter>CodeGenerate</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CodeGenerate\CallGen.cpp">
+      <Filter>CodeGenerate</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CodeGenerate\ClassMemberGen.cpp">
+      <Filter>CodeGenerate</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CodeGenerate\DefGen.cpp">
+      <Filter>CodeGenerate</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CodeGenerate\IfGen.cpp">
+      <Filter>CodeGenerate</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CodeGenerate\LetGen.cpp">
+      <Filter>CodeGenerate</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CodeGenerate\LoopGen.cpp">
+      <Filter>CodeGenerate</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CodeGenerate\NewGen.cpp">
+      <Filter>CodeGenerate</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CodeGenerate\SwitchGen.cpp">
+      <Filter>CodeGenerate</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CodeGenerate\SwitchIntGen.cpp">
+      <Filter>CodeGenerate</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CodeGenerate\TupleGen.cpp">
+      <Filter>CodeGenerate</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CodeGenerate\TupleSpreadGen.cpp">
+      <Filter>CodeGenerate</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CodeGenerate\UnaryGen.cpp">
+      <Filter>CodeGenerate</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CodeGenerate\UnaryIntGen.cpp">
+      <Filter>CodeGenerate</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ClassContext.cpp" />
+    <ClCompile Include="src\FunctionInstance.cpp" />
+    <ClCompile Include="src\lex.cpp" />
+    <ClCompile Include="src\modules.cpp" />
+    <ClCompile Include="src\si_c.cpp" />
+    <ClCompile Include="src\Silang.cpp" />
+    <ClCompile Include="src\utility.cpp" />
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="src\EnumContent.cpp" />
+    <ClCompile Include="src\CodeGenerate\CodeGen.cpp" />
+    <ClCompile Include="src\CodeGenerate\ReturnGen.cpp" />
+    <ClCompile Include="src\CodeGenerate\FloatPointerGen.cpp">
+      <Filter>CodeGenerate</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CodeGenerate\IntegerGen.cpp">
+      <Filter>CodeGenerate</Filter>
+    </ClCompile>
+    <ClCompile Include="intermediate\silang.tab.cpp" />
+    <ClCompile Include="intermediate\silang.yy.cpp" />
+    <ClCompile Include="src\CodeGenerate\CastGen.cpp" />
+    <ClCompile Include="src\CodeGenerate\IndexGen.cpp" />
+    <ClCompile Include="src\CodeGenerate\SequenceGen.cpp" />
+    <ClCompile Include="src\Type\AstType.cpp" />
+    <ClCompile Include="src\Type\ClassInstanceType.cpp" />
+    <ClCompile Include="src\Type\EnumType.cpp" />
+    <ClCompile Include="src\Type\LLVMType.cpp" />
+    <ClCompile Include="src\Type\SIntegerType.cpp" />
+    <ClCompile Include="src\Type\SArrayType.cpp" />
+    <ClCompile Include="src\Type\TupleType.cpp" />
+    <ClCompile Include="src\CodeGenerate\IntegerBinaryGen.cpp" />
+    <ClCompile Include="src\CodeGenerate\ClassBinaryGen.cpp" />
+    <ClCompile Include="src\CodeGenerate\NullGen.cpp" />
+    <ClCompile Include="src\lli.cpp" />
+    <ClCompile Include="src\Type\LLVMStruct.cpp" />
+    <ClCompile Include="src\packages.cpp" />
+    <ClCompile Include="src\CodeGenerate\StringLiteGen.cpp" />
+    <ClCompile Include="src\Ast\AstBased.cpp" />
+    <ClCompile Include="src\Ast\AstBinary.cpp" />
+    <ClCompile Include="src\Ast\AstCall.cpp" />
+    <ClCompile Include="src\Ast\AstCase.cpp" />
+    <ClCompile Include="src\Ast\AstClass.cpp" />
+    <ClCompile Include="src\Ast\AstConst.cpp" />
+    <ClCompile Include="src\Ast\AstConstant.cpp" />
+    <ClCompile Include="src\Ast\AstDef.cpp" />
+    <ClCompile Include="src\Ast\AstDelete.cpp" />
+    <ClCompile Include="src\Ast\AstDot.cpp" />
+    <ClCompile Include="src\Ast\AstEnum.cpp" />
+    <ClCompile Include="src\Ast\AstFloatConstant.cpp" />
+    <ClCompile Include="src\Ast\AstForeach.cpp" />
+    <ClCompile Include="src\Ast\AstFunction.cpp" />
+    <ClCompile Include="src\Ast\AstGet.cpp" />
+    <ClCompile Include="src\Ast\AstIf.cpp" />
+    <ClCompile Include="src\Ast\AstImport.cpp" />
+    <ClCompile Include="src\Ast\AstInc.cpp" />
+    <ClCompile Include="src\Ast\AstIndex.cpp" />
+    <ClCompile Include="src\Ast\AstInterface.cpp" />
+    <ClCompile Include="src\Ast\AstIs.cpp" />
+    <ClCompile Include="src\Ast\AstLet.cpp" />
+    <ClCompile Include="src\Ast\AstLoop.cpp" />
+    <ClCompile Include="src\Ast\AstNew.cpp" />
+    <ClCompile Include="src\Ast\AstNode.cpp" />
+    <ClCompile Include="src\Ast\AstPackage.cpp" />
+    <ClCompile Include="src\Ast\AstReturn.cpp" />
+    <ClCompile Include="src\Ast\AstSequence.cpp" />
+    <ClCompile Include="src\Ast\AstSet.cpp" />
+    <ClCompile Include="src\Ast\AstSplice.cpp" />
+    <ClCompile Include="src\Ast\AstStringList.cpp" />
+    <ClCompile Include="src\Ast\AstStringLiteral.cpp" />
+    <ClCompile Include="src\Ast\AstSwitch.cpp" />
+    <ClCompile Include="src\Ast\AstTry.cpp" />
+    <ClCompile Include="src\Ast\AstTryCatch.cpp" />
+    <ClCompile Include="src\Ast\AstTuple.cpp" />
+    <ClCompile Include="src\Ast\AstTupleSpread.cpp" />
+    <ClCompile Include="src\Ast\AstUnary.cpp" />
+    <ClCompile Include="src\Ast\AstValue.cpp" />
+    <ClCompile Include="src\AstContext.cpp" />
+    <ClCompile Include="src\caster.cpp" />
+    <ClCompile Include="src\Ast\AstIsNull.cpp" />
+    <ClCompile Include="src\CodeGenerate\IsNullGen.cpp" />
+    <ClCompile Include="src\Ast\AstIif.cpp" />
+    <ClCompile Include="src\CodeGenerate\IifGen.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\CodeGenerate\BinaryGen.h">
+      <Filter>CodeGenerate</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CodeGenerate\BlockGen.h">
+      <Filter>CodeGenerate</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CodeGenerate\CallGen.h">
+      <Filter>CodeGenerate</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CodeGenerate\CaseGen.h">
+      <Filter>CodeGenerate</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CodeGenerate\ClassMemberGen.h">
+      <Filter>CodeGenerate</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CodeGenerate\CodeGen.h">
+      <Filter>CodeGenerate</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CodeGenerate\DefGen.h">
+      <Filter>CodeGenerate</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CodeGenerate\GenList.h">
+      <Filter>CodeGenerate</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CodeGenerate\IfGen.h">
+      <Filter>CodeGenerate</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CodeGenerate\LetGen.h">
+      <Filter>CodeGenerate</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CodeGenerate\LoopGen.h">
+      <Filter>CodeGenerate</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CodeGenerate\NewGen.h">
+      <Filter>CodeGenerate</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CodeGenerate\ParamenterGen.h">
+      <Filter>CodeGenerate</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CodeGenerate\ReturnGen.h">
+      <Filter>CodeGenerate</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CodeGenerate\StringLiteGen.h">
+      <Filter>CodeGenerate</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CodeGenerate\SwitchGen.h">
+      <Filter>CodeGenerate</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CodeGenerate\SwitchIntGen.h">
+      <Filter>CodeGenerate</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CodeGenerate\TupleGen.h">
+      <Filter>CodeGenerate</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CodeGenerate\TupleSpreadGen.h">
+      <Filter>CodeGenerate</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CodeGenerate\TypeOnlyGen.h">
+      <Filter>CodeGenerate</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CodeGenerate\UnaryGen.h">
+      <Filter>CodeGenerate</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CodeGenerate\UnaryIntGen.h">
+      <Filter>CodeGenerate</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CodeGenerate\ValueGen.h">
+      <Filter>CodeGenerate</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ClassContext.h" />
+    <ClInclude Include="src\dot.h" />
+    <ClInclude Include="src\FunctionInstance.h" />
+    <ClInclude Include="src\lex.h" />
+    <ClInclude Include="src\modules.h" />
+    <ClInclude Include="src\si_c.h" />
+    <ClInclude Include="src\token.h" />
+    <ClInclude Include="src\utility.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="limbo\silang.tab.hpp">
+      <Filter>limbo</Filter>
+    </ClInclude>
+    <ClInclude Include="src\EnumContent.h" />
+    <ClInclude Include="src\CodeGenerate\IntegerGen.h">
+      <Filter>CodeGenerate</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CodeGenerate\FloatPointerGen.h">
+      <Filter>CodeGenerate</Filter>
+    </ClInclude>
+    <ClInclude Include="intermediate\silang.tab.hpp" />
+    <ClInclude Include="src\CodeGenerate\CastGen.h" />
+    <ClInclude Include="src\CodeGenerate\IndexGen.h" />
+    <ClInclude Include="src\CodeGenerate\SequenceGen.h" />
+    <ClInclude Include="src\Type\AstType.h" />
+    <ClInclude Include="src\Type\AutoType.h" />
+    <ClInclude Include="src\Type\ClassInstanceType.h" />
+    <ClInclude Include="src\Type\EnumType.h" />
+    <ClInclude Include="src\Type\LLVMType.h" />
+    <ClInclude Include="src\Type\SIntegerType.h" />
+    <ClInclude Include="src\Type\SArrayType.h" />
+    <ClInclude Include="src\Type\TupleType.h" />
+    <ClInclude Include="src\CodeGenerate\IntegerBinaryGen.h" />
+    <ClInclude Include="src\CodeGenerate\ClassBinaryGen.h" />
+    <ClInclude Include="src\CodeGenerate\NullGen.h" />
+    <ClInclude Include="src\Type\LLVMStruct.h" />
+    <ClInclude Include="src\packages.h" />
+    <ClInclude Include="src\CodeGenerate\StaticGen.h" />
+    <ClInclude Include="src\CodeGenerate\GlobalStroeGen.h" />
+    <ClInclude Include="src\Ast\AstBased.h" />
+    <ClInclude Include="src\Ast\AstBinary.h" />
+    <ClInclude Include="src\Ast\AstCall.h" />
+    <ClInclude Include="src\Ast\AstCase.h" />
+    <ClInclude Include="src\Ast\AstClass.h" />
+    <ClInclude Include="src\Ast\AstConst.h" />
+    <ClInclude Include="src\Ast\AstConstant.h" />
+    <ClInclude Include="src\Ast\AstDef.h" />
+    <ClInclude Include="src\Ast\AstDelete.h" />
+    <ClInclude Include="src\Ast\AstDot.h" />
+    <ClInclude Include="src\Ast\AstEmpty.h" />
+    <ClInclude Include="src\Ast\AstEnum.h" />
+    <ClInclude Include="src\Ast\AstFloatConstant.h" />
+    <ClInclude Include="src\Ast\AstForeach.h" />
+    <ClInclude Include="src\Ast\AstFunction.h" />
+    <ClInclude Include="src\Ast\AstGet.h" />
+    <ClInclude Include="src\Ast\AstGetClass.h" />
+    <ClInclude Include="src\Ast\AstIf.h" />
+    <ClInclude Include="src\Ast\AstImport.h" />
+    <ClInclude Include="src\Ast\AstInc.h" />
+    <ClInclude Include="src\Ast\AstIndex.h" />
+    <ClInclude Include="src\Ast\AstInterface.h" />
+    <ClInclude Include="src\Ast\AstIs.h" />
+    <ClInclude Include="src\Ast\AstLet.h" />
+    <ClInclude Include="src\Ast\AstList.h" />
+    <ClInclude Include="src\Ast\AstLoop.h" />
+    <ClInclude Include="src\Ast\AstNew.h" />
+    <ClInclude Include="src\Ast\AstNode.h" />
+    <ClInclude Include="src\Ast\AstPackage.h" />
+    <ClInclude Include="src\Ast\AstProtected.h" />
+    <ClInclude Include="src\Ast\AstReturn.h" />
+    <ClInclude Include="src\Ast\AstSequence.h" />
+    <ClInclude Include="src\Ast\AstSet.h" />
+    <ClInclude Include="src\Ast\AstSplice.h" />
+    <ClInclude Include="src\Ast\AstStringList.h" />
+    <ClInclude Include="src\Ast\AstStringLiteral.h" />
+    <ClInclude Include="src\Ast\AstSwitch.h" />
+    <ClInclude Include="src\Ast\AstTry.h" />
+    <ClInclude Include="src\Ast\AstTryCatch.h" />
+    <ClInclude Include="src\Ast\AstTuple.h" />
+    <ClInclude Include="src\Ast\AstTupleSpread.h" />
+    <ClInclude Include="src\Ast\AstUnary.h" />
+    <ClInclude Include="src\Ast\AstValue.h" />
+    <ClInclude Include="src\AstContext.h" />
+    <ClInclude Include="src\CodeGenerate\StaticTypeGen.h" />
+    <ClInclude Include="src\Ast\AstAnnotation.h" />
+    <ClInclude Include="src\caster.h" />
+    <ClInclude Include="src\Ast\AstIif.h" />
+    <ClInclude Include="src\Ast\AstIsNull.h" />
+    <ClInclude Include="src\CodeGenerate\IsNullGen.h" />
+    <ClInclude Include="src\CodeGenerate\IifGen.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="lex\silang.l">
+      <Filter>lex</Filter>
+    </CustomBuild>
+    <CustomBuild Include="lex\silang.yxx">
+      <Filter>lex</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

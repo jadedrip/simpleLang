@@ -1,0 +1,196 @@
+﻿package org.my
+
+// import si.clib
+import si.String
+
+String str = "Hello world!"
+int c=0 // str.at(0)
+printf( "c=%d\r\n", c )
+
+var b = (c==0) ? 11 : 12
+printf( "b=%d\r\n", b )
+
+// int x
+
+// int[5] a=[1,2,3,4,5]
+// printf( "o" + "a1=%d\r\n", a[0] )
+
+/*
+func myFirstFunc( int a, int b ) : int returnValue{
+	var x=a/4
+	int my=a
+
+	if (a>2) x=5 else x=6
+
+	a = a + 2
+
+	printf( "a=%d b=%d x=%f my=%d\r\n", a,b,x, my )
+	return my
+}
+
+var v= myFirstFunc( 10, 20 )
+printf("%d", v)
+*/
+
+ /*
+const y=16;
+switch(y){
+	case 16:
+		printf("y=16\r\n")
+}
+
+// int[] arr = [10, 20]
+
+	for( var i=0; i<10; i++ )
+	{
+		var a = i
+		if( i < 5 ) a = 10+i
+		printf("%d ", a)
+	}
+
+
+
+func add( int a, var b ) : var c{
+	c = a + b
+}
+
+var x = add( 10, 5 )
+printf("x=%d", x)
+
+
+class MyFirst{
+	int a
+	var b
+
+	init(var i){
+		b = i
+	}
+
+	func inc() {
+		a++
+		b++
+	}
+}
+
+const pi=3.1415
+var my=MyFirst(5)
+my.a = 10				
+printf("pi=%f my.a=%d my.b=%d\r\n", pi, my.a, my.b)
+
+enum MyEnum { red, blue=2, green }
+
+
+my{
+	inc()
+}
+my.inc()
+printf("enum red:%d blue=%d green=%d\r\n", MyEnum.red, MyEnum.blue, MyEnum.green)
+
+y=y+1
+
+// var o=add( y, 10 )		// Call c function
+
+//int b=si.math.addii( 3, 4 )
+//printf( "b %d\r\n", b )
+//var str = "I want a keyboard."
+
+printf( "Hello world\r\n" )
+
+func myFirstFunc( int a, int b ) : int returnValue{
+	var x=a/4
+	int my=a
+
+	if (a>2) x=5 else x=6
+
+	a = a + 2
+
+	printf( "a=%d b=%d x=%f\r\n", a,b,x );
+
+	printf( "hello world: %f\r\n", a+b+x );
+
+	while( my < 6 ){
+		printf( "while: %d\r\n", my ) 		
+		var zz = 1 
+		my = my + zz
+	}
+	
+	printf( " num %x\r\n", 4 | 1 );
+
+	for( var i=0; i<5; i++ ){
+		printf("for %d \r\n", i)
+	}
+
+	printf( "  inc %d\r\n", my++ );
+	printf( "  inc %d\r\n", my );
+	return my;
+}
+
+func second( int a ) : (int b, int c){
+	b=a
+	c=10
+}
+
+func tmp( var a ){
+	if( a is int )		
+		printf("int")
+	else		
+		printf("other")
+}
+
+var u;
+
+tmp(10);
+
+u=myFirstFunc( a=3, 4 )
+printf( "return %d\r\n", u )
+
+switch u {
+	case 1:
+		printf("1")
+	case 2,3:
+		printf("2 or 3")
+	default:
+		printf("default")
+}
+
+
+
+*/
+			/*
+// var bb, cc:=second( 15 )
+// printf( "bb %d, cc %d\r\n", bb, cc )
+class FirstClass<T, R> {
+	int a
+	int c
+	T b
+	R r
+
+	protected:
+	func inc(){
+		a++
+	}
+
+	init{	// 构造函数
+		printf("\r\n INIT %d\r\n", r)
+	}		
+
+	finalize{
+	}	// 析构函数
+}
+
+FirstClass<int> cls
+
+FirstClass cls={ b=10; r=20 }
+
+int x = cls.b = 10
+
+cls.inc()
+
+printf("b %d\r\n", cls.b);
+
+cls{
+	c = 20
+	printf("c %d %d\r\n", c, x);
+}
+
+												   */

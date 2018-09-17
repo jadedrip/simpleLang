@@ -1,0 +1,49 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+/*.opensdf
+/*.sdf
+/*.suo
+/generate
+/Debug
+/ipch
+/Release
+/.vs
+/*.opendb
+/*.db
+/out.gv
+/*.gv
+/*.cd
+/out.ll
+/15
+/x64
+/annexe/core/Debug
+/*.bak
+/*.filters
+/test
+/*.s
+/*.li
+/clib/Debug
+/compiler/intermediate/silang.yy.c
+/core/Si/String.ll
+/clib/x64/Debug
+/compiler/x64/Debug
+/compiler/*.log
