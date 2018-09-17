@@ -17,6 +17,11 @@ void StringLiteGen::append(StringLiteGen * g)
 
 llvm::Value * StringLiteGen::generateCode(llvm::Module * m, llvm::Function * func, llvm::IRBuilder<>& builder)
 {
+	auto i8ptr = IntegerType::getInt8PtrTy(m->getContext());
+	
+	if (hopeType && hopeType == i8ptr) {
+		return builder.CreateGlobalStringPtr(_str);
+	}
 	// auto i16=llvm::IntegerType::get(m->getContext(), 16);
 	// auto arrayTy=ArrayType::get(i16, str.size());
 	// new GlobalVariable(*m, arr, true, Link  )

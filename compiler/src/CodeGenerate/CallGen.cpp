@@ -61,8 +61,9 @@ Value * CallGen::generateCode(Module *m, Function *func, llvm::IRBuilder<>&build
 	std::vector< llvm::Value* > a;
 	auto *argIterator= llvmFunction->arg_begin();
 	for (auto *i : params) {
+		if (argIterator != llvmFunction->arg_end())
+			i->hopeType = argIterator->getType();
 		Value* v = i->generate(m, func, builder);
-
 		bool isPoint = i->type->isStructTy() || dynamic_cast<StringLiteGen*>(i);
 
 		if (!v)

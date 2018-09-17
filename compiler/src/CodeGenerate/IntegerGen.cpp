@@ -14,5 +14,7 @@ IntegerGen::IntegerGen(llvm::LLVMContext& c, int v) : value(v) {
 Value * IntegerGen::generateCode(Module * m, Function * func, IRBuilder<>&builder)
 {
 	auto &context = builder.getContext();
+	if(hopeType)
+		return ConstantInt::get(hopeType, value);
 	return ConstantInt::get(type, value);
 }

@@ -19,6 +19,7 @@ llvm::Value * LetGen::generateCode(llvm::Module *m, llvm::Function *func, llvm::
 	assert(l->getType()->isPointerTy());
 
 	auto valueType = l->getType()->getPointerElementType();
+	right->hopeType = valueType;
 	auto *r=right->generate(m, func, builder);
 	r = load(builder, r);
 	r = try_cast(builder, valueType, r);
