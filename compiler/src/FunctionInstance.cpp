@@ -20,7 +20,8 @@ llvm::Function * FunctionInstance::generateCode(llvm::Module *m, llvm::LLVMConte
 {
 	if (func) return func;
 
-	Type* retType = makeReturnType(context);
+	Type* retType = returnType ? returnType : Type::getVoidTy(context);
+
 	std::vector<Type*> param;
 	if (object) {
 		auto *x=PointerType::get(object, 0);
@@ -36,14 +37,12 @@ llvm::Function * FunctionInstance::generateCode(llvm::Module *m, llvm::LLVMConte
 	std::for_each(n.begin(), n.end(), [](char &n) { if (n == '.') n = '_'; });
 
 	FunctionType *FT = FunctionType::get(retType, param, variable);
-											   
+	func = Function::Create(FT, Function::ExternalLinkage, n, m);
+
 	// 仅有定义
 	if (block.empty()) {
-		// return CLangModule::getFunction(module, n);
-		return Function::Create(FT, Function::ExternalLinkage, n, m);
+		return func;
 	}
-
-	func = Function::Create(FT, Function::ExternalLinkage, n, m);
 
 	auto basicBlock = BasicBlock::Create(context, name, func);
 
@@ -65,13 +64,6 @@ llvm::Function * FunctionInstance::generateCode(llvm::Module *m, llvm::LLVMConte
 
 	return func;
 }
-
-llvm::Type * FunctionInstance::makeReturnType(llvm::LLVMContext & context)
-{
-	if( !returnType ) return Type::getVoidTy(context);
-	return returnType;
-}
-
 
 //void FunctionInstance::draw(std::ostream & os)
 //{

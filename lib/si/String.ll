@@ -1,12 +1,12 @@
 ; ModuleID = 'si\String.c'
 source_filename = "si\5CString.c"
 target datalayout = "e-m:w-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-pc-windows-msvc19.15.26729"
+target triple = "x86_64-pc-windows-msvc19.15.26730"
 
 %struct.si_String = type { i64, i16, i8*, %struct.si_String*, i8 }
 
 ; Function Attrs: noinline nounwind optnone uwtable
-define i32 @toUNICODE(%struct.si_String*) #0 {
+define dso_local i32 @toUNICODE(%struct.si_String*) #0 {
   %2 = alloca %struct.si_String*, align 8
   %3 = alloca i8*, align 8
   %4 = alloca i32, align 4
@@ -65,10 +65,10 @@ define i32 @toUNICODE(%struct.si_String*) #0 {
 
 declare dllimport i32 @MultiByteToWideChar(i32, i32, i8*, i32, i16*, i32) #1
 
-declare noalias i8* @malloc(i64) #1
+declare dso_local noalias i8* @malloc(i64) #1
 
 ; Function Attrs: noinline nounwind optnone uwtable
-define void @si_String_init(%struct.si_String*, i16, i8*, i64, %struct.si_String*) #0 {
+define dso_local void @si_String_init(%struct.si_String*, i16, i8*, i64, %struct.si_String*) #0 {
   %6 = alloca %struct.si_String*, align 8
   %7 = alloca i64, align 8
   %8 = alloca i8*, align 8
@@ -102,7 +102,7 @@ define void @si_String_init(%struct.si_String*, i16, i8*, i64, %struct.si_String
 }
 
 ; Function Attrs: noinline nounwind optnone uwtable
-define i64 @si_String_GET_size(%struct.si_String*) #0 {
+define dso_local i64 @si_String_GET_size(%struct.si_String*) #0 {
   %2 = alloca %struct.si_String*, align 8
   store %struct.si_String* %0, %struct.si_String** %2, align 8
   %3 = load %struct.si_String*, %struct.si_String** %2, align 8
@@ -112,7 +112,7 @@ define i64 @si_String_GET_size(%struct.si_String*) #0 {
 }
 
 ; Function Attrs: noinline nounwind optnone uwtable
-define i16 @si_String_at(%struct.si_String*, i64) #0 {
+define dso_local i16 @si_String_at(%struct.si_String*, i64) #0 {
   %3 = alloca i16, align 2
   %4 = alloca i64, align 8
   %5 = alloca %struct.si_String*, align 8
@@ -149,7 +149,7 @@ define i16 @si_String_at(%struct.si_String*, i64) #0 {
 }
 
 ; Function Attrs: noinline nounwind optnone uwtable
-define i8* @si_String_Cast_i8_ptr(%struct.si_String*) #0 {
+define dso_local i8* @si_String_Cast_i8_ptr(%struct.si_String*) #0 {
   %2 = alloca %struct.si_String*, align 8
   store %struct.si_String* %0, %struct.si_String** %2, align 8
   %3 = load %struct.si_String*, %struct.si_String** %2, align 8
@@ -168,4 +168,4 @@ attributes #1 = { "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-
 !0 = !{!"/DEFAULTLIB:uuid.lib"}
 !1 = !{i32 1, !"wchar_size", i32 2}
 !2 = !{i32 7, !"PIC Level", i32 2}
-!3 = !{!"clang version 6.0.1 (tags/RELEASE_601/final)"}
+!3 = !{!"clang version 7.0.0 (tags/RELEASE_700/final)"}

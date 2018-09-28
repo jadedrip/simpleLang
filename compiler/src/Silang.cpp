@@ -172,7 +172,7 @@ int main(int argc, char* argv[],  char * const *envp)
 		of.close();
 
 		currentPackage->generateCode(m);
-
+	
 		{
 			std::ofstream file("out.ll");
 			llvm::raw_os_ostream os(file);
@@ -187,6 +187,11 @@ int main(int argc, char* argv[],  char * const *envp)
 		llvm::SMDiagnostic error;
 		execute(envp);
 		// system("lli -force-interpreter out.ll");
+	} else {
+		CLangModule::shutdown();
+
+		auto * m= module.release();
+		delete m;
 	}
 	return 0;
 }

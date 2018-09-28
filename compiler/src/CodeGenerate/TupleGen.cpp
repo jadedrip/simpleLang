@@ -1,7 +1,9 @@
 ﻿#include "stdafx.h"
 #include "TupleGen.h"
 #include <llvm/IR/Function.h>
+#include "../Type/TupleType.h"
 
+using namespace std;
 using namespace llvm;
 llvm::Value * TupleGen::generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>&builder)
 {
@@ -13,14 +15,14 @@ llvm::Value * TupleGen::generateCode(llvm::Module *m, llvm::Function *func, llvm
 		values.push_back(v);
 		types.push_back(v->getType());
 	}
+	type = makeStruct(builder.getContext(), types);
 
-	Type* type = StructType::create(builder.getContext(), types, "tuple");
 	IRBuilder<> allocBuilder(&func->getEntryBlock());
 	Value* tuple = allocBuilder.CreateAlloca(type, nullptr, "tuple");
 
 	for (size_t i = 0; i < values.size(); i++) {
 		Value* v = values.at(i);
-		Value* ptr = builder.CreateConstInBoundsGEP2_32(type, tuple, 0, i);
+		Value* ptr = builder.CreateConstInBoundsGEP2_32(type, tuple, 0, (unsigned int)i);
 		builder.CreateStore(v, ptr);
 	}
 

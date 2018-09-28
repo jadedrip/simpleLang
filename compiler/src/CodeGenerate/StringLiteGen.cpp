@@ -5,7 +5,7 @@
 #include <Windows.h>
 
 using namespace llvm;
-StringLiteGen::StringLiteGen(llvm::LLVMContext& c, const std::string & s) : _context(c), _str(s)
+StringLiteGen::StringLiteGen(llvm::LLVMContext& c, const std::string & s) : _str(s), _context(c)
 {
 	type = CLangModule::getStruct("si", "String");
 }

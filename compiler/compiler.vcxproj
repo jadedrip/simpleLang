@@ -347,10 +347,11 @@
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <AdditionalIncludeDirectories>./src;.</AdditionalIncludeDirectories>
+      <SupportJustMyCode>false</SupportJustMyCode>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>Debug</GenerateDebugInformation>
+      <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
       <AdditionalDependencies>chkstk.obj;LLVMInstrumentation.lib;LLVMCodeGen.lib;LLVMCore.lib;LLVMExecutionEngine.lib;LLVMGlobalISel.lib;LLVMIRReader.lib;LLVMInterpreter.lib;LLVMMC.lib;LLVMMCJIT.lib;LLVMOrcJIT.lib;LLVMObject.lib;LLVMRuntimeDyld.lib;LLVMSelectionDAG.lib;LLVMSupport.lib;LLVMX86CodeGen.lib;LLVMX86AsmPrinter.lib;LLVMX86AsmParser.lib;LLVMX86Desc.lib;LLVMX86Info.lib;LLVMX86Disassembler.lib;LLVMAsmParser.lib;LLVMAsmPrinter.lib;LLVMScalarOpts.lib;LLVMInstCombine.lib;LLVMProfileData.lib;LLVMTransformUtils.lib;LLVMAnalysis.lib;LLVMTarget.lib;LLVMBitReader.lib;LLVMX86Utils.lib;LLVMMCParser.lib;LLVMMCDisassembler.lib;LLVMDebugInfoCodeView.lib;LLVMDebugInfoMSF.lib;LLVMBinaryFormat.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

@@ -24,7 +24,7 @@ public:
 	CodeGen * makeCast(llvm::LLVMContext&, std::vector<CodeGen*> cache, AstType * type, CodeGen * value);
 
 	/// 本函数判断给定的参数是否符合本函数
-	CodeGen* makeCall(llvm::LLVMContext& c, std::vector<std::pair<std::string, CodeGen*>>& types, CodeGen* classObject = nullptr);
+	CodeGen* makeCall(llvm::LLVMContext& c, const std::vector<std::pair<std::string, CodeGen*>>& types, CodeGen* classObject = nullptr);
 
 	virtual CodeGen* makeGen(AstContext* parent);
 	enum FunctionType { Func=0, Method=1, Constructor=2, Destructor=3, Set=4, Get=5, Lambda=6, Operator=7 };
@@ -47,7 +47,7 @@ public:
 		std::vector<CodeGen*> variableGen;
 	};
 	/// 尝试按签名参数整理为匹配的参数，参数不匹配返回 nullptr
-	OrderedParameters* orderParameters(llvm::LLVMContext& c, std::vector<std::pair<std::string, CodeGen*>>& types);
+	OrderedParameters* orderParameters(llvm::LLVMContext& c, const std::vector<std::pair<std::string, CodeGen*>>& types);
 	AstType* getTypeByName(const std::string& name);
 	CodeGen * createCallGen(llvm::LLVMContext& c, std::vector<std::pair<std::string, CodeGen*>>& parameters, std::vector<CodeGen*>& variableGen, CodeGen* object = nullptr, FunctionInstance* instance=nullptr);
 	FunctionInstance * getFunctionInstance(llvm::LLVMContext& c, std::vector<std::pair<std::string, CodeGen*>> parameterGens, std::vector<CodeGen*> variableGen, ClassInstanceType* object = nullptr);

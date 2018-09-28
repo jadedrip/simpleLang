@@ -47,3 +47,4 @@
 /clib/x64/Debug
 /compiler/x64/Debug
 /compiler/*.log
+/compiler/Debug

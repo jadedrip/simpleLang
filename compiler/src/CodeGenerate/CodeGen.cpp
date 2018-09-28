@@ -11,7 +11,7 @@ llvm::Value * CodeGen::generate(llvm::Module * m, llvm::Function * func, llvm::I
 }
 llvm::Value * CodeGen::load(llvm::IRBuilder<>& builder, llvm::Value * v)
 {
-	if (!v) 
+	if (v==nullptr) 
 		throw std::runtime_error("Load can't load null"); // 无法读取空指针
 
 	auto *t=v->getType();

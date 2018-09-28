@@ -5,22 +5,17 @@
 #include "CallGen.h"
 #include "caster.h"
 #include "../modules.h"
-#include "windows.h"
+#include "utility.h"
 
 using namespace llvm;
 DefGen::DefGen(const std::string & n, Type * t, CodeGen* value, int s) : name(n), arraySize(s) {
 	assert(t);
-	this->value = value;
+	this->_value = value;
 	this->type = t;
 }
 
 llvm::Value * DefGen::generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>&builder)
 {
-	if (def) {
-		if (isClass) return def;
-		return def;
-	}
-
 	assert(type);
 	isClass = type->isStructTy();
 	bool isSeq = arraySize > 1;
@@ -30,8 +25,8 @@ llvm::Value * DefGen::generateCode(llvm::Module *m, llvm::Function *func, llvm::
 
 	IRBuilder<> b(&block);
 
-	if (value) {
-		llvm::Value* v = value->generate(m, func, builder);
+	if (_value) {
+		llvm::Value* v = _value->generate(m, func, builder);
 
 		if (isClass) {
 			return v;
@@ -44,9 +39,14 @@ llvm::Value * DefGen::generateCode(llvm::Module *m, llvm::Function *func, llvm::
 		}
 
 		// 如果数字，转为指针
-		def = b.CreateAlloca(type, nullptr, name);
-		builder.CreateStore(v, def);
+		value = b.CreateAlloca(type, nullptr, name);
+		builder.CreateStore(v, value);
+	} else if (!isClass) {
+		value = b.CreateAlloca(type, nullptr, name);
+		auto defaultValue = getDefaultValue(type);
+		if (defaultValue)
+			builder.CreateStore(defaultValue, value);
 	}
-	return def;
+	return value;
 }
 

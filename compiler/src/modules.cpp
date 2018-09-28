@@ -65,7 +65,7 @@ void CLangModule::moveAll(llvm::ExecutionEngine * engine) {
 		std::clog << "Load module:" << v ->getName().str() << std::endl;
 
 		for (auto &i : v->getFunctionList()) {
-			auto &n = i.getName();
+			auto n = i.getName();
 			std::clog << "Find function: " << n.str() << std::endl;
 
 			// auto p=engine->getFunctionAddress(n);

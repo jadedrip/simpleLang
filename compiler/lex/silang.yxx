@@ -353,13 +353,12 @@ operator_overload
 
 function_ret
 	:									{ $$=nullptr; }
-	| ':' '(' return_tuple_elems ')'	{ $$=$<expr>3; }
-	| ':' return_tuple_elem				{ $$=$<expr>2; }	/*命名返回*/
+	| ':' return_tuple_elems 			{ $$=$<expr>2; }/*命名返回*/
 	;
 
 return_tuple_elem
-	:   def_type L_IDENTIFIER			{ $$=let($1, $2); }
-	|	def_type					{ $$=let($1); }
+	:   typeLet			                // int a = 20
+	|	def_type						{ $$=let($1); }
 	;
 
 return_tuple_elems
@@ -374,8 +373,9 @@ lambda
 
 /* return 语句 */
 rtn
-	:	RETURN		{ $$=callReturn(); } 
-	|	RETURN expr { $$=callReturn( $<expr>2 ); }
+	:	RETURN			{ $$=callReturn(); } 
+	|	RETURN expr		{ $$=callReturn( $2 ); }
+	|	RETURN exprs	{ $$=callReturn( $2 ); } 
 	;
 
 /* 操作符 */

@@ -1,7 +1,7 @@
 ; ModuleID = 'core.c'
 source_filename = "core.c"
 target datalayout = "e-m:w-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-pc-windows-msvc19.15.26729"
+target triple = "x86_64-pc-windows-msvc19.15.26730"
 
 %struct.__crt_locale_pointers = type { %struct.__crt_locale_data*, %struct.__crt_multibyte_data* }
 %struct.__crt_locale_data = type opaque
@@ -21,11 +21,11 @@ $_vsnprintf_l = comdat any
 
 $__local_stdio_printf_options = comdat any
 
-@arrayMark = constant i32 -2147483648, align 4
+@arrayMark = dso_local constant i32 -2147483648, align 4
 @__local_stdio_printf_options._OptionsStorage = internal global i64 0, align 8
 
 ; Function Attrs: noinline nounwind optnone uwtable
-define linkonce_odr i32 @sprintf(i8*, i8*, ...) #0 comdat {
+define linkonce_odr dso_local i32 @sprintf(i8*, i8*, ...) #0 comdat {
   %3 = alloca i8*, align 8
   %4 = alloca i8*, align 8
   %5 = alloca i32, align 4
@@ -46,7 +46,7 @@ define linkonce_odr i32 @sprintf(i8*, i8*, ...) #0 comdat {
 }
 
 ; Function Attrs: noinline nounwind optnone uwtable
-define linkonce_odr i32 @vsprintf(i8*, i8*, i8*) #0 comdat {
+define linkonce_odr dso_local i32 @vsprintf(i8*, i8*, i8*) #0 comdat {
   %4 = alloca i8*, align 8
   %5 = alloca i8*, align 8
   %6 = alloca i8*, align 8
@@ -61,7 +61,7 @@ define linkonce_odr i32 @vsprintf(i8*, i8*, i8*) #0 comdat {
 }
 
 ; Function Attrs: noinline nounwind optnone uwtable
-define linkonce_odr i32 @_snprintf(i8*, i64, i8*, ...) #0 comdat {
+define linkonce_odr dso_local i32 @_snprintf(i8*, i64, i8*, ...) #0 comdat {
   %4 = alloca i8*, align 8
   %5 = alloca i64, align 8
   %6 = alloca i8*, align 8
@@ -85,7 +85,7 @@ define linkonce_odr i32 @_snprintf(i8*, i64, i8*, ...) #0 comdat {
 }
 
 ; Function Attrs: noinline nounwind optnone uwtable
-define linkonce_odr i32 @_vsnprintf(i8*, i64, i8*, i8*) #0 comdat {
+define linkonce_odr dso_local i32 @_vsnprintf(i8*, i64, i8*, i8*) #0 comdat {
   %5 = alloca i8*, align 8
   %6 = alloca i8*, align 8
   %7 = alloca i64, align 8
@@ -103,7 +103,7 @@ define linkonce_odr i32 @_vsnprintf(i8*, i64, i8*, i8*) #0 comdat {
 }
 
 ; Function Attrs: noinline nounwind optnone uwtable
-define i8* @createObject(i64, i32) #0 {
+define dso_local i8* @createObject(i64, i32) #0 {
   %3 = alloca i32, align 4
   %4 = alloca i64, align 8
   store i32 %1, i32* %3, align 4
@@ -113,10 +113,10 @@ define i8* @createObject(i64, i32) #0 {
   ret i8* %6
 }
 
-declare noalias i8* @malloc(i64) #1
+declare dso_local noalias i8* @malloc(i64) #1
 
 ; Function Attrs: noinline nounwind optnone uwtable
-define void @freeObject(i8*) #0 {
+define dso_local void @freeObject(i8*) #0 {
   %2 = alloca i8*, align 8
   store i8* %0, i8** %2, align 8
   %3 = load i8*, i8** %2, align 8
@@ -124,10 +124,10 @@ define void @freeObject(i8*) #0 {
   ret void
 }
 
-declare void @free(i8*) #1
+declare dso_local void @free(i8*) #1
 
 ; Function Attrs: noinline nounwind optnone uwtable
-define i8* @createArray(i32, i32, i32) #0 {
+define dso_local i8* @createArray(i32, i32, i32) #0 {
   %4 = alloca i32, align 4
   %5 = alloca i32, align 4
   %6 = alloca i32, align 4
@@ -145,7 +145,7 @@ define i8* @createArray(i32, i32, i32) #0 {
 }
 
 ; Function Attrs: noinline nounwind optnone uwtable
-define i32 @referenceIncrease(i8*) #0 {
+define dso_local i32 @referenceIncrease(i8*) #0 {
   %2 = alloca i8*, align 8
   %3 = alloca i32*, align 8
   store i8* %0, i8** %2, align 8
@@ -165,7 +165,7 @@ define i32 @referenceIncrease(i8*) #0 {
 declare void @llvm.va_start(i8*) #2
 
 ; Function Attrs: noinline nounwind optnone uwtable
-define linkonce_odr i32 @_vsprintf_l(i8*, i8*, %struct.__crt_locale_pointers*, i8*) #0 comdat {
+define linkonce_odr dso_local i32 @_vsprintf_l(i8*, i8*, %struct.__crt_locale_pointers*, i8*) #0 comdat {
   %5 = alloca i8*, align 8
   %6 = alloca %struct.__crt_locale_pointers*, align 8
   %7 = alloca i8*, align 8
@@ -186,7 +186,7 @@ define linkonce_odr i32 @_vsprintf_l(i8*, i8*, %struct.__crt_locale_pointers*, i
 declare void @llvm.va_end(i8*) #2
 
 ; Function Attrs: noinline nounwind optnone uwtable
-define linkonce_odr i32 @_vsnprintf_l(i8*, i64, i8*, %struct.__crt_locale_pointers*, i8*) #0 comdat {
+define linkonce_odr dso_local i32 @_vsnprintf_l(i8*, i64, i8*, %struct.__crt_locale_pointers*, i8*) #0 comdat {
   %6 = alloca i8*, align 8
   %7 = alloca %struct.__crt_locale_pointers*, align 8
   %8 = alloca i8*, align 8
@@ -224,10 +224,10 @@ define linkonce_odr i32 @_vsnprintf_l(i8*, i64, i8*, %struct.__crt_locale_pointe
   ret i32 %27
 }
 
-declare i32 @__stdio_common_vsprintf(i64, i8*, i64, i8*, %struct.__crt_locale_pointers*, i8*) #1
+declare dso_local i32 @__stdio_common_vsprintf(i64, i8*, i64, i8*, %struct.__crt_locale_pointers*, i8*) #1
 
 ; Function Attrs: noinline nounwind optnone uwtable
-define linkonce_odr i64* @__local_stdio_printf_options() #0 comdat {
+define linkonce_odr dso_local i64* @__local_stdio_printf_options() #0 comdat {
   ret i64* @__local_stdio_printf_options._OptionsStorage
 }
 
@@ -240,4 +240,4 @@ attributes #2 = { nounwind }
 
 !0 = !{i32 1, !"wchar_size", i32 2}
 !1 = !{i32 7, !"PIC Level", i32 2}
-!2 = !{!"clang version 6.0.1 (tags/RELEASE_601/final)"}
+!2 = !{!"clang version 7.0.0 (tags/RELEASE_700/final)"}

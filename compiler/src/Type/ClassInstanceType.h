@@ -21,7 +21,7 @@ public:
 	AstContext* makeContext(AstContext* parent);
 	/// 查询成员对象
 	virtual ClassMemberGen* getMember(CodeGen* object, const std::string& name);
-	virtual CodeGen * makeCall(llvm::LLVMContext& c, CodeGen * value, const std::string & name, std::vector<std::pair<std::string, CodeGen*>>& arguments);
+	virtual CodeGen * makeCall(llvm::LLVMContext& c, CodeGen * value, const std::string & name, const std::vector<std::pair<std::string, CodeGen*>>& arguments);
 	CodeGen* newObject(llvm::LLVMContext& c, std::vector<std::pair<std::string, CodeGen*> >& );
 public:
 	std::string path;

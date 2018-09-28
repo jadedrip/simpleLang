@@ -14,7 +14,7 @@ CallGen::CallGen(FunctionInstance * func, std::vector<CodeGen*>&& attrs) : funct
 	assert(func); 
 }
 
-CallGen::CallGen(FunctionInstance* func, std::vector<std::pair<std::string, CodeGen*>>& paramters, CodeGen* object)
+CallGen::CallGen(FunctionInstance* func, const std::vector<std::pair<std::string, CodeGen*>>& paramters, CodeGen* object)
 	: function(func)
 {
 	const size_t s=func->parameters.size();

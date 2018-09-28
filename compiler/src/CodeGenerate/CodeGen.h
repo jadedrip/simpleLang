@@ -6,6 +6,7 @@
 class CodeGen {
 public:
 	CodeGen(llvm::Type* t = nullptr);
+	virtual ~CodeGen(){}
 	llvm::Type* type;
 	llvm::Type* hopeType = nullptr; // 期望返回的类型(帮助部分节点优化）
 	llvm::Value* value = nullptr;

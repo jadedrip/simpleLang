@@ -46,14 +46,14 @@ AstFunction::OrderedParameters* clearGen(
 	return nullptr;
 }
 
-AstFunction::OrderedParameters* AstFunction::orderParameters(llvm::LLVMContext& c, std::vector<std::pair<std::string, CodeGen*>>& types) {
+AstFunction::OrderedParameters* AstFunction::orderParameters(llvm::LLVMContext& c, const std::vector<std::pair<std::string, CodeGen*>>& types) {
 	auto * ordered = new OrderedParameters();
 	std::vector<CodeGen*> cache;  // 这里保存生成的转换器，匹配失败退出时，清理
 
 	auto a = paremeters.begin();
 	auto i = types.begin();
 	for (; i != types.end() && a != paremeters.end(); a++, i++) {	// 先顺序匹配
-		std::string& name = i->first;
+		const std::string& name = i->first;
 		Type* type = i->second->type;	// 参数的类型
 
 		if (!name.empty() && a->name != name)
@@ -118,7 +118,7 @@ AstType * AstFunction::getTypeByName(const std::string & name) {
 	return iter->second.type;
 }
 
-CodeGen * AstFunction::makeCall(LLVMContext& c, std::vector<std::pair<std::string, CodeGen*>>& types, CodeGen * object){
+CodeGen * AstFunction::makeCall(LLVMContext& c, const std::vector<std::pair<std::string, CodeGen*>>& types, CodeGen * object){
 	OrderedParameters *ordered = orderParameters(c, types);
 	if (!ordered) return nullptr;
 	// 成功
@@ -260,7 +260,10 @@ void AstFunction::fillFunctionBlock(AstContext * s, FunctionInstance *instance)
 	// 初始化返回值
 	for (auto *i : rets) {
 		if (!i->name.empty()) {
-			auto *p = new DefGen(i->name, i->type->llvmType(c));
+			CodeGen* v = nullptr;
+			if (i->right)
+				v = i->right->makeGen(s);
+			auto *p = new DefGen(i->name, i->type->llvmType(c), v);
 			s->setSymbolValue(i->name, p);
 			instance->block.push_back(p);
 			namedReturn.push_back(p);
@@ -305,7 +308,7 @@ void AstFunction::fillFunctionBlock(AstContext * s, FunctionInstance *instance)
 		}
 	}
 
-	instance->returnType = TupleType::create(c, std::move(returnTypes));
+	instance->returnType = TupleType::create(c, returnTypes);
 
 	if (block.empty()) {
 		instance->block.push_back(new ReturnGen());

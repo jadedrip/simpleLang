@@ -26,6 +26,4 @@ public:
 	llvm::Function* generateCode(llvm::Module*, llvm::LLVMContext& context);
 	// static CallGen* makeCall(llvm::Function*, std::vector<std::pair<std::string, CodeGen*>>& arguments, CodeGen* object = false) { return nullptr; }
 	llvm::Function* func = nullptr;
-private:
-	llvm::Type* makeReturnType(llvm::LLVMContext& context);
 };

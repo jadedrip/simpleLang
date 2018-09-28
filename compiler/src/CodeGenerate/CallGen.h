@@ -8,7 +8,7 @@ class CallGen : public CodeGen
 public:
 	CallGen(FunctionInstance* func = nullptr);
 	CallGen(FunctionInstance* func, std::vector<CodeGen*>&& attrs);
-	CallGen(FunctionInstance* func, std::vector<std::pair<std::string, CodeGen*>>& v, CodeGen* object=nullptr);
+	CallGen(FunctionInstance* func, const std::vector<std::pair<std::string, CodeGen*>>& v, CodeGen* object=nullptr);
 
 	FunctionInstance* function = nullptr;
 	llvm::Function* llvmFunction = nullptr;

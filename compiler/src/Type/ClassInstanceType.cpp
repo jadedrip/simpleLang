@@ -62,7 +62,7 @@ ClassMemberGen * ClassInstanceType::getMember(CodeGen* value, const std::string 
 	return getMapValue(memberGens, name);
 }
 
-CodeGen * ClassInstanceType::makeCall(llvm::LLVMContext& c, CodeGen* value, const std::string & name, std::vector<std::pair<std::string, CodeGen*>>& arguments) {
+CodeGen * ClassInstanceType::makeCall(llvm::LLVMContext& c, CodeGen* value, const std::string & name, const std::vector<std::pair<std::string, CodeGen*>>& arguments) {
 	auto it = methds.find(name);
 	if (it == methds.end()) {
 		auto *func=funcCache[name];

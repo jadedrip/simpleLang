@@ -1,6 +1,7 @@
 ﻿package org.my
 
 // import si.clib
+/*
 import si.String
 
 String str = "Hello world!"
@@ -9,6 +10,16 @@ printf( "c=%d\r\n", c )
 
 var b = (c==0) ? 11 : 12
 printf( "b=%d\r\n", b )
+
+var tuple1 = ( 10, 20 )
+var tuple2 = ( 20, 30 )
+*/ 
+
+func mul( int a, int b ) : int x, int y {
+	return a, b
+}
+
+var d, e := mul(10, 20)
 
 // int x
 

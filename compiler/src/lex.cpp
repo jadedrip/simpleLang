@@ -336,7 +336,7 @@ AstNode* makeDelete(AstNode* expr) {
 AstNode* callReturn(AstNode * val)
 {
 	AstReturn* p = new AstReturn();
-	p->returnValues.push_back(val);
+	moveLines(p->returnValues, val);
 	return p;
 }
 

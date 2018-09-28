@@ -45,8 +45,8 @@ llvm::Value* int_to_bool(llvm::IRBuilder<>& builder, llvm::Value* v);
 class AstNode;
 struct Parameter;
 
-inline std::string i2hexString(int i) {
-	static char * n = "0123456789abcdef";
+inline std::string i2hexString(uint64_t i) {
+	static const char * n = "0123456789abcdef";
 	std::string s;
 	while (i > 0) {
 		s.push_back(n[i % 0xF]);
@@ -86,7 +86,7 @@ inline std::string encodeByHash(const std::string& str) {
 	std::string out;
 	out.reserve(6);
 	// (a-z) 26 + (A-F) 6 = 32
-	static char *codes = "abcedefhijklmnopqrstuvwxyzABCDEF";
+	static const char *codes = "abcedefhijklmnopqrstuvwxyzABCDEF";
 	while (hash > 0)
 	{
 		unsigned int v = hash & 0x17;
@@ -146,3 +146,17 @@ inline llvm::Value* toLLValue(uint64_t v)
 }
 
 std::string toReadable(llvm::Type* type);
+inline std::string toShort(llvm::Type* type)
+{
+	return toReadable(type);
+}
+
+inline llvm::Value* getDefaultValue(llvm::Type* type)
+{
+	if (type->isIntegerTy()) {
+		return llvm::ConstantInt::get(type, 0); 
+	} else if (type->isFloatingPointTy() || type->isDoubleTy()) {
+		return llvm::ConstantFP::get(type, 0.0);
+	} 
+	return nullptr;
+}

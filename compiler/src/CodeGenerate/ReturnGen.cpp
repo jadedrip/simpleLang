@@ -20,6 +20,7 @@ llvm::Value * ReturnGen::generateCode(llvm::Module * m, llvm::Function * func, l
 		}
 
 		llvm::Value* v = p->generate(m, func, builder);
-		return builder.CreateRet(v);	// 返回 Tuple 的指针
+		v=builder.CreateLoad(v, "return");
+		return builder.CreateRet(v);	// 返回 Tuple 的对象
 	}
 }
