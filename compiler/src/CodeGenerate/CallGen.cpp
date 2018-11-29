@@ -64,7 +64,7 @@ Value * CallGen::generateCode(Module *m, Function *func, llvm::IRBuilder<>&build
 		if (argIterator != llvmFunction->arg_end())
 			i->hopeType = argIterator->getType();
 		Value* v = i->generate(m, func, builder);
-		bool isPoint = i->type->isStructTy() || dynamic_cast<StringLiteGen*>(i);
+		bool isPoint = dynamic_cast<StringLiteGen*>(i) || i->type->isStructTy();
 
 		if (!v)
 			v = ConstantInt::getNullValue(argIterator->getType());

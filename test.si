@@ -1,6 +1,20 @@
 ﻿package org.my
 
-// import si.clib
+class MyFirst{
+	const data=3
+
+	func show() : int {
+		return data
+	}
+}
+
+MyFirst x()
+x.show()
+
+enum MyEnum{ red=1, blue=2 }
+
+printf( "red=%d, data=%d\r\n", MyEnum.red, MyFirst.data )
+
 /*
 import si.String
 
@@ -20,7 +34,7 @@ func mul( int a, int b ) : int x, int y {
 }
 
 var d, e := mul(10, 20)
-
+printf("%d %d", d, e)
 // int x
 
 // int[5] a=[1,2,3,4,5]

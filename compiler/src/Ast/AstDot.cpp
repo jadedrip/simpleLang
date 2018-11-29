@@ -29,7 +29,8 @@ CodeGen * AstDot::makeGen(AstContext * parent)
 				throw std::runtime_error("Can't find class:" + sty->getName().str());
 			return cls->makeCall(parent->context(), o, right->name, c->getArguments(parent));
 		}
-		auto* cls= ClassInstanceType::findByName(sty->getName());
+
+		auto* cls = parent->findCompiledClass(sty->getName());
 		return cls->getMember(o, right->name);
 	}
 	else {

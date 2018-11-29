@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Ast\AstGetConstValue.cpp" />
     <ClCompile Include="src\Ast\AstIif.cpp" />
     <ClCompile Include="src\Ast\AstIsNull.cpp" />
     <ClCompile Include="src\caster.cpp" />
@@ -127,6 +128,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Ast\AstGetConstValue.h" />
     <ClInclude Include="src\Ast\AstIif.h" />
     <ClInclude Include="src\Ast\AstIsNull.h" />
     <ClInclude Include="src\caster.h" />
@@ -344,7 +346,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4996; 4624; 4065</DisableSpecificWarnings>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <AdditionalIncludeDirectories>./src;.</AdditionalIncludeDirectories>
       <SupportJustMyCode>false</SupportJustMyCode>

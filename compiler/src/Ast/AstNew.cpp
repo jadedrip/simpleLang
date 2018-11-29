@@ -35,6 +35,8 @@ CodeGen * AstNew::makeGen(AstContext * parent) {
 	static std::vector<std::pair<std::string, CodeGen*>> emptyArgs;
 	GenList* l = new GenList();
 	CodeGen* a = cls->makeNew(parent, emptyArgs);
+	parent->setSymbolValue(name, a);
+
 	l->generates.push_back(a);
 
 	BlockGen* b = new BlockGen();

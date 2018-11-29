@@ -41,6 +41,7 @@
 #include "Ast/AstList.h"
 #include "Ast/AstEmpty.h"
 #include "Ast/AstAnnotation.h"
+#include "Ast/AstGetConstValue.h"
 #include "token.h"
 #include "utility.h"
 #include "Type/AutoType.h"
@@ -425,15 +426,17 @@ AstNode* makeTuple(AstNode* elem, AstNode* list)
 	return p;
 }
 
-AstNode * tupleResolve(AstNode * left, AstNode * tuple)
+AstNode * tupleResolve(AstNode * left, AstNode * tuple, bool def)
 {
 	cout << "tupleResolve: " << tuple->name << endl;
 	auto spread = new AstTupleSpread();
 	spread->tuple = tuple;
+	spread->def = def;
 
 	foreach(left, [spread](AstNode*i) {
 		spread->vars.push_back(std::move(i->name));
 	}, true);
+	
 	return spread;
 }
 
@@ -564,6 +567,11 @@ AstNode * createEnum(char * name, AstNode* items)
 		p->values.push_back(x);
 	});
 	return p;
+}
+
+AstNode * makeGetConstValue(char * name, char * value)
+{
+	return new AstGetConstValue(name, value);
 }
 
 AstNode * makeCall(char * name, AstNode* node)

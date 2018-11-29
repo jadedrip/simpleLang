@@ -23,6 +23,7 @@ public:
 	std::vector<AstNode*> block;
 
 	std::map<std::string, AstType* > memberTypes;
+	std::map<std::string, CodeGen* > constValues;
 private:
 	AstFunction * _construstor = nullptr;	// 构造函数
 	// 类的上下文，为类定义时的上下文

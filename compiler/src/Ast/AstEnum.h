@@ -1,8 +1,8 @@
 ﻿#pragma once
-#include "AstLet.h"
+#include "AstClass.h"
 
 ///定义变量
-class AstEnum : public AstNode {
+class AstEnum : public AstClass {
 public:
 	virtual void draw(std::ostream& os);
 

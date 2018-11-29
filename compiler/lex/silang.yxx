@@ -35,7 +35,7 @@ void yyerror( const char* error );
 %token<expr>	INTEGER FLOAT INT64 FLOAT64 BOOLEAN STRING_LITERAL 
 %type<tp>		def_type
 %type<expr>		typeLet function_variable equal
-%type<expr>		typeLets function_parameters  
+%type<expr>		typeLets function_parameters class_new 
 %type<type>		cls_type cls_construct operator operator_binary operator_unary
 %type<expr>		expr expr_value lambda call exprs for_loop cls function_def def sequence
 %type<expr>		tuple tupleResolve assignment splice index  while_loop type_expr if_expr function_ret
@@ -110,24 +110,25 @@ lines
 	;
 
 line
-	:	def						{ $$=$1; }
-	|	cls						{ $<expr>$=$<expr>1; }
-	|   interface				{ $<expr>$=$<expr>1; }
-	|	tupleResolve			{ $<expr>$=$<expr>1; }
-	|   call					{ $<expr>$=$<expr>1; }
-	|	assignment				{ $<expr>$=$<expr>1; }
-	|	expr					{ $<expr>$=$<expr>1; }
-	|	rtn						{ $<expr>$=$<expr>1; }
-	|	for_loop				{ $<expr>$=$<expr>1; }
-	|	while_loop				{ $<expr>$=$<expr>1; }
-	|	if_else					{ $<expr>$=$<expr>1; }
-	|   function				{ $<expr>$=$<expr>1; }
-	|   const					{ $<expr>$=$<expr>1; }
-	|	enum					{ $<expr>$=$<expr>1; }
-	|	switch					{ $<expr>$=$<expr>1; }
-	|	try						{ $<expr>$=$<expr>1; }
-	|	object_delete			{ $<expr>$=$<expr>1; }
-	|	operator_overload 		{ $<expr>$=$<expr>1; }
+	:	def						
+	|	cls						
+	|   interface				
+	|	tupleResolve			
+	|   call					
+	|	assignment				
+	|	expr					
+	|	rtn						
+	|	for_loop				
+	|	while_loop				
+	|	if_else					
+	|   function				
+	|   const					
+	|	enum					
+	|	switch					
+	|	try						
+	|	object_delete			
+	|	operator_overload 		
+	|	class_new
 	;
 
 const
@@ -156,7 +157,7 @@ typeLets
 *	枚举
 ************************/
 enum
-	:	ENUM L_IDENTIFIER '{' enum_list '}' { $$=createEnum($2, $<expr>4); }
+	:	ENUM U_IDENTIFIER '{' enum_list '}' { $$=createEnum($2, $<expr>4); }
 	;
 
 enum_list
@@ -192,6 +193,7 @@ cls_line
 	|	set					
 	|	cls_construct		
 	|	cls_destory			
+	|   const
 	|	function			
 	|	function_def ';'
 	|	PROTECTED ':'			{ $<expr>$=setProtected(); }
@@ -225,8 +227,8 @@ interface
 	;
 	
 interface_line
-	:	def					{ $<expr>$=$<expr>1; }
-	|	function_def 	{ $<expr>$=$<expr>1; }
+	:	def					
+	|	function_def 	
 	;
 
 interface_lines
@@ -288,7 +290,7 @@ tuple
 
 tupleResolve	/* 元组的自动解构 */
 	:   tupleResolveDef AEQ expr		{ $$=tupleResolve($<expr>1, $<expr>3); }
-	|	def AEQ expr					{ $$=tupleResolve($<expr>1, $<expr>3); }
+	|	ITYPE tupleResolveDef AEQ expr	{ $$=tupleResolve($<expr>2, $<expr>4, true); }
 	;
 
 tupleResolveDef	
@@ -316,7 +318,12 @@ call_arg
 
 /*******************************************
 *	类的实例化
+*	MyCls cls( 1 )
 ********************************************/
+class_new
+	: def_type L_IDENTIFIER '(' call_args ')'	{ $<expr>$=createNew($1, $2, $<expr>4); }
+	;
+
 object_delete
 	:	DELETE_TOKEN expr	{ $<expr>$=makeDelete($2); }
 	;
@@ -374,7 +381,6 @@ lambda
 /* return 语句 */
 rtn
 	:	RETURN			{ $$=callReturn(); } 
-	|	RETURN expr		{ $$=callReturn( $2 ); }
 	|	RETURN exprs	{ $$=callReturn( $2 ); } 
 	;
 
@@ -521,7 +527,6 @@ expr
 	| L_IDENTIFIER				{ $$=getVar($1); }
 	| '(' expr ')'				{ $$=$<expr>2; }
 	| expr operator_binary expr { $$=binary($<type>2, $<expr>1, $<expr>3);  }
-	| expr '<' expr				{ $$=binary('<', $<expr>1, $<expr>3);  }
 	| operator_unary expr		{ $$=unary($<type>1, $<expr>2); }
 	| expr operator_unary		{ $$=unaryAfter($<type>2, $1); }
 	| assignment
@@ -532,6 +537,7 @@ expr
 	| expr DEC					{ $$=makeInc($1, false); }
 	| expr WHEN_NULL expr		{ $$=makeIIF(makeIsNull($1), $3); }
 	| expr '?' expr ':' expr	{ $$=makeIIF($1, $3, $5);}
+	| U_IDENTIFIER '.' L_IDENTIFIER { $$=makeGetConstValue($1,$3); }
 	;
 
 type_expr

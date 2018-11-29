@@ -44,13 +44,13 @@ H		[a-fA-F0-9]
 "uint"		    yylval.type=12;	return ITYPE; 
 "ulong"		yylval.type=13;	return ITYPE; 
 
-"0"[lL]\n(\-?[1-9]{D}*)[lL] { yylval.expr=makeValue(yytext,std::stol(yytext));			return INTEGER; }
-"0"|("-"?[1-9]{D}*)			{ yylval.expr=makeValue(yytext,std::stoll(yytext));			return INT64;  }
-"0x"{H}[lL]					{ yylval.expr=makeValue(yytext,std::stol( yytext, 0, 16 ));	return INTEGER; }
-"0x"{H}						{ yylval.expr=makeValue(yytext,std::stoll( yytext, 0, 16 ));	return INT64; }
+"0"[lL]|(\-?[1-9]{D}*)[lL] { yylval.expr=makeValue(yytext,std::stoll(yytext));			return INT64; }
+"0"|("-"?[1-9]{D}*)			{ yylval.expr=makeValue(yytext,std::stol(yytext));			return INTEGER;  }
+"0x"{H}[lL]					{ yylval.expr=makeValue(yytext,std::stol(yytext, 0, 16 ));	return INTEGER; }
+"0x"{H}						{ yylval.expr=makeValue(yytext,std::stoll(yytext, 0, 16 ));	return INT64; }
 0[0-7]+[lL]					{ yylval.expr=makeValue(yytext,std::stol(yytext,0,8));		return INTEGER; }
 0[0-7]+						{ yylval.expr=makeValue(yytext,std::stoll(yytext,0,8));		return INT64; }
-"-"{D}+\.{D}+[fF]			{ yylval.expr=makeValue(yytext,std::stof(yytext));			return FLOAT; }	// 负数小数点前必须有值
+"-"{D}+\.{D}+[fF]			{ yylval.expr=makeValue(yytext,std::stof(yytext));			return FLOAT; }		// 负数小数点前必须有值
 "-"{D}+\.{D}+				{ yylval.expr=makeValue(yytext,std::stod(yytext));			return FLOAT64; }	// 负数小数点前必须有值
 {D}*\.{D}+[fF]				{ yylval.expr=makeValue(yytext,std::stof(yytext));			return FLOAT; }	
 {D}*\.{D}+					{ yylval.expr=makeValue(yytext,std::stod(yytext));			return FLOAT64; }	

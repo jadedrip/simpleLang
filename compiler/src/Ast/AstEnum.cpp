@@ -5,17 +5,17 @@
 #include "CodeGenerate/TypeOnlyGen.h"
 #include "CodeGenerate/IntegerGen.h"
 #include "CodeGenerate/IntegerBinaryGen.h"
-#include "../Type/EnumType.h"
+#include "../Type/ClassInstanceType.h"
 #include "../Type/SIntegerType.h"
 
 void AstEnum::draw(std::ostream & os) {
 	dotLable(os, name);
 }
 
-// enum 
 CodeGen * AstEnum::makeGen(AstContext * parent)
 {	 
-	auto *type = new EnumType();
+    // enum 处理为类内的常量
+	parent->setClass(name, this);
 	CodeGen* idx = nullptr;
 	IntegerBinaryGen* p;
 	if (!values.empty()) {
@@ -31,14 +31,11 @@ CodeGen * AstEnum::makeGen(AstContext * parent)
 				idx = p;
 			}
 
-			type->enums[i->name] = idx;
+			constValues[i->name] = idx;
 			if (++iter == values.end()) break;
 		}
 	}
 	
-	auto llvmType = type->llvmType(parent->context());
-	auto *x=new TypeOnlyGen(llvmType);
-	parent->setSymbolValue(name, x);
-	return x;
+	return nullptr;
 }
 

@@ -118,11 +118,15 @@ AstType * AstFunction::getTypeByName(const std::string & name) {
 	return iter->second.type;
 }
 
-CodeGen * AstFunction::makeCall(LLVMContext& c, const std::vector<std::pair<std::string, CodeGen*>>& types, CodeGen * object){
+CodeGen * AstFunction::makeCall(
+	LLVMContext& c, 
+	const std::vector<std::pair<std::string, CodeGen*>>& types, 
+	CodeGen * object,
+	ClassInstanceType* clsType){
 	OrderedParameters *ordered = orderParameters(c, types);
 	if (!ordered) return nullptr;
 	// 成功
-	return createCallGen(c, ordered->parameters, ordered->variableGen, object);
+	return createCallGen(c, ordered->parameters, ordered->variableGen, object, clsType);
 }
 
 /// <summary>
@@ -160,6 +164,7 @@ CodeGen * AstFunction::createCallGen(
 	std::vector<std::pair<std::string, CodeGen*>>& parameterGens,
 	std::vector<CodeGen*>& variableGen,
 	CodeGen* object,
+	ClassInstanceType* clsType,
 	FunctionInstance* instance
 )
 {
@@ -167,8 +172,7 @@ CodeGen * AstFunction::createCallGen(
 	if (instance)
 		p->function = instance;
 	else {
-		ClassInstanceType* o = object ? ClassInstanceType::findByStruct(object->type) : nullptr;
-		p->function = getFunctionInstance(c, parameterGens, variableGen, o);
+		p->function = getFunctionInstance(c, parameterGens, variableGen, clsType);
 	}
 
 	if (object) {

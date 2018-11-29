@@ -1,23 +1,8 @@
-//===- lli.cpp - LLVM Interpreter / Dynamic compiler ----------------------===//
-//
-//                     The LLVM Compiler Infrastructure
-//
-// This file is distributed under the University of Illinois Open Source
-// License. See LICENSE.TXT for details.
-//
-//===----------------------------------------------------------------------===//
-//
-// This utility provides a simple wrapper around the LLVM Execution Engines,
-// which allow the direct execution of LLVM programs through a Just-In-Time
-// compiler, or through an interpreter if no JIT is available for this platform.
-//
-//===----------------------------------------------------------------------===//
-
 #include "stdafx.h"
 #include "llvm/ADT/StringExtras.h"
 #include "llvm/ADT/Triple.h"
 #include "llvm/Bitcode/BitcodeReader.h"
-#include "llvm/CodeGen/CommandFlags.def"
+#include "llvm/CodeGen/CommandFlags.inc"
 #include "llvm/CodeGen/LinkAllCodegenComponents.h"
 #include "llvm/ExecutionEngine/GenericValue.h"
 #include "llvm/ExecutionEngine/Interpreter.h"
@@ -59,25 +44,11 @@ using namespace llvm;
 
 #define DEBUG_TYPE "lli"
 
-//===----------------------------------------------------------------------===//
-// Object cache
-//
-// This object cache implementation writes cached objects to disk to the
-// directory specified by CacheDir, using a filename provided in the module
-// descriptor. The cache tries to load a saved object using that path if the
-// file exists. CacheDir defaults to "", in which case objects are cached
-// alongside their originating bitcodes.
-//
-
 LLVM_ATTRIBUTE_NORETURN
 static void reportError(SMDiagnostic Err, const char *ProgName) {
   Err.print(ProgName, errs());
   exit(1);
 }
-
-//===----------------------------------------------------------------------===//
-// main Driver function
-//
 
 void addModule( const std::string& InputFile, Module* Mod) {
 	std::string CacheName("file:");

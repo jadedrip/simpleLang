@@ -1,7 +1,7 @@
 ; ModuleID = 'core.c'
 source_filename = "core.c"
 target datalayout = "e-m:w-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-pc-windows-msvc19.15.26730"
+target triple = "x86_64-pc-windows-msvc19.16.27024"
 
 %struct.__crt_locale_pointers = type { %struct.__crt_locale_data*, %struct.__crt_multibyte_data* }
 %struct.__crt_locale_data = type opaque

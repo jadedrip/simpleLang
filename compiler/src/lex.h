@@ -67,7 +67,7 @@ AstNode* makeIndex(AstNode* expr, AstNode* index);
 
 // 元组
 AstNode* makeTuple(AstNode* elem, AstNode* second);
-AstNode* tupleResolve(AstNode* type, AstNode* tuple);
+AstNode* tupleResolve(AstNode* type, AstNode* tuple, bool def=false);
 
 AstNode * makeClass(int type, char * name, AstType * inherit, AstNode* block);
 AstNode* makeConst(char* name, AstNode* value );
@@ -90,6 +90,8 @@ AstNode * setProtected();
 AstNode* makeInc(AstNode* expr, bool isInc = true);
 
 AstNode* createEnum(char* name, AstNode* items);
+AstNode* makeGetConstValue(char* name, char* value);
+
 AstNode* makeCall(char* name, AstNode* args);
 AstNode* makeDelete(AstNode* expr);
 AstNode* createNew(AstType* type, char* name, AstNode* block);

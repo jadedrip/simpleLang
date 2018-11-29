@@ -188,6 +188,7 @@ move /Y %(Filename).ll  $(SolutionDir)\lib\si</Command>
   </ItemGroup>
   <ItemGroup>
     <None Include="clib.def" />
+    <None Include="si\String.si" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

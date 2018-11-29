@@ -1,0 +1,22 @@
+class Charset {
+	init(ushort code=0)
+	get code()
+}
+
+enum Charsets {
+	Default = Charset(0),
+	UTF8 = Charset(65001),
+	UNICODE = Charset(1200)
+}
+
+class String{
+	init(byte[] str, Charset charset=Charsets.Default)
+	func at(ulong index) : char
+	func size() : ulong
+	// operator == (String str)
+	func compare(String another)
+	func sub(ulong index, ulong size)
+	func bytes(Charset charset=Charsets.UTF8) : byte[]
+}
+
+func Charset.name()

@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="si">
+      <UniqueIdentifier>{9ac4f59e-d8c8-4634-b3cc-0e14a9ecb631}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -39,6 +42,9 @@
   <ItemGroup>
     <None Include="clib.def">
       <Filter>源文件</Filter>
+    </None>
+    <None Include="si\String.si">
+      <Filter>si</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

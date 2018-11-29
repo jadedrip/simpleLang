@@ -44,6 +44,7 @@ CodeGen * AstTupleSpread::makeGen(AstContext * parent)
 
 		if (def) {
 			v = new DefGen(s, type);
+			parent->setSymbolValue(s, v);
 		}
 		else {
 			v= parent->findSymbolValue(s);

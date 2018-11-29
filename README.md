@@ -51,7 +51,7 @@ Si 是拍脑袋的产物，试验性的产品，现在仅仅处于最初级阶�
 |:----------|:------|:-------
 | boolean	| 无		| 1 bit  
 | byte	    | 无		| 8 bit 
-| char	    | 有		| 8 bit  
+| char	    | 无		| 16 bit  
 | short		| 有		| 16 bit 
 | ushort    | 无		| 16 bit
 | int		| 有		| 32 bit 
@@ -84,6 +84,7 @@ Si 是拍脑袋的产物，试验性的产品，现在仅仅处于最初级阶�
 | Func		| 函数对象
 | Delay		| 延迟对象
 | Delegate	| 委托（保留）
+| Proxy		| 代理（保留）
 
 使用 const 来定义常量：
 
@@ -632,6 +633,19 @@ Si 支持的异常。
 
 *设计语:操作符重载有可能引起歧义，需要谨慎思考*
 
+类外部方法增强
+----------------
+通过在类外部定义额外方法，可以增强类
+
+	package org.other
+
+	fun MyCls.other(){	// 本函数定义在外部，通过 import org.other 引入
+		this.val++
+	}
+
+	MyCls cls()
+	cls.other()			// 可以像内部方法一样使用
+
 循环解偶
 -----------------
 两个类互相引用对方的情况是被禁止的（即使是间接引用）。但可以定义子类。
@@ -667,11 +681,6 @@ Si 支持的异常。
 
 	var managed = ManagedClass() 	// 托管的
 	free(managed)					// 调用析构函数
-
-如果要生成非托管对象，必须打开一个编译器开关，并且使用 new 关键字。非托管对象不由 GC 管理，并且非托管类不能引用托管类：  
-
-	var unmanaged=new UnmanagedClass()
-	free(unmanaged)
 
 语法糖：对象作用区
 ----------------
@@ -873,11 +882,10 @@ for 可以用来解开通过 ... 传入的多个参数等，也可以解开元�
 接口
 -------------
 
-Si 可以通过 interface 关键字定义接口，接口所有的方法、变量都是公开的。但需要注意的是，
-**接口并非类型，而是模板约束。** 接口内的函数**没有**默认实现。
-接口仅在编译期工作，编译后的二进制代码里，是没有接口的。
+Si 可以通过 interface 关键字定义接口，接口所有的方法、变量都是公开的。
+接口可以带默认方法、变量默认值，但需要注意的是，接口的方法会被认为是函数对象。
 
-接口可以直接用在函数、方法的参数上，它可以用来约束函数、方法的参数，
+接口附带尖括号，用在函数、方法的参数上，它可以用来约束函数、方法的参数（），
 它实现了部分需要模板的功能，只要类实现了接口里的所有方法和变量，并且他们是可访问的，那么就视为他实现了该接口，可以传送给接受该接口的方法。
 
 比如
@@ -888,25 +896,29 @@ Si 可以通过 interface 关键字定义接口，接口所有的方法、变量
 		func getSome():int	// 这是个函数定义
 	}
 
-	void aFunc( MyInterface inc ){	// aFunc 实际上是一个模板函数。
+	void aFunc( <MyInterface> inc ){	// aFunc 实际上是一个模板函数。
 		// 这样，任何对象，只要包含名字为 a, b 的成员变量，以及 getSome 这样一个方法，
 		// 就可以被传入这个函数
 	}
 
-再次提醒，这是编译期的动作，接口被视为有约束的模板参数。
-另外，有且只有一个条件的简单的接口，可以通过 ` 在参数中直接定义（匿名接口）
+这是编译期的动作，在这里，接口被视为有约束的模板参数。
+另外，有且只有一个条件的简单的接口，可以通过尖括号在参数中直接定义（匿名模板接口）
 
-	void aFunc( `int a` inc ){
+	void aFunc( <int a> inc ){
 		inc.a++
 	}
 
-接口也可以用来明确的强制一个类去符合某种契约，当然，同样是编译期的：
+接口也可以用来明确的强制一个类去符合某种契约：
 
 	class MyClass : Base, MyInterface{	   // 当 MyClass	不符合 MyInterface 时会编译错误
 
 	}
 
-	MyInterface i=MyClass()		// i 会被编译为 MyClass 类型
+	MyInterface i=MyClass()		// i 被认为是 MyClass 的基类
+	
+	void bFunc(MyInterface v){  // 这里 bFunc 没带尖括号关键字，表示这并非模板函数，
+	                            // 必须从 MyInterface 继承的对象，才能传入
+	}
 
 模板推导函数
 --------------
@@ -1085,17 +1097,16 @@ lib 文件、需要对应的头文件及适配文件等需要的东西，会被�
 
 对象追踪
 =====
+	
+	class Connect
 
-	class MyObject link Connect{
-		MyObject(){
-			super.Open()
-		}
-	}
+	class MyObject
 
-	var my= conn .. MyObject()
+	var conn = Connect()
+	var my = MyObject() link conn
+	var myRef = conn..MyObject 
 
-my 对象的生存期将会跟随输入的对象，成为 Connect 的子类。
-
+my 对象的生存期将会跟随输入的对象 conn，成为 Connect 的子类。
 
 操作符重载
 ================
@@ -1124,5 +1135,27 @@ Si 支持有限的操作符重载。对于类内的操作符，可以通过一�
 
 这段代码会调用一个叫json的插件，把中间的代码解析为 si 语言的代码。
 
+接口代理
+--------------
+接口代理是接口的另一种使用方法，会以名称的形式来调用接口内的函数
 
+	interface MyProxy{
+		func run(String data)
+	}
 
+	class MyProxyImp{
+		func invoke(String methodName, Any[] args) : Any
+	}
+
+	MyProxyImp obj()
+
+	Proxy<MyProxy> imp = Proxy<MyProxy>(obj)	// proxy 是内部类型
+	imp.run("Hello")	// 
+
+非托管对象
+-----------------
+
+如果要生成非托管对象，必须打开一个编译器开关，并且使用 new 关键字。非托管对象不由 GC 管理，并且非托管类不能引用托管类：  
+
+	var unmanaged=new UnmanagedClass()
+	free(unmanaged)

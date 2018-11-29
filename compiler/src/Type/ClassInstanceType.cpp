@@ -50,6 +50,8 @@ using namespace llvm;
 Type * ClassInstanceType::llvmType(LLVMContext & context)
 {
 	if (_type) return _type;
+
+	
 	return _type;
 }
 
@@ -71,7 +73,7 @@ CodeGen * ClassInstanceType::makeCall(llvm::LLVMContext& c, CodeGen* value, cons
 		}
 		throw std::runtime_error("Can't find function: " + name); // 找不到函数
 	}
-	return it->second->makeCall(c, arguments, value);
+	return it->second->makeCall(c, arguments, value, this);
 }
 
 CodeGen * ClassInstanceType::newObject(llvm::LLVMContext& c, std::vector<std::pair<std::string, CodeGen*>>& v)
