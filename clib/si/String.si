@@ -1,6 +1,6 @@
 class Charset {
 	init(ushort code=0)
-	get code()
+	func code()
 }
 
 enum Charsets {
@@ -9,7 +9,7 @@ enum Charsets {
 	UNICODE = Charset(1200)
 }
 
-class String{
+class String {
 	init(byte[] str, Charset charset=Charsets.Default)
 	func at(ulong index) : char
 	func size() : ulong
@@ -19,4 +19,8 @@ class String{
 	func bytes(Charset charset=Charsets.UTF8) : byte[]
 }
 
-func Charset.name()
+// func Charset.name()
+
+func print( String text )
+
+func hello()

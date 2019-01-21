@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Ast\AstGetClass.cpp" />
     <ClCompile Include="src\Ast\AstGetConstValue.cpp" />
     <ClCompile Include="src\Ast\AstIif.cpp" />
     <ClCompile Include="src\Ast\AstIsNull.cpp" />
@@ -184,6 +185,7 @@
     <ClInclude Include="src\CodeGenerate\StaticGen.h" />
     <ClInclude Include="src\CodeGenerate\GlobalStroeGen.h" />
     <ClInclude Include="src\CodeGenerate\StaticTypeGen.h" />
+    <ClInclude Include="src\CodeGenerate\ThisGen.h" />
     <ClInclude Include="src\packages.h" />
     <ClInclude Include="src\Type\AstType.h" />
     <ClInclude Include="src\Ast\AstUnary.h" />

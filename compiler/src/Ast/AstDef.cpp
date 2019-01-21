@@ -12,6 +12,7 @@
 #include <exception>
 
 using namespace llvm;
+using namespace std;
 void AstDef::draw(std::ostream & os)
 {
 	std::string n = "def ";
@@ -27,14 +28,17 @@ CodeGen * AstDef::makeGen(AstContext * parent)
 	AstType* p = AutoType::isAuto(type) ? nullptr : type;
 
 	if (vars.size() == 1) {
-		auto gen= makeDefGen(parent, p, vars.at(0));
-		parent->setSymbolValue(gen->name, gen );
+		auto x=vars.at(0);
+		auto gen= makeDefGen(parent, p, x.first, x.second);
+		if (!gen)
+			throw std::runtime_error("Can't def " + x.first);
+		parent->setSymbolValue(x.first, gen );
 		return gen;
 	}
 	
 	auto list = new GenList();
 	for (auto &i : vars) {
-		auto gen = makeDefGen(parent, p, i);
+		auto gen = makeDefGen(parent, p, i.first, i.second);
 		list->generates.push_back(gen);
 		parent->setSymbolValue(i.first, gen);
 	}
@@ -42,43 +46,28 @@ CodeGen * AstDef::makeGen(AstContext * parent)
 	return list;
 }
 
-DefGen * AstDef::makeDefGen(AstContext * parent, AstType * type, const std::pair<std::string, AstNode*> & i)
+static string emptyStr;
+CodeGen * AstDef::makeDefGen(AstContext * parent, AstType * type, const std::string& n, AstNode* var)
 {
-	std::string n = i.first;
-	CodeGen*  v = nullptr;
+	CodeGen*  v = var ? var->makeGen(parent) : nullptr;
 	llvm::Type* t = nullptr;
 
 	LLVMContext& c = parent->context();
 
 	auto *a = dynamic_cast<AstGetClass*>(type);
 	if (a) {
-		auto x = parent->findCompiledClass(a->name);
+		// 创建新对象
+		auto *x = parent->findClass(a->name);
 		if (x) {
-			t = x->llvmType(parent->context());
-		} 
-	} else if(type) {
+			// TODO: 测试 x 类型和 v 一致
+			if (v) return v;
+
+			vector<pair<string, CodeGen*>> args;
+			return x->makeNew(parent, args);
+		}
+	} else if (type) {
 		t = type->llvmType(parent->context());
 	}
 	
-	if (i.second) { // 如果有值
-		v = i.second->makeGen(parent);	  	// p==null 说明是 = null 禁止创建
-
-		if (!t) {
-			if (!type || isType<AutoType>(type)) {
-				if (isType<StringLiteGen>(v)) {// 对字符串特殊处理
-					auto sty = parent->findCompiledClass("String");
-					t = sty->llvmType(parent->context());
-				} else if (v)
-					t = v->type;
-			}
-		}
-
-		if (v) {
-			if (isType<StringLiteGen>(v) && v->type != t) {
-				v = new CastGen(t, v);
-			}
-		}
-	} 
-
 	return new DefGen(n, t, v);
 }

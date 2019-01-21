@@ -82,13 +82,15 @@ ExecutionEngine* buildEngine(std::unique_ptr<Module> Owner) {
 
   builder.setOptLevel(CodeGenOpt::Default);
 
-  TargetOptions Options = InitTargetOptionsFromCodeGenFlags();
-  if (FloatABIForCalls != FloatABI::Default)
-    Options.FloatABIType = FloatABIForCalls;
+  //TargetOptions Options = InitTargetOptionsFromCodeGenFlags();
+  //if (FloatABIForCalls != FloatABI::Default)
+  //  Options.FloatABIType = FloatABIForCalls;
 
-  builder.setTargetOptions(Options);
+  //builder.setTargetOptions(Options);
 
   auto * EE=builder.create();
+  if (!EE)
+	  std::cerr << ErrorMsg << std::endl;
   //EE->setObjectCache(CacheManager.get());
 
   //for (unsigned i = 0, e = ExtraObjects.size(); i != e; ++i) {

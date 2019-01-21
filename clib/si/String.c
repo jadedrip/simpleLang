@@ -1,3 +1,4 @@
+#include "stdio.h"
 #include "Windows.h"
 #include "String.h"
 
@@ -24,6 +25,9 @@ void si_String_Init(struct si_String * str, char * data, uint64_t length, uint16
 	//if (!source && length>0 && encode != CP_WINUNICODE) {
 	//	toUNICODE(str);
 	//}
+
+	// wsprintfW(data);
+	printf("Call String(data, %lld, %d)", length, encode);
 }
 
 void si_String_Finalize(struct si_String * str)
@@ -50,4 +54,12 @@ wchar_t si_String_at(struct si_String *str, uint64_t index)
 char * si_String_Cast_i8_ptr(struct si_String *str)
 {
 	return (char*)str->data;
+}
+
+void si_print(struct si_String * str)
+{
+	printf("Call print : \r\n");
+	if (!str || !str->data) return;
+	wchar_t* data = (wchar_t*)str->data;
+	wprintf(data);
 }

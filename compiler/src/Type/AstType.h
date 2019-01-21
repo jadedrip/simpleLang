@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "../Ast/AstNode.h"
 #include <llvm/IR/Type.h>
 					
@@ -7,6 +7,7 @@ class AstType {
 public:
 	std::string name;
 	bool nullable = false;
+	AstType* inherit = nullptr;// 继承类
 
 	enum SiTypeId // 扩展 llvm::Type::TypeID
 	{
@@ -77,6 +78,18 @@ public:
 	virtual CodeGen* malloc(AstContext* context);
 
 	virtual ~AstType() {}
+
+	template<typename Iterator>
+	static std::string uniqueName(Iterator begin, Iterator end)
+	{
+		std::string name;
+		for (auto i = begin; i != end; i++) {
+			AstType* type = *i;
+			name += type->uniqueName();
+		}
+		//TODO: 如果名称过长，hash 下
+		return name;
+	}
 protected:
 	size_t hash(size_t o, size_t v);
 	const SiTypeId _type;

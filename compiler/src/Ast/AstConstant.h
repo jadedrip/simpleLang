@@ -8,7 +8,7 @@ class AstContext;
  */
 class AstConstant : public AstNode {
 public:
-	AstConstant(const std::string& text) { name = text; }
+	AstConstant(const std::string& text);
 
 	void set_value(bool v);
 	void set_value(int32_t v);
@@ -20,6 +20,6 @@ public:
 		dotLable(os, name);
 	}
 private:
-	int64_t _value;
+	int64_t _value = 0;
 	int _bits = 0;
 };

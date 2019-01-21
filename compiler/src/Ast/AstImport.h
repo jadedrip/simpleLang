@@ -9,17 +9,12 @@ class CodeGen;
 class AstImport : public AstNode {
 public:
 	std::vector<std::string> identifiers;
+	bool isFunction = false;
 public:
 	virtual CodeGen* makeGen(AstContext* parent);
-	void loadCModule(llvm::Module * m);
-	virtual void draw(std::ostream& os) {
-		std::string n = nodeId;
-		os << n << " -> ";
-		for (auto i : identifiers) {
-			os << i << '.';
-		}
-		os << std::endl;
-	}
+	// void loadCModule(llvm::Module * m);
+	virtual void draw(std::ostream& os);
 private:
+	void loadPackage(const std::string& package);
 	void loadClassFromModule(AstClass* cls, AstAnnotation* annotation, AstContext* context, llvm::Module* m);
 };

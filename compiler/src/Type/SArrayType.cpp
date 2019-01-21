@@ -13,7 +13,7 @@ SArrayType::SArrayType(AstType * type, AstNode* node) :
 
 llvm::Type * SArrayType::llvmType(llvm::LLVMContext & context)
 {
-	return memberType->llvmType(context);
+	return llvm::PointerType::get( memberType->llvmType(context), 0 );
 }
 
 CodeGen * SArrayType::malloc(AstContext* context)

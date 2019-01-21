@@ -49,7 +49,9 @@ AstType::AstType(SiTypeId t) : _type(t) {
 
 /// 判断本类型是否指定类型，或是从指定类型继承的
 bool AstType::instanceOf(AstType * p) {	// TODO: 支持继承
-	return type() == p->type();
+	if (this == p || this->hashCode() == p->hashCode())
+		return true;
+	return (this->inherit ? this->inherit->instanceOf(p) : false);
 }
 
 
@@ -71,8 +73,7 @@ std::string AstType::uniqueName() {
 
 size_t AstType::hashCode()
 {
-	std::hash<int> a;
-	return a(type());
+	return type();
 }
 
 llvm::Type * AstType::llvmType(llvm::LLVMContext & context)

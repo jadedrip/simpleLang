@@ -5,15 +5,13 @@
 
 class FunctionInstance;
 													
-class ClassInstanceType
+class ClassInstanceType : public AstType
 {
 	friend class AstClass;
 public:
 	static ClassInstanceType* findByName(const std::string& name);
 	static ClassInstanceType* findByStruct(llvm::Type* type);
 public:
-	ClassInstanceType* inherit = nullptr;	// 继承
-
 	ClassInstanceType(const std::string& path, const std::string& name, llvm::StructType* type = nullptr);
 public:
 	virtual std::string uniqueName();
@@ -29,9 +27,11 @@ public:
 	static int serial;
 public:
 	llvm::StructType* _type = nullptr;
-	FunctionInstance* creator = nullptr;
+	std::vector<FunctionInstance*> creators;
 	std::map<std::string, CodeGen*> defaultValues;      // 成员变量默认值
 	std::map<std::string, AstFunction*>		methds;		// 模板方法
 	std::map<std::string, FunctionInstance*> funcCache;
-	std::map<std::string, ClassMemberGen*> memberGens;
+	std::map<std::string, ClassMemberGen*> memberGens; // TODO: 似乎多余？
+private:
+	AstContext* _context; //  
 };

@@ -1,51 +1,66 @@
 #include "stdafx.h"
+#include <Windows.h>
+#include <llvm/IR/Constants.h>
+
 #include "StringLiteGen.h"
 #include "CallGen.h"
+#include "NewGen.h"
 #include "../modules.h"
-#include <Windows.h>
 
 using namespace llvm;
+extern bool utf8File;
 StringLiteGen::StringLiteGen(llvm::LLVMContext& c, const std::string & s) : _str(s), _context(c)
 {
+	// ±àÂë±ä»Ã
+	UINT code = utf8File ? CP_UTF8 : CP_ACP;
+	int  len = _str.length();
+	int  unicodeLen = ::MultiByteToWideChar(code,
+											0,
+											_str.c_str(),
+											-1,
+											NULL,
+											0);
+	wchar_t *  pUnicode = new  wchar_t[unicodeLen + 1];
+	memset(pUnicode, 0, (unicodeLen + 1) * sizeof(wchar_t));
+	::MultiByteToWideChar(code,
+						  0,
+						  _str.c_str(),
+						  -1,
+						  (LPWSTR)pUnicode,
+						  unicodeLen);
+	int ulen = unicodeLen * sizeof(wchar_t);
+
+	_data.assign(pUnicode, unicodeLen-1);
+	delete[]  pUnicode;
+
 	type = CLangModule::getStruct("si", "String");
 }
+
 void StringLiteGen::append(StringLiteGen * g)
 {
 	_str += g->_str;
-	type = CLangModule::getStruct("si", "String");
 }
 
 llvm::Value * StringLiteGen::generateCode(llvm::Module * m, llvm::Function * func, llvm::IRBuilder<>& builder)
 {
-	auto i8ptr = IntegerType::getInt8PtrTy(m->getContext());
-	
-	if (hopeType && hopeType == i8ptr) {
-		return builder.CreateGlobalStringPtr(_str);
-	}
-	// auto i16=llvm::IntegerType::get(m->getContext(), 16);
-	// auto arrayTy=ArrayType::get(i16, str.size());
-	// new GlobalVariable(*m, arr, true, Link  )
+	auto &c = func->getContext();
+	int ulen = _data.size() * sizeof(wchar_t);
+	auto *v=builder.CreateGlobalStringPtr(StringRef(
+		(const char*)_data.c_str(), ulen
+	));
 
-	auto* s = CLangModule::getStruct("si", "String");
-	auto* createObject = CLangModule::getFunction("createObject");
+	NewGen n(type);
+	auto* obj = n.generate(m, func, builder);
+	auto* creator=CLangModule::getFunction("si_String_Init");
+	assert(creator);
 
-	Constant* allocSize = ConstantExpr::getSizeOf(s);
-	auto * v=CallGen::call(builder, createObject, allocSize, 0);
-	auto * ps = PointerType::get(s, 0);
-	auto * p=builder.CreateBitOrPointerCast(v, ps);
-
-	//auto ty16 = Type::getInt16Ty(m->getContext());
-	//auto ty32 = IntegerType::getInt32Ty(m->getContext());
-	//auto ty64 = Type::getInt64Ty(m->getContext());
-	//std::vector<Value*> args0;
-	//auto* ty=allocSize->getType();
-	//int o=ty->getIntegerBitWidth();
-	//args0.push_back(allocSize);
-	//args0.push_back(ConstantInt::get(ty32, 0));
-	//auto* v = builder.CreateCall(createObject, args0, "createObject");
-
-	auto* init = CLangModule::getFunction("si_String_init");
-	auto* data = builder.CreateGlobalStringPtr(_str);
-	CallGen::call(builder, init, p, CP_UTF8, data, _str.size(), p->getType());
-	return p;
+	std::vector<Value*> params;
+	params.push_back(obj);
+	params.push_back(v);
+	auto lenType = IntegerType::get(c, 64);
+	params.push_back(ConstantInt::get(lenType, ulen));
+	auto encodeType = IntegerType::get(c, 16);
+	params.push_back(ConstantInt::get(encodeType, 1200));
+	builder.CreateCall(creator, params);
+	return obj;
 }

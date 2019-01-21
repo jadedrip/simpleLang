@@ -76,12 +76,6 @@ CodeGen * AstCall::makeGen(AstContext * parent)
 			return cls->makeNew(parent, gens);
 		}
 
-		auto *x=parent->findCompiledClass(name);
-		if (x) {
-			auto* p = x->newObject(c, gens);
-			return p;
-		}
-
 		throw std::runtime_error("找不到匹配的类：" + name);
 	}
 	

@@ -30,5 +30,5 @@ using namespace std::experimental;
 
 void make_c_functions(llvm::Module *module) {
 	make_printf(module);
-	CLangModule::loadLLFile("lib/core");
+	CLangModule::loadLLFile("lib/core.ll");
 }

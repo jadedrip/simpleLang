@@ -1,4 +1,7 @@
 ﻿package org.my
+import si.String
+import si.print
+import si.hello
 
 class MyFirst{
 	const data=3
@@ -8,18 +11,20 @@ class MyFirst{
 	}
 }
 
-MyFirst x()
-x.show()
+//MyFirst x()
+//x.show()
 
-enum MyEnum{ red=1, blue=2 }
+enum MyEnum{ Red=1, Blue=2 }
 
-printf( "red=%d, data=%d\r\n", MyEnum.red, MyFirst.data )
-
-/*
-import si.String
+// printf( "red=%d, data=%d\r\n", MyEnum.Red, MyFirst.data )
 
 String str = "Hello world!"
-int c=0 // str.at(0)
+print(str)
+
+hello()
+
+/*
+int c=str.at(0)
 printf( "c=%d\r\n", c )
 
 var b = (c==0) ? 11 : 12
@@ -27,7 +32,7 @@ printf( "b=%d\r\n", b )
 
 var tuple1 = ( 10, 20 )
 var tuple2 = ( 20, 30 )
-*/ 
+
 
 func mul( int a, int b ) : int x, int y {
 	return a, b
@@ -35,6 +40,7 @@ func mul( int a, int b ) : int x, int y {
 
 var d, e := mul(10, 20)
 printf("%d %d", d, e)
+*/ 
 // int x
 
 // int[5] a=[1,2,3,4,5]

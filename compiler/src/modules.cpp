@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+﻿ #include "stdafx.h"
 #include "modules.h"
 #include "Ast/AstPackage.h"
 
@@ -95,7 +95,7 @@ Module* CLangModule::loadLLFile(const std::string& filename) {
 	std::cout << "Try to load:" << filename << std::endl;
 	llvm::SMDiagnostic error;
 
-	auto m = parseIRFile(filename+".ll", error, llvmContext);
+	auto m = parseIRFile(filename, error, llvmContext);
 	if (!m) {
 		std::clog << "Can't load file: " << filename << std::endl;
 		return nullptr;
@@ -126,7 +126,8 @@ Module* CLangModule::loadLLFile(const std::string& filename) {
 extern int yyparse(void);
 extern FILE *yyin;
 extern AstPackage* currentPackage;
-AstContext* CLangModule::loadSiFile(const stdfs::path& file) {
+extern int yylineno;
+AstContext* CLangModule::loadSiFile(const stdfs::path& file, const std::string& packageName, llvm::Module* m) {
 	std::string fname = file.string();
 	auto i=_packages.find(fname);
 	if (i != _packages.end())
@@ -135,7 +136,9 @@ AstContext* CLangModule::loadSiFile(const stdfs::path& file) {
 	auto *old = currentPackage;
 
 	currentPackage = new AstPackage();
-
+	currentPackage->name = packageName;
+	int ono=yylineno;
+	yylineno = 0;
 	yyin = fopen(fname.c_str(), "r"); /* 首先打开要被处理的文件（参数1）yyin是lex默认的文件输入指针，设置了则不处理控制台输入 */
 	if (!yyin) {
 		throw std::runtime_error("无法打开文件：" + fname);
@@ -143,12 +146,13 @@ AstContext* CLangModule::loadSiFile(const stdfs::path& file) {
 	if (0 != yyparse()) {
 		throw new std::runtime_error("解析" + fname + "异常");
 	}
+	yylineno = ono;
 	fclose(yyin);
 
 	auto* importedPackage = currentPackage;
 	currentPackage = old;
 
-	return _packages[fname] = importedPackage->preprocessor(module.get());
+	return _packages[fname] = importedPackage->preprocessor(m);
 }
 
 void CLangModule::shutdown() {

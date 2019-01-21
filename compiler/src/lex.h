@@ -19,10 +19,10 @@ AstNode* packageName(AstNode* name);
 
 void packageImport(AstNode* n);
 void setPackageLines(AstNode* n);
-AstNode* importName(AstNode* n, char* name);
+AstNode* importName(AstNode* n, char* name, bool isFunc = false);
 
 AstType* getType( int type_id );
-AstType* getClassType( char * name );
+AstType* getClassType( char * name, AstNode* path=nullptr );
 AstType* getFuncType();
 AstType* makeArray(AstType* type, AstNode* list = nullptr);
 AstNode* makeSequence(AstNode* list);

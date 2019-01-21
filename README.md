@@ -326,6 +326,8 @@ remove 的返回值赋值给 i, 重新开始循环体 (continue)
 
 单号函数使用推导获取返回值，必定有返回值，因此也不需要 return。
 
+
+
 return
 ==========
 * return 语句必须写在区块的最后，本区块后面不能有其他语句
@@ -411,8 +413,8 @@ Si 语言中，传入的参数（不包括 int 等内部参数）都被视为引
 
 另外可以使用前置参数来调用函数
 
-	fun1() ::> fun2()			// 等同 fun2( fun1() )
-	fun1() :: name :> fun2(1)	// 等同 fun2(1, name= fun1() )
+	fun1() :> fun2(1)			// 等同 fun2( 1, fun1() )
+	fun1() :> fun2(1, name=?)	// 等同 fun2(1, name= fun1() )
 
 如果你想玩一下函数式编程，这种语法也许会让你的程序更容易阅读
 
@@ -428,6 +430,7 @@ Si 在语言级别支持函数对象、匿名函数
 	var my1=func(int a){ ... }			// 无返回值
 	var my2=func{ ... }					// 无参数、无返回值的函数
 	var my3=func{ return 10 }			// 返回值类型自动推导
+	var my4={ return 20 }				// 语法糖: = 后面 func 可以省略
 	func(int):float itIsAFunctor		// 明确的类型
 
 同时，匿名函数可以引用外部变量（作为引用）：
@@ -545,8 +548,6 @@ Si 支持的异常。
 	Mydata mydata( a=10, b=20 )	
 
 *设计语：使用 Type name 这样的方式构造，可以帮助 IDE 自动补全（输入 My, IDE可以帮你连变量名一起补全了)*
-
-注意：由于禁止多态，因此构造函数只能有一个，可以通过默认值来实现多种构造。
 
 继承&重载
 ===================
@@ -896,7 +897,7 @@ Si 可以通过 interface 关键字定义接口，接口所有的方法、变量
 		func getSome():int	// 这是个函数定义
 	}
 
-	void aFunc( <MyInterface> inc ){	// aFunc 实际上是一个模板函数。
+	void aFunc( MyInterface inc ){	// aFunc 实际上是一个模板函数。
 		// 这样，任何对象，只要包含名字为 a, b 的成员变量，以及 getSome 这样一个方法，
 		// 就可以被传入这个函数
 	}
@@ -957,7 +958,7 @@ si 的函数参数，允许使用延迟生成的技术以优化效率。它让�
 		if(x) print( get_data() )
 	}
 
-要启用延迟优化，调用代码不用做任何更改，只要函数是模板函数
+要启用延迟优化，调用代码不用做任何更改，只要函数是模板函数，或者接受 Delay<?> 类型的参数。
 
 	trans_data( get_data(), x)		// trans_data 的第一个参数必须是模板，或者 Delay<?> 类型
 
@@ -965,7 +966,7 @@ si 的函数参数，允许使用延迟生成的技术以优化效率。它让�
 
 其实也不一定用在函数里
 
-	Delay<int> x=delay->{ get_data() }	// 这时 get_date() 其实没有被执行
+	Delay<int> x={ get_data() }		// 这时 get_date() 其实没有被执行
 	var k=x							// 这时才会执行，并且只会执行一次
 	var k2=x						// 注意，这里不会重复执行
 
@@ -1092,6 +1093,17 @@ C 对象定义
 lib 文件、需要对应的头文件及适配文件等需要的东西，会被某个处理软件打成一个包，并放在编译程序能找到的地方。
 而 Si 可以编译成 c lib, 函数会按**约定**转换成 c 的格式。
 
+非托管对象
+-----------------
+
+某些类可以用 class* 定义为非托管类，托管类在构造时不使用 GC 以提高性能，并且必须手工 free。
+
+	class *UnmanagedClass{
+	}
+
+	var unmanaged=new UnmanagedClass()
+	free(unmanaged)
+
 备选（思考中）
 --------------
 
@@ -1151,11 +1163,3 @@ Si 支持有限的操作符重载。对于类内的操作符，可以通过一�
 
 	Proxy<MyProxy> imp = Proxy<MyProxy>(obj)	// proxy 是内部类型
 	imp.run("Hello")	// 
-
-非托管对象
------------------
-
-如果要生成非托管对象，必须打开一个编译器开关，并且使用 new 关键字。非托管对象不由 GC 管理，并且非托管类不能引用托管类：  
-
-	var unmanaged=new UnmanagedClass()
-	free(unmanaged)

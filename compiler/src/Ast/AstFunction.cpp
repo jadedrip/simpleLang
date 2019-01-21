@@ -14,6 +14,7 @@
 #include "CodeGenerate/ParamenterGen.h"
 #include "CodeGenerate/ClassMemberGen.h"
 #include "utility.h"
+#include "AstGetClass.h"
 #include "../Type/LLVMType.h"
 #include "../Type/TupleType.h"
 #include "../Type/ClassInstanceType.h"
@@ -27,6 +28,15 @@ void AstFunction::draw(std::ostream & os) {
 	// std::string n = nodeId;
 	// block->draw(os);
 	// block->dotLable(os, "function " + name);
+}
+
+void AstFunction::genDefaultValue(AstContext * context)
+{
+	for (auto &i : paremeters) {
+		if (i.defaultValue) return;// 已经执行过
+		if (i.value)
+			i.defaultValue = i.value->makeGen(context);
+	}
 }
 
 CodeGen * AstFunction::makeCast(llvm::LLVMContext& c, std::vector<CodeGen*> cache, AstType * type, CodeGen * value)
@@ -59,12 +69,31 @@ AstFunction::OrderedParameters* AstFunction::orderParameters(llvm::LLVMContext& 
 		if (!name.empty() && a->name != name)
 			break;	// 如果输入有名字，并且和当前位置不匹配，退出顺序匹配模式
 
-		bool is = AutoType::isAuto(a->type);
+		AstType* aType = a->type;
+		bool is = AutoType::isAuto(aType);
+		if (!is) {
+			auto *x=dynamic_cast<AstGetClass*>(a->type);
+			if (x) { // TODO: 判断类是否能转换
+				// 参数有两种可能，非模板类型或者确定了模板参数的模板类
+				// 或者是模板类型，这种情况下，函数也应该是模板的，这种
+				// 情况下，就应该以参数来实例化
+				// 而如果是非模板参数，就要考虑继承
+				auto cls=_parent->findClass(x->name);
+				// TODO: cls->is(type)  // 判断
+				if (cls->isTemplated()) {
 
-		if (!is && !instanceOf( type, a->type->llvmType(c) ) )
-			return nullptr;		// 输入类型不匹配函数签名
+				} else {
+					
+				}
+				ordered->parameters.push_back(std::make_pair(name.empty() ? a->name : name, i->second));
+				continue;
+			} else {
+				if (!instanceOf(type, aType->llvmType(c)))
+					return nullptr;		// 输入类型不匹配函数签名
+			}
+		}
 
-		auto *v = makeCast(c, cache, a->type, i->second);
+		auto *v = makeCast(c, cache, aType, i->second);
 		ordered->parameters.push_back(std::make_pair(name.empty() ? a->name : name, v));
 	}
 
@@ -85,11 +114,13 @@ AstFunction::OrderedParameters* AstFunction::orderParameters(llvm::LLVMContext& 
 		if (x == indexes.end()) {
 			if (a->defaultValue) {	// 有默认值
 				ordered->parameters.push_back(std::make_pair(a->name, a->defaultValue));
-			}
+				continue;
+			} 
 			else
 				return clearGen(ordered, cache);
 		}
 		auto ty = a->type->llvmType(c);
+		assert(ty);
 		if (! instanceOf( x->second->type, ty) )
 			return nullptr;
 
@@ -136,6 +167,7 @@ std::unordered_map<std::string, FunctionInstance*> functionInstances;
 
 CodeGen * AstFunction::makeGen(AstContext * parent)
 {
+	if (_parent) return nullptr; // 已经执行过
 	llvm::LLVMContext& c = parent->context();
 	this->pathName = parent->pathName;
 
@@ -144,18 +176,30 @@ CodeGen * AstFunction::makeGen(AstContext * parent)
 	_parent = parent;
 
 	// TODO: 如果非模板函数，直接生成签名 & 实现
-	std::vector<std::pair<std::string, Type*>> parameters;
+	//std::vector<std::pair<std::string, Type*>> parameters;
 
 	for (auto &i : paremeters) {
-		if (AutoType::isAuto(i.type)) return nullptr;
-		parameters.push_back(std::make_pair(i.name, i.type->llvmType(c)));
+		auto *tp = i.type;
+		if (AutoType::isAuto(tp)) return nullptr;
 	}
-	if (variable) {
-		if (AutoType::isAuto(variable))
-			return nullptr;
-	}
-	ClassInstanceType* cls = nullptr;// TODO: 判断是否类 c ? c->getClassType() : nullptr;
-	noTemplateInstance = getFunctionInstance(parent->context(), parameters, variable, cls);
+
+	_isTemplate = _cls && _cls->isTemplated();
+	//	if (i.value)
+	//		i.defaultValue = i.value->makeGen(parent);
+
+	//	auto *x=dynamic_cast<AstGetClass*>(tp);
+	//	if (x) {
+	//		auto llvmType = x->get(parent, i.defaultValue ? i.defaultValue->type : nullptr);
+	//	}
+
+
+	//	parameters.push_back(std::make_pair(i.name, i.type->llvmType(c)));
+
+	//}
+	//if (variable) {
+	//	if (AutoType::isAuto(variable))
+	//		return nullptr;
+	//}
 	return nullptr;
 }
 
@@ -196,12 +240,13 @@ FunctionInstance* AstFunction::getFunctionInstance(
 	std::vector<std::pair<std::string, llvm::Type*>> parameters,
 	AstType* variableGen,
 	ClassInstanceType* object) {
-	if (this->noTemplateInstance) return this->noTemplateInstance;
+
+	if (_funcInstance) return _funcInstance;
 
 	AstContext *s;
 	auto *instance = new FunctionInstance();
 
-	instance->name = object ? object->name + "." + name : name;
+	instance->name = object ? object->uniqueName() + "." + name : pathName + "." + name;
 	if (object) {
 		instance->module = object->name;
 	}
@@ -253,6 +298,8 @@ FunctionInstance* AstFunction::getFunctionInstance(
 		// 生成函数体
 		fillFunctionBlock(s, instance);
 	}
+	if (!_isTemplate)
+		_funcInstance = instance;
 	return instance;
 }
 
@@ -338,7 +385,11 @@ FunctionInstance* AstFunction::getFunctionInstance(
 	// 参数
 	std::vector<std::pair<std::string, llvm::Type*>> params;
 	for (auto&i : parameterGens) {
-		params.push_back(std::make_pair(i.first, i.second->type));
+		auto *t = i.second->type;
+		params.push_back(std::make_pair(i.first, t));
+		if (t->isArrayTy()) { // 长度
+			params.push_back(std::make_pair("size", llvm::IntegerType::get(c, 32)));
+		}
 	}
 
 	// 可变参数

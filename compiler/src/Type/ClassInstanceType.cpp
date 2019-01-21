@@ -80,12 +80,14 @@ CodeGen * ClassInstanceType::newObject(llvm::LLVMContext& c, std::vector<std::pa
 {
 	auto *p = new NewGen();
 	p->type = llvmType(c);
-	if (creator) {
-		auto* call = new CallGen(creator, v);
-		for (auto &i : v) {
-			call->params.push_back(i.second);
+	for (auto i : creators) {
+		auto* call = i->makeCall(v);
+		if (call) {
+			p->construstor = call;
+			return p;
 		}
-		p->construstor = call;
 	}
+	if (!v.empty())
+		throw std::runtime_error("没有匹配的构造函数");
 	return p;
 }

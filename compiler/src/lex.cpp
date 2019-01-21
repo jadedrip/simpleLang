@@ -125,13 +125,14 @@ AstNode* packageName(AstNode* names)
 	return nullptr;
 }
 
-AstNode* importName(AstNode* n, char* name)
+AstNode* importName(AstNode* n, char* name, bool isFunc)
 {
 	auto *p = new AstImport();
 	foreach(n, [&p](AstNode* i) {
 		p->identifiers.push_back(std::move(i->name));
 	}, true);
 	p->identifiers.push_back(name);
+	p->isFunction = isFunc;
 	return p;
 }
 
@@ -382,35 +383,44 @@ AstType* getType(int type_id) {
 	{
 	case 0:
 		return new AutoType();
-	case 1:
+	case 1:// bool
 		return SIntegerType::get(1);
-	case 2:
-		return SIntegerType::get(8);
-	case 3:
-		return SIntegerType::get(32, true);	// unsigned
-	case 4:
+	case 2:// byte
+		return SIntegerType::get(8, true);
+	case 3:// char
+		return SIntegerType::get(8);	// unsigned
+	case 4:// short
 		return SIntegerType::get(16);
-	case 5:
+	case 5:// int
 		return SIntegerType::get(32);
-	case 6:
+	case 6:// long
 		return SIntegerType::get(64);
-	case 7:
+	case 7:// float
 		return AstType::floatType;
-	case 8:
+	case 8:// double
 		return AstType::doubleType;
-	case 9:
+	case 9:// string
 		return AstType::stringType;
-	case 10:
+	case 10:// any
 		return AstType::anyType;
+	case 11:// ushort
+		return SIntegerType::get(16, true);
+	case 12:// uint
+		return SIntegerType::get(32, true);
+	case 13:// ulong
+		return SIntegerType::get(64, true);
 	default:
-		throw runtime_error("未知类型");
+		throw runtime_error("未知类型: " + to_string(type_id));
 	}
 }
 
-AstType * getClassType(char * name)
+AstType * getClassType(char * name, AstNode * path)
 {
 	auto p = new AstGetClass();
 	p->name = name;
+	foreach<AstNode>(path, [p](AstNode* i) {
+		p->path.push_back(i->name);
+	});
 	return p;
 }
 
@@ -594,7 +604,7 @@ AstNode * createNew(AstType* type, char * name, AstNode * args)
 {
 	auto *p = new AstNew();
 	p->type = type;
-	p->name = name;
+	if(name) p->name = name;
 
 	if (args) {
 		moveLines(p->blocks, args);

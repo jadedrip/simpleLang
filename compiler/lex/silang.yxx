@@ -34,7 +34,7 @@ void yyerror( const char* error );
 %token<str>		L_IDENTIFIER U_IDENTIFIER 
 %token<expr>	INTEGER FLOAT INT64 FLOAT64 BOOLEAN STRING_LITERAL 
 %type<tp>		def_type
-%type<expr>		typeLet function_variable equal
+%type<expr>		typeLet function_variable equal block_or_none
 %type<expr>		typeLets function_parameters class_new 
 %type<type>		cls_type cls_construct operator operator_binary operator_unary
 %type<expr>		expr expr_value lambda call exprs for_loop cls function_def def sequence
@@ -93,6 +93,7 @@ import_name_pre
 import_name
 	:	import_name_pre '.' '*'					{ $<expr>$=importName($<expr>1, "*"); }
 	|	import_name_pre '.' U_IDENTIFIER		{ $<expr>$=importName($<expr>1, $3); }
+	|	import_name_pre '.' L_IDENTIFIER		{ $<expr>$=importName($<expr>1, $3, true); }
 	;
 
 import_names
@@ -165,10 +166,9 @@ enum_list
 	| enum_list ',' enum_assignment		{ $<expr>$=link($<expr>1,$<expr>3); }
 	;
 
-/* 赋值语句 */
 enum_assignment
-	: equal					// red = 10
-	| L_IDENTIFIER			{ $<expr>$=let($1,nullptr); }	
+	: U_IDENTIFIER '=' expr	{ $<expr>$=let($1,$3);  }// red = 10
+	| U_IDENTIFIER			{ $<expr>$=let($1,nullptr); }	
 	;
 
 /************************
@@ -195,18 +195,17 @@ cls_line
 	|	cls_destory			
 	|   const
 	|	function			
-	|	function_def ';'
 	|	PROTECTED ':'			{ $<expr>$=setProtected(); }
 	;
 
 // 构造函数
 cls_construct
-	: INIT_TOKEN '(' function_parameters ')' block 
-		 { $<expr>$=createFunction(2, ":init", $3, nullptr, $5); }
+	: INIT_TOKEN '(' function_parameters ')' block_or_none 
+		 { $<expr>$=createFunction(2, "Init", $3, nullptr, $5); }
 	;
 
 cls_destory
-	:   FINALIZE_TOKEN block 
+	:   FINALIZE_TOKEN block_or_none 
 		{ $<expr>$=createFunction(3, ":finalize", nullptr, nullptr, $2); }
 	;
 
@@ -269,11 +268,10 @@ def_type
 	|   def_type '?'							{ $$=nullAble($1); }
 	;
 
-
 def
 	: 	typeLet									{ $$=createDef($1); }
-	|	def ',' L_IDENTIFIER						{ $$=appendDef($1, $3); }
-	|	def ',' L_IDENTIFIER '=' expr				{ $$=appendDef($1, $3, $5); }
+	|	def ',' L_IDENTIFIER					{ $$=appendDef($1, $3); }
+	|	def ',' L_IDENTIFIER '=' expr			{ $$=appendDef($1, $3, $5); }
 	;
 
 sequence
@@ -333,7 +331,12 @@ object_delete
 	func myfunc(int a, long, mycls val=my) => (int, var named)
 **********************************************/
 function 
-	: function_def block				 { $$=addFunctionBlock($1, $2); }
+	: function_def block_or_none				 { $$=addFunctionBlock($1, $<expr>2); }
+	;
+
+block_or_none
+	:	{ $<expr>$=NULL; }
+	|	block
 	;
 
 /*尾部允许可变参数*/
@@ -538,6 +541,8 @@ expr
 	| expr WHEN_NULL expr		{ $$=makeIIF(makeIsNull($1), $3); }
 	| expr '?' expr ':' expr	{ $$=makeIIF($1, $3, $5);}
 	| U_IDENTIFIER '.' L_IDENTIFIER { $$=makeGetConstValue($1,$3); }
+	| U_IDENTIFIER '.' U_IDENTIFIER { $$=makeGetConstValue($1,$3); }
+	| def_type '(' call_args ')'	{ $<expr>$=createNew($1, NULL, $<expr>3); }
 	;
 
 type_expr

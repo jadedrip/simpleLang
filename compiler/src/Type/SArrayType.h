@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "AstType.h"
-#include "Ast/AstList.h"
 
 /*
 	数组类型(数组是有固定大小的)

@@ -18,7 +18,7 @@ NewGen::NewGen(llvm::Type * type, CodeGen * c, CodeGen * len) : CodeGen(type), c
 llvm::Value * NewGen::generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>&builder)
 {
 	if (!createObject) {
-		Module* clib = CLangModule::loadLLFile("lib/core");
+		Module* clib = CLangModule::loadLLFile("lib/core.ll");
 		assert(clib);
 		createObject = makeLink(clib, m, "createObject");
 		createArray = makeLink(clib, m, "createArray");
@@ -42,14 +42,17 @@ llvm::Value * NewGen::generateCode(llvm::Module *m, llvm::Function *func, llvm::
 		value=CallGen::call(builder, createArray, allocSize, typeId, v);
 	}
 	else {
-		value=CallGen::call(builder, createObject, allocSize, typeId);
+ 		value=CallGen::call(builder, createObject, allocSize, typeId);
 	}
 	auto *pType = PointerType::get(type, 0);
 	value = builder.CreateBitCast(value, pType);
 
 	// 调用构造函数
-	if (construstor) construstor->generate(m, func, builder);
-
+	if (construstor) {
+		auto* p=dynamic_cast<CallGen*>(construstor);
+		p->params[0]->value = value;
+		construstor->generate(m, func, builder);
+	}
 	//auto *c = _type->constructor;
 	//if (c) {
 	//	std::vector<Value*> a;

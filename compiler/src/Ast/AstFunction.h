@@ -21,6 +21,7 @@ class AstFunction : public AstNode {
 	friend class AstClass;
 public:
 	virtual void draw(std::ostream& os);
+	void genDefaultValue(AstContext* context);
 
 	CodeGen * makeCast(llvm::LLVMContext&, std::vector<CodeGen*> cache, AstType * type, CodeGen * value);
 
@@ -49,11 +50,10 @@ public:
 	AstType* variable = nullptr;					// 可变参数的类型
 	std::string variableName;
 	FunctionType funcType;						// 
-	FunctionInstance* noTemplateInstance = nullptr;
 
 	struct OrderedParameters {
 		std::vector<std::pair<std::string, CodeGen*>> parameters;
-		std::vector<CodeGen*> variableGen;
+		std::vector<CodeGen*> variableGen;  
 	};
 	/// 尝试按签名参数整理为匹配的参数，参数不匹配返回 nullptr
 	OrderedParameters* orderParameters(llvm::LLVMContext& c, const std::vector<std::pair<std::string, CodeGen*>>& types);
@@ -66,9 +66,11 @@ public:
 		ClassInstanceType* object
 	);
 	void fillFunctionBlock(AstContext *context, FunctionInstance*);
+	std::string fullName();
 private:
 	std::map<std::string, FunctionArgument> named;
 	AstContext *_parent;
-
-	
+	AstClass *_cls = nullptr;
+	bool _isTemplate = true;
+	FunctionInstance *_funcInstance = nullptr;
 };

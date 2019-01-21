@@ -48,3 +48,6 @@
 /compiler/x64/Debug
 /compiler/*.log
 /compiler/Debug
+/src/lib/si/x64
+*.user
+/lib

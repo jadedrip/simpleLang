@@ -22,17 +22,18 @@ public:
 	AstGetClass* inherit = nullptr;	// 继承
 	std::vector<AstNode*> block;
 
-	std::map<std::string, AstType* > memberTypes;
 	std::map<std::string, CodeGen* > constValues;
+	bool isTemplated() const { return _templated; }
 private:
-	AstFunction * _construstor = nullptr;	// 构造函数
+	std::vector<AstFunction *> _construstor;	// 构造函数
 	// 类的上下文，为类定义时的上下文
-	AstContext* _parent;
+	AstContext* _context;
 	bool _templated = false;
 	ClassInstanceType* _generated = nullptr;
 private:
 	ClassInstanceType* generateClass(
 		llvm::LLVMContext& c,
-		AstFunction::OrderedParameters *ordered
+		CodeGen* thisGen
 	);
+	int scanClass(ClassInstanceType * cls, AstContext * context, CodeGen* thisGen);
 };

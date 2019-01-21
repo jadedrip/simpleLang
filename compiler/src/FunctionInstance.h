@@ -22,6 +22,9 @@ public:
 	std::vector<CodeGen*> block;
 	bool variable = false;
 	llvm::StructType* object = nullptr;
+
+	/// 尝试构造呼叫请求，如果参数不匹配，返回 nullptr
+	CodeGen* makeCall(const std::vector<std::pair<std::string, CodeGen*>>& args) { return nullptr; }
 public:
 	llvm::Function* generateCode(llvm::Module*, llvm::LLVMContext& context);
 	// static CallGen* makeCall(llvm::Function*, std::vector<std::pair<std::string, CodeGen*>>& arguments, CodeGen* object = false) { return nullptr; }

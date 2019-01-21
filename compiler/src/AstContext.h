@@ -57,7 +57,7 @@ public:
 	/// <param name="arguments">参数表</param>
 	/// <returns>调用函数</returns>
 	virtual CodeGen* makeCall(llvm::LLVMContext& c, const std::string& name, std::vector<std::pair<std::string, CodeGen*>>& arguments);
-protected:
+public:
 	std::map<std::string, AstFunction*> _functions;		 // 模板函数
 	std::unordered_map< std::string, AstClass* > _class;			// 未特例化的自定义结构
 	std::unordered_map< std::string, CodeGen* > _symbols;	// 变量

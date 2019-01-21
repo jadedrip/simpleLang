@@ -30,6 +30,10 @@ llvm::Function * FunctionInstance::generateCode(llvm::Module *m, llvm::LLVMConte
 
 	for (auto i : parameters) {
 		Type* tp = const_cast<Type*>(i.second);
+		// 结构一律用指针传
+		if (tp->isStructTy()) {
+			tp = PointerType::get(tp, 0);
+		}
 		param.push_back(tp);
 	}
 

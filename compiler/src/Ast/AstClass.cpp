@@ -11,6 +11,7 @@
 #include "../Type/ClassInstanceType.h"
 #include "CodeGenerate/NewGen.h"
 #include "CodeGenerate/DefGen.h"
+#include "CodeGenerate/ThisGen.h"
 #include "modules.h"
 
 using namespace llvm;
@@ -18,17 +19,15 @@ using namespace llvm;
 CodeGen * AstClass::makeGen(AstContext * parent)
 {
 	parent->setClass(name, this);
-	_parent = parent;
+	_context = parent;
 
 	for (auto i : block) {
 		// 检测构造函数
 		auto *p=dynamic_cast<AstFunction*>(i);
 		if (p) {
-			if (p->name == ":init") {
-				if (_construstor)
-					throw std::runtime_error("Dup construstor");
-				_construstor=p;
-			}
+			p->_cls = this;
+			if (p->name == "Init") 
+				_construstor.push_back(p);
 			continue;
 		}	  
 		// 检测是否模版类
@@ -53,24 +52,32 @@ CodeGen * AstClass::makeNew(AstContext* parent, std::vector<std::pair<std::strin
 	llvm::LLVMContext &c = parent->context();
 	NewGen* classObject = new NewGen();		// TODO: malloc
 
-	if (_construstor) {
-		AstFunction::OrderedParameters *ordered = _construstor->orderParameters(parent->context(), args);
-		if (!args.empty() && !ordered)
-			return nullptr;  // 不匹配
-							 // 推导类
-		auto a = generateClass(c, ordered);
-		classObject->type = a->llvmType(c);
+	auto *thisGen = new ThisGen();
+	if (!_construstor.empty()) {
+		bool match = false;
+		for (auto x : _construstor) {
+			x->genDefaultValue(_context);
+			AstFunction::OrderedParameters *ordered = x->orderParameters(parent->context(), args);
+			if (!args.empty() && !ordered)
+				continue;  // 不匹配
+						 // 推导类
+			match = true;
+			auto cls = generateClass(c, thisGen); // 生成类（注意，这时部分变量可能还是模板的
 
-		classObject->construstor = _construstor->createCallGen(
-			parent->context(),
-			ordered->parameters,
-			ordered->variableGen,
-			classObject,
-			a,
-			a->creator
-		);
+			// 创建构造函数，并设置所有模板变量
+			CodeGen* call = x->makeCall(
+				c,
+				ordered->parameters,
+				thisGen,
+				cls
+			);
+
+			classObject->type = cls->llvmType(c);
+			classObject->construstor = call;
+		}
+		if (!match) return nullptr;
 	}else{
-		auto a = generateClass(c, nullptr);
+		auto a = generateClass(c, thisGen);
 		auto t = classObject->type = a->llvmType(c);
 		parent->setCompiledClass(t->getStructName(), a);
 	}
@@ -81,25 +88,12 @@ CodeGen * AstClass::makeNew(AstContext* parent, std::vector<std::pair<std::strin
 	throw std::runtime_error("类" + name + "没有合适的构造函数");
 }
 
-ClassInstanceType* AstClass::generateClass(llvm::LLVMContext& c, AstFunction::OrderedParameters *ordered)
+int AstClass::scanClass(ClassInstanceType* cls, AstContext* context, CodeGen* thisGen)
 {
-	if (_generated) return _generated;
-
-	// 如果是模板的，查看是否有已经生成的
-	//if (_templated) {
-	//	auto a=_cached.find(reinterpret_cast<intptr_t>(_construstor));
-	//	if (a != _cached.end()) return a->second;
-	//}
-
-	std::string pathName = _parent->pathName + "." + name;
-
+	context->setSymbolValue("this", thisGen);
 	bool isProctected = false;
 	int idx = 0;
-	std::vector< Type* > types;
-	std::map< std::string, ClassMemberGen* > members;
-
-	ClassInstanceType* cls = new ClassInstanceType(_parent->pathName, name );
-	auto *context=cls->makeContext(_parent);
+	auto &c=context->context();
 
 	for (auto i : block) {
 		// 创建函数、变量索引
@@ -115,35 +109,32 @@ ClassInstanceType* AstClass::generateClass(llvm::LLVMContext& c, AstFunction::Or
 		std::vector< CodeGen* > initGen;
 		auto v = dynamic_cast<AstDef*>(i);
 		if (v) {
-			// 首先确定变量类型
-			Type* p = v->type->isAuto() ? nullptr : v->type->llvmType(c);
-
+			// String v="1", b
 			for (auto a : v->vars) {
-				if (!p) {  // 如果是自动类型
-					auto valueGen=a.second->makeGen(context);
-					p = valueGen->type;
-					if (!p) throw std::runtime_error("Unknown member's type:" + a.first);
-				}
-				types.push_back(p);
 				ClassMemberGen* m = new ClassMemberGen();
+				m->object = thisGen;
 				m->name = v->name;
 				m->isProtected = isProctected;
-				m->type = p;
+				// 如果是非模板变量，确定类型
+				if (!v->type->isAuto())
+					m->type = v->type->llvmType(c);
 				m->index = idx++;
 				cls->memberGens[a.first] = m;
-				cls->defaultValues[a.first] = a.second->makeGen(_parent);
+				if (a.second)
+					cls->defaultValues[a.first] = a.second->makeGen(_context);
+				context->setSymbolValue(a.first, m);
 			}
 			continue;
 		}
 
 		auto y = dynamic_cast<AstProtected*>(i);
-		if(y){
+		if (y) {
 			isProctected = true;
 			continue;
 		}
 
-		auto c = dynamic_cast<AstConst*>(i);
-		if (c) {
+		auto cst = dynamic_cast<AstConst*>(i);
+		if (cst) {
 			continue;
 		}
 
@@ -153,29 +144,43 @@ ClassInstanceType* AstClass::generateClass(llvm::LLVMContext& c, AstFunction::Or
 	for (auto i : constValues) {
 		context->setSymbolValue(i.first, i.second);
 	}
+	return idx;
+}
 
-	//
-	std::string u = _parent->pathName;
+/// 通过构造函数，将类从模板转为编译的 ClassInstanceType
+ClassInstanceType* AstClass::generateClass(llvm::LLVMContext& c, CodeGen* thisGen)
+{
+	if (_generated) return _generated;
 
-// 优先使用 C 里面定义的对象
-	for (auto &c : u) {
-		if (c == '.') c = '_';
-	}
-	cls->_type = CLangModule::getStruct(u, name);
-	if (!cls->_type) {
-		cls->_type = StructType::create(context->context(), types, u+"_"+name);
-	}
+	// 如果是模板的，查看是否有已经生成的
+	//if (_templated) {
+	//	auto a=_cached.find(reinterpret_cast<intptr_t>(_construstor));
+	//	if (a != _cached.end()) return a->second;
+	//}
+	
+	std::string packageName = _context->pathName;
+	std::string pathName = _context->pathName + "." + name;
 
-	// 构造函数
-	cls->creator= _construstor ?
-		_construstor->getFunctionInstance(c, ordered->parameters, ordered->variableGen, cls) :
-		nullptr;
+	std::vector< Type* > types;
+	std::map< std::string, ClassMemberGen* > members;
+
+	ClassInstanceType* cls = new ClassInstanceType(packageName, name);
+	auto *context=cls->makeContext(_context);
+	// 扫描类，初步生成对象
+	int idx = scanClass(cls, context, thisGen);
+
 	if (!_templated) {
+// 优先使用 C 里面定义的对象
+		for (auto &cobj : pathName) {
+			if (cobj == '.') cobj = '_';
+		}
+		cls->_type = CLangModule::getStruct(packageName, name);
+		if (!cls->_type) {
+			cls->_type = StructType::create(context->context(), types, pathName);
+		}
 		_generated = cls;
 	}
 	return cls;
 }
-
-
 
 

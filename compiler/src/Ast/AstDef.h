@@ -11,6 +11,6 @@ private:
 	virtual void draw(std::ostream& os);
 	virtual CodeGen* makeGen(AstContext* parent);
 private:
-	DefGen* makeDefGen(AstContext * parent, AstType* type, const std::pair<std::string, AstNode*>& var);
+	CodeGen* makeDefGen(AstContext * parent, AstType* type, const std::string& name, AstNode* var);
 };
 

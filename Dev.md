@@ -39,6 +39,14 @@ class MyClass : Base
 默认的，如果字符串被直接传递到 char\* 类型的参数 （比如 printf），将不进行任何编码转换（使用源文件的编码），并不生成 String 对象。
 生成 String 对象的情况下，会转换为 Unicode，表情符号占用2个字符。
 
-                              
+# 类
+
+源码级别的类使用 AstClass 保持，实例化以后，确定了模板类参数，使用 ClassInstance 保存。
+ClassInstanceType 在 new 一个 AstClass 的时候生成，因为这个时候可以确定模板参数，然后用指定类型构造 llvm Type。
+ClassInstanceType 内的成员函数，有可能还是模板的，因此保存为 AstFunction, 在函数被调用的时候才实例化。
+
+包导入的时候，定义一般为源码级导入，具体 c 函数，被包装为 FunctionInstance 后，再反包装为 AstFunction 放回。
+
+函数调用的时候，使用 名字 + 类型 的方式查找 c 函数，如果找到，优先调用 c 函数，如果找不到，尝试使用源码。                              
 							  
 

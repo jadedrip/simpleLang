@@ -49,6 +49,12 @@ CallGen::CallGen(FunctionInstance* func, const std::vector<std::pair<std::string
 	//}
 }
 
+inline bool checkIsClass(Type* type)
+{
+	if (!type->isPointerTy()) return false;
+	auto* p=type->getPointerElementType();
+	return p->isStructTy();
+}
 
 Value * CallGen::generateCode(Module *m, Function *func, llvm::IRBuilder<>&builder)
 {
@@ -63,23 +69,38 @@ Value * CallGen::generateCode(Module *m, Function *func, llvm::IRBuilder<>&build
 	for (auto *i : params) {
 		if (argIterator != llvmFunction->arg_end())
 			i->hopeType = argIterator->getType();
-		Value* v = i->generate(m, func, builder);
-		bool isPoint = dynamic_cast<StringLiteGen*>(i) || i->type->isStructTy();
+		Value* v = i->generate(m, llvmFunction, builder);
 
-		if (!v)
-			v = ConstantInt::getNullValue(argIterator->getType());
+		if (!v) {
+			assert(i->hopeType);
+			v = ConstantInt::getNullValue(i->hopeType);
+		} 
 
-		if (!isPoint) {									// 写入指针
-			v = load(builder, v);
+		if (i->hopeType && v->getType() != i->hopeType && v->getType()->isPointerTy() ) {
+			if(!i->hopeType->isPointerTy())
+				v = load(builder, v);
+			else {
+				assert(0 && "Not match.");
+			}
 		}
+
 		if (argIterator == llvmFunction->arg_end()) {	// 可变参数
 			std::clog << toReadable(v->getType()) << ", ";
 			a.push_back(v);
 		}
 		else {
 			std::clog << toReadable(v->getType()) << ", ";
-			a.push_back(try_cast(builder, argIterator->getType(), v));
+			a.push_back(try_cast(builder, i->hopeType, v));
 			argIterator++;
+			// 对于数组，改为数据+长度2个参数
+			if (i->type && i->type->isArrayTy()) {
+				auto sz = i->type->getArrayNumElements();
+				assert(argIterator != llvmFunction->arg_end());
+				auto hope = argIterator->getType();
+				auto* v=ConstantInt::get(hopeType, sz);
+				a.push_back(v);
+				argIterator++;
+			}
 		}
 	}
 	std::clog << std::endl;

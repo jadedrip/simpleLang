@@ -16,6 +16,8 @@ CodeGen * AstConstant::makeGen(AstContext * parent)
 	return new IntegerGen(parent->context(), _value, _bits);
 }
 
+AstConstant::AstConstant(const std::string & text) { name = text; }
+
 void AstConstant::set_value(bool v)
 {
 	_bits = 1;

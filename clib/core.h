@@ -4,11 +4,11 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-	extern void* createObject(uint64_t objectSize, uint32_t typeId);
-	extern void freeObject(void* object);
-	extern long referenceIncrease(void* object);
+	void* createObject(uint64_t objectSize, uint32_t typeId);
+	void freeObject(void* object);
+	long referenceIncrease(void* object);
 
-	extern void* createArray(uint32_t objectSize, uint32_t typeId, uint32_t length);
+	void* createArray(uint32_t objectSize, uint32_t typeId, uint32_t length);
 #ifdef __cplusplus
 }
 #endif

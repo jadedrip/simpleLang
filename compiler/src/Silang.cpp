@@ -27,7 +27,7 @@
 
 extern int yyparse(void);
 extern FILE *yyin, *yyout;
-extern int yydebug;
+extern int yydebug, yylineno;
 
 bool parse() {
 	try {
@@ -45,8 +45,10 @@ LLVMContext llvmContext;
 std::unique_ptr<Module> module;
 
 AstPackage* currentPackage = new AstPackage();
-
 ExecutionEngine* buildEngine(std::unique_ptr<Module> Owner);
+
+// 源文件是否 utf8 的
+bool utf8File = false;
 
 extern RTDyldMemoryManager *RTDyldMM;
 void execute(char * const *envp){
@@ -72,38 +74,38 @@ void execute(char * const *envp){
 	//
 	llvm::ExecutionEngine *EE = buildEngine(std::move(module));
 	if (EE) {
-	CLangModule::moveAll(EE);
+		CLangModule::moveAll(EE);
 
-	//void* p = sys::DynamicLibrary::SearchForAddressOfSymbol("_chkstk");
-	//if (p)
-	//	EE->addGlobalMapping("__chkstk", (uint64_t)p);
+		//void* p = sys::DynamicLibrary::SearchForAddressOfSymbol("_chkstk");
+		//if (p)
+		//	EE->addGlobalMapping("__chkstk", (uint64_t)p);
 
-	auto target=EE->getTargetMachine();
-
-
-	// The following functions have no effect if their respective profiling
-	// support wasn't enabled in the build configuration.
-	EE->RegisterJITEventListener(
-		JITEventListener::createOProfileJITEventListener());
-	EE->RegisterJITEventListener(
-		JITEventListener::createIntelJITEventListener());
-
-	EE->DisableLazyCompilation(false);
-
-	// Give MCJIT a chance to apply relocations and set page permissions.
-	EE->finalizeObject();
-	EE->runStaticConstructorsDestructors(false);
-
-	std::vector<std::string> noargs;
-	EE->runFunctionAsMain(mainFunction, noargs, envp);
-
-	// Clear instruction cache before code will be executed.
-	if (RTDyldMM)
-		static_cast<SectionMemoryManager*>(RTDyldMM)->invalidateInstructionCache();
+		auto target = EE->getTargetMachine();
 
 
-	// Run static destructors.
-	EE->runStaticConstructorsDestructors(true);
+		// The following functions have no effect if their respective profiling
+		// support wasn't enabled in the build configuration.
+		EE->RegisterJITEventListener(
+			JITEventListener::createOProfileJITEventListener());
+		EE->RegisterJITEventListener(
+			JITEventListener::createIntelJITEventListener());
+
+		EE->DisableLazyCompilation(false);
+
+		// Give MCJIT a chance to apply relocations and set page permissions.
+		EE->finalizeObject();
+		// EE->runStaticConstructorsDestructors(false);
+
+		std::vector<std::string> noargs;
+		EE->runFunctionAsMain(mainFunction, noargs, envp);
+
+		// Clear instruction cache before code will be executed.
+		if (RTDyldMM)
+			static_cast<SectionMemoryManager*>(RTDyldMM)->invalidateInstructionCache();
+
+
+		// Run static destructors.
+		// EE->runStaticConstructorsDestructors(true);
 	}
 	else
 		std::cerr << "无法创建 JIT 引擎: " << ErrStr << std::endl;
@@ -130,17 +132,22 @@ int main(int argc, char* argv[],  char * const *envp)
 		errs() << "Error loading program symbols.\n";
 		return -1;
 	}
+	//if (sys::DynamicLibrary::LoadLibraryPermanently("lib/clib.dll")) {
+	//	errs() << "Error loading clib.dll.\n";
+	//	return -1;
+	//}
 
 	auto *m = new Module("TOP", llvmContext);
 	module.reset(m);
 	make_c_functions(m);
-	CLangModule::loadLLFile("lib/clib");
+	CLangModule::loadLLFile("lib/clib.ll");
 	void* p = sys::DynamicLibrary::SearchForAddressOfSymbol("printf");
 	//if (p)
 	// 	EE->addGlobalMapping("printf", (uint64_t)p);
 
 	bool b;
 	if (argc > 1) {
+		yylineno = 0;
 		yyin = fopen(argv[1], "r"); /* 首先打开要被处理的文件（参数1）yyin是lex默认的文件输入指针，设置了则不处理控制台输入 */
 		if (!yyin) {
 			std::cerr << "无法打开文件：" << argv[1] << std::endl;

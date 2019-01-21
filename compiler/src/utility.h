@@ -98,6 +98,7 @@ inline std::string encodeByHash(const std::string& str) {
 
 inline bool instanceOf(llvm::Type* a, llvm::Type* b)
 {
+	assert(a && b && "Can't be null");
 	return a->getTypeID() == b->getTypeID();
 }
 
