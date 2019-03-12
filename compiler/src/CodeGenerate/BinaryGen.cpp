@@ -62,8 +62,8 @@ llvm::Value * BinaryGen::generateCode(Module *m, Function *function, IRBuilder<>
 			return builder.CreateFCmpOLT(l, r);
 		case EQ:	// ==
 			return builder.CreateFCmpOEQ(l, r);
-		case NOEQ:	// !=
-			return builder.CreateFCmpONE(l, r);
+		//case NOEQ:	// !=
+		//	return builder.CreateFCmpONE(l, r);
 		case REQ:	// >=
 			return builder.CreateFCmpOGE(l, r);
 		case LEQ:	// <=

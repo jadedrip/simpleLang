@@ -140,6 +140,9 @@
     <ClCompile Include="src\CodeGenerate\IifGen.cpp" />
     <ClCompile Include="src\Ast\AstGetConstValue.cpp" />
     <ClCompile Include="src\Ast\AstGetClass.cpp" />
+    <ClCompile Include="src\CodeGenerate\LambdaGen.cpp" />
+    <ClCompile Include="src\Ast\AstGo.cpp" />
+    <ClCompile Include="src\CodeGenerate\GoGen.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\CodeGenerate\BinaryGen.h">
@@ -303,6 +306,9 @@
     <ClInclude Include="src\CodeGenerate\IifGen.h" />
     <ClInclude Include="src\Ast\AstGetConstValue.h" />
     <ClInclude Include="src\CodeGenerate\ThisGen.h" />
+    <ClInclude Include="src\CodeGenerate\LambdaGen.h" />
+    <ClInclude Include="src\Ast\AstGo.h" />
+    <ClInclude Include="src\CodeGenerate\GoGen.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="lex\silang.l">

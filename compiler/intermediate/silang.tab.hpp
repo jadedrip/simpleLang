@@ -47,29 +47,29 @@
      EQ = 263,
      REQ = 264,
      LEQ = 265,
-     ARRAY = 266,
-     URIGHTMOVE = 267,
-     RIGHTMOVE = 268,
-     LEFTMOVE = 269,
-     DEC = 270,
-     INC = 271,
-     BINARY = 272,
-     EOL = 273,
-     FEOF = 274,
-     FUNC = 275,
-     DOTS = 276,
-     TYPE = 277,
-     RGO = 278,
-     WHEN_NULL = 279,
-     ITYPE = 280,
-     L_IDENTIFIER = 281,
-     U_IDENTIFIER = 282,
-     INTEGER = 283,
-     FLOAT = 284,
-     INT64 = 285,
-     FLOAT64 = 286,
-     BOOLEAN = 287,
-     STRING_LITERAL = 288,
+     STRING_LITERAL = 266,
+     ARRAY = 267,
+     URIGHTMOVE = 268,
+     RIGHTMOVE = 269,
+     LEFTMOVE = 270,
+     DEC = 271,
+     INC = 272,
+     BINARY = 273,
+     EOL = 274,
+     FEOF = 275,
+     FUNC = 276,
+     DOTS = 277,
+     TYPE = 278,
+     RGO = 279,
+     WHEN_NULL = 280,
+     ITYPE = 281,
+     L_IDENTIFIER = 282,
+     U_IDENTIFIER = 283,
+     INTEGER = 284,
+     FLOAT = 285,
+     INT64 = 286,
+     FLOAT64 = 287,
+     BOOLEAN = 288,
      CALL = 289,
      IF = 290,
      ELSE = 291,
@@ -98,7 +98,8 @@
      NEW_TOKEN = 314,
      DELETE_TOKEN = 315,
      INIT_TOKEN = 316,
-     FINALIZE_TOKEN = 317
+     FINALIZE_TOKEN = 317,
+     GO_TOKEN = 318
    };
 #endif
 
@@ -119,7 +120,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 123 "intermediate/silang.tab.hpp"
+#line 124 "intermediate/silang.tab.hpp"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

@@ -11,10 +11,13 @@
 #include "CodeGenerate/GlobalStroeGen.h"
 #include "utility.h"
 
+using namespace std;
 AstContext::AstContext(AstContext * p) : parent(p)
 {
-	if(p)	pathName = p->pathName;
-	module = p->module;
+	if (p) {
+		pathName = p->pathName;
+		module = p->module;
+	}
 }
 
 AstContext::AstContext(llvm::Module* m)
@@ -24,7 +27,7 @@ AstContext::AstContext(llvm::Module* m)
 }
 
 llvm::LLVMContext & AstContext::context() {
-	return module->getContext();
+	return module ? module->getContext() : parent->context();
 }
 
 CodeGen * AstContext::findSymbolValue(const std::string & name, bool recursive) {
@@ -49,14 +52,13 @@ void AstContext::setSymbolValue(const std::string & name, CodeGen * v) {
 
 void AstContext::defineFunction(const std::string & name, AstFunction *f)
 {
-	auto i=_functions.find(name);
-	if (i!=_functions.end()) {
-		throw std::runtime_error("Duplicate function: " + name);
-	}
 	_functions.insert(std::make_pair(name, f));
 }
 
-void AstContext::setClass(const std::string & name, AstClass * cls) {
+void AstContext::setClass(const std::string & name, AstClass * cls)
+{
+	if (name == "String" &&	_class.find(name) != _class.end()) 
+		return;
 	auto o = _class.insert(std::make_pair(name, cls));
 	if (!o.second) throw std::runtime_error("类名字冲突:" + name);
 }
@@ -71,29 +73,64 @@ AstClass * AstContext::findClass(const std::string & name) {
 ClassInstanceType * AstContext::findCompiledClass(const std::string & name)
 {
 	auto i = _compiledClass.find(name);
-	if (i == _compiledClass.end())
-		i = _compiledClass.find("struct." + name);
-	return i == _compiledClass.end() ? nullptr : i->second;
+	if (i != _compiledClass.end()) return i->second;
+
+	if (name.substr(0, 7) != "struct.") {
+		std::string n = pathName + "_" + name;
+		std::for_each(n.begin(), n.end(), [](char &c) {if (c == '.') c = '_'; });
+		i = _compiledClass.find(n);
+		if (i != _compiledClass.end()) return i->second;
+		i = _compiledClass.find("struct." + n);
+		if (i != _compiledClass.end()) return i->second;
+	}
+	return parent ? parent->findCompiledClass(name) : nullptr;
+}
+
+map<std::string, AstClass*> loadClassCache;
+AstClass * AstContext::loadClass(const std::string & path, const std::string & name)
+{
+	string n = path + "." + name;
+	auto iter = loadClassCache.find(n);
+	if (iter != loadClassCache.end()) return iter->second;
+
+
+	return nullptr;
 }
 
 CodeGen * AstContext::makeCall(llvm::LLVMContext& c, const std::string & name, std::vector<std::pair<std::string, CodeGen*>>& arguments)
 {
-	auto it = _functions.find(name);
-	if (it != _functions.end()) {
-		auto *f = it->second;
-		return f->makeCall(c, arguments);
+	auto it = _functions.equal_range(name);
+	if (it.first != it.second) {
+		// 优先非模板
+		for (auto i = it.first; i != it.second; i++) {
+			auto *f = i->second;
+			if (f->isTemplate()) continue;
+			auto *p = f->makeCall(this, arguments);
+			if (p) return p;
+		}
+		for (auto i = it.first; i != it.second; i++) {
+			auto *f = i->second;
+			if (!f->isTemplate()) continue;
+			auto *p = f->makeCall(this, arguments);
+			if (p) return p;
+		}
 	}
 	if (parent) return parent->makeCall(c, name, arguments);
 
 	// Find C function
-	auto *func=module->getFunction(name);
-	if (func) {
-		auto * p=new CallGen();
-		p->llvmFunction = func;
-		for (auto i : arguments) {
-			p->params.push_back(i.second);
-		}
-		return p;
-	}
+	//auto *func=module->getFunction(name);
+	//if (func) {
+	//	auto * p=new CallGen();
+	//	p->llvmFunction = func;
+	//	for (auto i : arguments) {
+	//		p->params.push_back(i.second);
+	//	}
+	//	return p;
+	//}
 	return nullptr;
+}
+
+AstType * AstContext::findType(const std::string & name)
+{
+	return parent ? parent->findType(name) : nullptr;
 }

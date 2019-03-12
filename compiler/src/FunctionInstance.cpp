@@ -12,10 +12,46 @@
 #include "modules.h"
 
 using namespace llvm;
-FunctionInstance::FunctionInstance(llvm::Function * f) : func(f) 
-{ 
-	if (f) name = f->getName(); 
+FunctionInstance::FunctionInstance(llvm::Function * f) : func(f)
+{
+	if (f) {
+		name = f->getName();
+		returnType = f->getReturnType();
+	}
 }
+
+void FunctionInstance::generateBody(llvm::Module *m, llvm::LLVMContext & context)
+{
+	if (!func->getBasicBlockList().empty())
+		return;
+
+	// 仅有定义
+	if (block.empty()) {
+		auto *p=CLangModule::getFunction(name);
+		if (!p)
+			std::clog << "Warning, not find function " << name << std::endl;
+		return;
+	}
+
+	auto basicBlock = BasicBlock::Create(context, name, func);
+
+	auto iter = parameters.begin();
+	auto i = func->arg_begin();
+	if (object) {
+		// i->setName("this");
+		i++;
+	}
+	for (; i != func->arg_end(); i++) {
+		i->setName(iter->first);
+		iter++;
+	}
+
+	IRBuilder<> bd(basicBlock);
+	for (auto&i : block) {
+		i->generate(m, func, bd);
+	}
+}
+
 llvm::Function * FunctionInstance::generateCode(llvm::Module *m, llvm::LLVMContext & context)
 {
 	if (func) return func;
@@ -40,32 +76,19 @@ llvm::Function * FunctionInstance::generateCode(llvm::Module *m, llvm::LLVMConte
 	std::string n = name;
 	std::for_each(n.begin(), n.end(), [](char &n) { if (n == '.') n = '_'; });
 
-	FunctionType *FT = FunctionType::get(retType, param, variable);
-	func = Function::Create(FT, Function::ExternalLinkage, n, m);
-
-	// 仅有定义
-	if (block.empty()) {
-		return func;
+	if (overload && !parameters.empty()) {
+		for (auto i : parameters) {
+			n.push_back('_');
+			Type* tp = const_cast<Type*>(i.second);
+			n += getReadable(tp);
+		}
 	}
 
-	auto basicBlock = BasicBlock::Create(context, name, func);
-
-	auto iter = parameters.begin();
-	auto i = func->arg_begin();
-	if (object) {
-		i->setName("this");
-		i++;
+	func = m->getFunction(n);
+	if (!func) {
+		FunctionType *FT = FunctionType::get(retType, param, variable);
+		func = Function::Create(FT, Function::ExternalLinkage, n, m);
 	}
-	for (; i != func->arg_end(); i++ ) {
-		i->setName(iter->first);
-		iter++;
-	}
-
-	IRBuilder<> bd(basicBlock);
-	for (auto&i : block) {
-		i->generate(m, func, bd);
-	}
-
 	return func;
 }
 

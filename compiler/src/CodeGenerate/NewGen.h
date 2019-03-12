@@ -8,6 +8,7 @@ public:
 	NewGen(llvm::Type* type = nullptr, CodeGen* c = nullptr, CodeGen* len = nullptr);
 	CodeGen* construstor = nullptr;
 	CodeGen* length = nullptr;
+	std::map<int, CodeGen*> defaultValues;
 public:
 	virtual llvm::Value* generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>&);
 };

@@ -9,15 +9,14 @@
 
 using namespace llvm;
 DefGen::DefGen(const std::string & n, Type * t, CodeGen* value, int s) : name(n), arraySize(s) {
-	assert(t);
+	// assert(t);
 	this->_value = value;
 	this->type = t;
 }
 
 llvm::Value * DefGen::generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>&builder)
 {
-	assert(type);
-	isClass = type->isStructTy();
+	isClass = type ? type->isStructTy() : true;
 	bool isSeq = arraySize > 1;
 		
 	LLVMContext& context = builder.getContext();

@@ -42,6 +42,7 @@
 #include "Ast/AstEmpty.h"
 #include "Ast/AstAnnotation.h"
 #include "Ast/AstGetConstValue.h"
+#include "Ast/AstGo.h"
 #include "token.h"
 #include "utility.h"
 #include "Type/AutoType.h"
@@ -136,6 +137,13 @@ AstNode* importName(AstNode* n, char* name, bool isFunc)
 	return p;
 }
 
+AstNode * stringCat(AstNode * left, AstNode * right)
+{
+	left->name += right->name;
+	delete right;
+	return left;
+}
+
 void packageImport(AstNode * n)
 {
 	foreach<AstImport>(n, [](AstImport* i) {
@@ -189,6 +197,17 @@ AstNode * link(AstNode * left, AstNode * right)
 	return p;
 }
 
+AstType * link(AstType * left, AstType * right)
+{
+	AstTypeList* p = dynamic_cast<AstTypeList*>(left);
+	if (!p) {
+		p = new AstTypeList();
+		p->lines.push_back(left);
+	}
+	p->lines.push_back(right);
+	return p;
+}
+
 AstNode* getVar(const char* name, bool right) {
 	auto p = new AstGet();
 	p->name = name;
@@ -223,7 +242,6 @@ AstNode* makeValue(const char* name, bool v) {
 }
 
 AstNode* makeValue(const char* v) {
-	// TODO：utf8 支持？
 	return new AstStringLiteral(v);
 }
 
@@ -301,8 +319,10 @@ AstNode * addFunctionBlock(AstNode *node, AstNode * block, AstNode* annotation)
 
 AstNode * createOperator(int oper, AstNode * variables, AstNode * ret, AstNode * block)
 {
-	auto n = "operator " + operator_to_str(oper);
-	return createFunction(7, n, variables, ret, block);
+	auto n = operator_to_word(oper);
+	auto *p = createFunction(7, n, variables, ret, block);
+	dynamic_cast<AstFunction*>(p)->isOperator = true;
+	return p;
 }
 
 AstType * createInterface(char * name, AstNode * block)
@@ -414,13 +434,20 @@ AstType* getType(int type_id) {
 	}
 }
 
-AstType * getClassType(char * name, AstNode * path)
+AstType* getClassType(char* name, AstType* templateVars)
 {
 	auto p = new AstGetClass();
 	p->name = name;
-	foreach<AstNode>(path, [p](AstNode* i) {
-		p->path.push_back(i->name);
-	});
+
+	if (templateVars) {
+		auto *x = dynamic_cast<AstTypeList*>(templateVars);
+		if (x) {
+			for (auto i : x->lines)
+				p->templateVars.push_back(i);
+		} else {
+			p->templateVars.push_back(templateVars);
+		}
+	}
 	return p;
 }
 
@@ -453,6 +480,7 @@ AstNode * tupleResolve(AstNode * left, AstNode * tuple, bool def)
 AstNode* makeClass(
 	int type,
 	char * name,
+	AstNode* templateVars,
 	AstType* inherit,
 	AstNode* block
 )
@@ -462,6 +490,13 @@ AstNode* makeClass(
 	p->singleton = (type == 1);
 	if (inherit) p->inherit = (AstGetClass*)inherit;
 	moveLines(p->block, block);
+
+	if (templateVars) {
+		foreach<AstNode>(templateVars, [p](AstNode*i) {
+			p->templateVariables.push_back(i->name);
+			delete i;
+			});
+	}
 	return p;
 }
 
@@ -667,4 +702,14 @@ AstNode * makeIsNull(AstNode * value)
 AstNode * makeIIF(AstNode * cond, AstNode * thenValue, AstNode * elseValue)
 {
 	return new AstIif(cond, thenValue, elseValue);
+}
+
+AstNode * createGo(AstNode * node) {
+	return new AstGo(node);
+}
+
+AstNode * createNode(char * name)
+{
+	auto* p = new AstNode(name);
+	return p;
 }

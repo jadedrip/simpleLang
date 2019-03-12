@@ -1,0 +1,74 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Si language",
+	"patterns": [
+		{
+			"include": "#comments"
+		},
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#strings"
+		}
+	],
+	"repository": {
+		"keywords": {
+			"patterns": [{
+				"name": "keyword.control.si",
+				"match": "\\b(var|func|import|package|enum|switch|if|else|default|interface|const|for|return|try|catch|finally|null|is|def|go)\\b"
+			},
+			{
+				"name": "keyword.class.type.si",
+				"match": "\\b(class|interface|singleton|TRUE|FALSE)\\b"
+			},
+			{
+				"name": "entity.name.type.si",
+				"match": "\\b([A-Z][a-zA-Z0-9]+)\\b"
+			},
+			{
+				"name": "storage.type.si",
+				"match": "\\b(boolean|byte|char|short|int|long|float|double)\\b"
+			}
+		]
+		},
+		"strings": {
+			"name": "string.quoted.double.si",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.si",
+					"match": "\\\\."
+				}
+			]
+		},
+		"comments": {
+			"patterns": [
+				{
+					"begin": "/\\*",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.definition.comment.begin.si"
+						}
+					},
+					"end": "\\*/",
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.definition.comment.end.si"
+						}
+					},
+					"name": "comment.block.si"
+				},
+				{
+					"name": "comment.line.si",
+		
+							"match": "//.*"
+						
+					
+				}
+			]
+		}
+	},
+	"scopeName": "source.si"
+}

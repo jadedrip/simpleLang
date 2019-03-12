@@ -53,11 +53,8 @@ Si 是拍脑袋的产物，试验性的产品，现在仅仅处于最初级阶�
 | byte	    | 无		| 8 bit 
 | char	    | 无		| 16 bit  
 | short		| 有		| 16 bit 
-| ushort    | 无		| 16 bit
 | int		| 有		| 32 bit 
-| uint		| 无		| 32 bit
 | long		| 有		| 64 bit 
-| ulong		| 无		| 64 bit
 | float		| 有		| 32 bit 
 | double	| 有		| 64 bit 
 
@@ -272,6 +269,10 @@ remove 的返回值赋值给 i, 重新开始循环体 (continue)
 
 	String s=str[0:1]	// 注意，这里不会复制内部字符串
 
+连续多个字符串会拼接为一个
+
+	String s = "Hello " "World"
+
 字符串允许进行 + 操作，并且可以和整数、浮点数加，结果是字符串。
 
 	String s="" + 16		// 结果是字符串 "16"
@@ -324,7 +325,7 @@ remove 的返回值赋值给 i, 重新开始循环体 (continue)
 
 	func add(int a, int b) = a + b
 
-单号函数使用推导获取返回值，必定有返回值，因此也不需要 return。
+单行函数使用推导获取返回值，必定有返回值，因此也不需要 return。
 
 
 
@@ -347,7 +348,7 @@ return
 
 	func varFunc2( int a, Any ... args ){
 		//  args 被视为 Any 数组
-				for( var i : args ){    // 这个 For 会在运行期被展开
+		for( var i : args ){    // 这个 For 会在运行期被展开
 			run(i)
 		}
 	}
@@ -384,7 +385,7 @@ Si 语言中，传入的参数（不包括 int 等内部参数）都被视为引
 参数中可以使用 var 关键字，这时候它同样被视为模板函数。
 返回值也可以使用 var，这时通过 return 来推断返回值
 
-	func myFunc( var a, int b ) : var ret{
+	func myFunc( var a, int b ) : var ret {
 	   return a+b   // 这时推断返回值为 int 类型
 	}
 
@@ -413,14 +414,14 @@ Si 语言中，传入的参数（不包括 int 等内部参数）都被视为引
 
 另外可以使用前置参数来调用函数
 
-	fun1() :> fun2(1)			// 等同 fun2( 1, fun1() )
-	fun1() :> fun2(1, name=?)	// 等同 fun2(1, name= fun1() )
+	fun1() ~> fun2(1)			// 等同 fun2( 1, fun1() )
+	fun1() ~> fun2(1, name=?)	// 等同 fun2( 1, name= fun1() )
 
 如果你想玩一下函数式编程，这种语法也许会让你的程序更容易阅读
 
 函数对象、匿名函数
 -------
-Si 在语言级别支持函数对象、匿名函数
+Si 在语言级别支持函数对象、匿名函数，匿名函数**不能**是模板的，参数不能有默认值，不允许可变参数。
 
 	var add=func(int a, int b) : int{ return a+b }	// 匿名函数
 	int a=add(10, 20)								// 执行
@@ -428,9 +429,7 @@ Si 在语言级别支持函数对象、匿名函数
 如果没返回值，没有参数，都可以省略
 
 	var my1=func(int a){ ... }			// 无返回值
-	var my2=func{ ... }					// 无参数、无返回值的函数
-	var my3=func{ return 10 }			// 返回值类型自动推导
-	var my4={ return 20 }				// 语法糖: = 后面 func 可以省略
+	var my4={ return 20 }				// 语法糖: 无参数时 = 后面 func 可以省略， 返回值类型自动推导
 	func(int):float itIsAFunctor		// 明确的类型
 
 同时，匿名函数可以引用外部变量（作为引用）：
@@ -513,7 +512,7 @@ Si 支持的异常。
 
 	class MyCls {	// 定义类
 		// 语法糖在变量前加个点，会自动赋值到内部变量
-		init(int .privateValue = 20 )	// 等同 this.privateValue = privateValue
+		init(int .privateValue = 20 ){}	// 等同 this.privateValue = privateValue
 
 		finalize{           // 析构函数始终是无参数的，不需要括号
 		}
@@ -525,7 +524,7 @@ Si 支持的异常。
 			}
 		}
 
-		int key = 1	// 创建时初始化（先于构造函数）
+		int key = 1			// 创建时初始化（先于构造函数）
 		int value			// 创建时默认为0
 
 		func do_something(){
@@ -536,13 +535,15 @@ Si 支持的异常。
 		int? privateValue	// 可为 null 的变量
 	}
 
+注：成员变量的默认值必须能确定，不能是模板的，也不能是成员函数调用或引用另一个成员变量（这时类还没构造）
+
 类如果没有构造函数，将生成一个默认的构造函数，所有可访问成员，都可以使用命名构造的方式构造：
 
 	class Mydata {
 		int a
 		int b
 
-		int( int .a=0, int .b=0 ){}	// 默认生成的构造函数
+		init( int .a=0, int .b=0 ){}	// 默认生成的构造函数
 	}
 
 	Mydata mydata( a=10, b=20 )	
@@ -567,7 +568,7 @@ Si 支持的异常。
 		}
 	}
 
-    // 类可以继承，但只能单继承，但可以有多个接口
+    // 类可以继承，只能单继承，但可以有多个接口
 	class Second : Base, Interface0, Interface1 {        
 		func cantOverload(){	  // 这会是个全新函数
 
@@ -584,14 +585,7 @@ Si 支持的异常。
 		func third(int name) = Third.third		// 从第三方类偷（引用）一个实现
 	}
 
-	Interface0 obj = Second()	// 编译错误，接口不是类型，而仅仅是约束
-
-必要的话，可以把另一个类中的实现以**源码**的方式引用进来，效果基本等同复制源码，但更智能。
-如果引用的方法中有调用引用类的其他方法，编译器会先在本类查找，如果找不到，就会尝试将被调用
-的方法也引用进来。
-
-当然，只有有源码的方法才能被引用，当你想继承多个类，可以尝试继承一个主要类，
-然后把其他需要的方法引用进来。
+	Interface0 obj = Second()	// TODO: 这个如何实现需要思考
 
 类的构造
 =================
@@ -688,9 +682,9 @@ Si 支持的异常。
 
 通过在对象后直接挂接代码块，可以以这个对象为“基准”来执行代码。区块中的所有函数、变量会先在这个
 对象内部查找。	另外，代码块中默认使用 it 代表本对象。  
-**注意，代码块仅仅在对象不为null的时候才被执行**
+**注意，代码块仅仅在对象不为 null 的时候才被执行**
 
-	var i=a {		// if(a!=null) 才执行
+	var i = a {		// if(a!=null) 才执行
 		doSomething()
 		it.name = "hello"	  // it 关键字代替本身
 	}
@@ -709,7 +703,7 @@ Si 支持的异常。
 
 	class MyCla{
 		fun my(){
-			a{ other :
+			a { other :
 				other.hello()	
 			}
 		}
@@ -717,11 +711,11 @@ Si 支持的异常。
 
 显式类型转换
 --------------------
-除了默认类型转换，还可以使用下面的显式转换.
+除了默认类型转换，还可以使用下面的显式转换，如果后面接操作符，显示转换优先进行.
 
-	var a=(MyClass)b			// 尝试将 b 转换为 a
+	var a=(MyClass)b			// 尝试将 b 转换为 MyClass 类型
 	(MyClass)b.funcInMyClass()	// 先转换在调用
-	(MyClass)b{					// 转换在调用对象作用区
+	(MyClass)b{					// 转换再调用对象作用区
 		funcInMyclass()
 	}
 
@@ -730,7 +724,7 @@ Si 支持的异常。
 单例
 ---------------------
 
-单例受到语言级别的支持。它的声明类似 class, 仅仅是把关键字 class 改为 singleton
+单例受到语言级别的支持。它的声明类似 class, 仅仅是把关键字 class 改为 singleton。
 
 	////// 文件开始 ////////
 	package org.silang
@@ -738,9 +732,9 @@ Si 支持的异常。
 		func astCallit(){}
 	}
 
-当编译器发现单例在代码中可达时，会在启动时被**线程安全**的初始化，并且到程序关闭时被析构。
+当编译器发现单例在代码中被引用时，会在启动时被**线程安全**的初始化，并且到程序关闭时才被析构。
 
-	MySingleton.astCallit()
+	import org.MySingleton	// 引用就初始化
 
 模板
 ------------------
@@ -749,12 +743,14 @@ Si 支持的异常。
 	class MyTuple {
 		var left
 		var right
-		init( var .left, var .right )		
+		init( var .left, var .right ){}		
 	}
 
 	MyTuple<int, int> v = MyTuple(10,20)	// 通过构造函数确定所有类型
 
-	class MyMap<KEY, VAL>{	// 注意：模板变量的约束是必须全大写
+或者和 Java 类似，用命名的类型占位符来定义模板类
+
+	class MyMap<KEY, VAL>{	// 注意：类型占位符的约束是必须全大写
 		KEY key
 		VAL val
 
@@ -766,9 +762,10 @@ Si 支持的异常。
 				a++
 			}
 
-			typeof(a) b					// b 定义为 a 相同的类型
+			def A = b
+			A b							// b 定义为 a 相同的类型
 
-			Type c=type(a)				// Type 是种描述类型的特殊类型
+			Type c=typeof(a)			// Type 是种描述类型的特殊类型
 			when( a ){					// 用 when 判断类型
 				int : {
 
@@ -843,10 +840,10 @@ A 可以是变量或者模板变量，B 必须为类型或接口，和 is 相近
 
 操作符 if
 ============
-当 if 后的括号内，是一个类型，那么它就成为一个编译期的类型操作符，仅当类型为 FALSE 时，编译 else 语句块，
+当 if 后的括号内是一个类型，那么它就成为一个编译期的类型操作符，仅当类型为 FALSE 时，编译 else 语句块，
 其他任何类型都编译 then 语句块。
 
-	if(a === int){	// 当 a 类型为 int 时被编译
+	if(a is int){	// 当 a 类型为 int 时被编译
 		int b = a+10
 	}else{
 		a = "Hello"	// 虽然类型错误，但这里没编译，因此不会报错
@@ -1016,12 +1013,13 @@ si 的函数参数，允许使用延迟生成的技术以优化效率。它让�
 	c->(int v){
 		// 这里的代码会在 协程 结束后被调用，v 为代码块的返回值
 	}
-	c.join()	// 强制等待
-	if(c.done()){
-		var answer=c.get()	// 获取 go 中的返回值
+	c.join(4000)	// 强制等待结束, 4000 毫秒后还未结束将抛异常
+	
+	if(c.done()){ // 如果已经结束
+		int v=c.get()
 	}
 
-Si 通过一个特别的内置函数 await 来支持协程，可以把异步操作写得更像同步操作。
+Si 通过通道来支持跨协程数据交换，一个特别的内置函数 await 来支持协程，可以把异步操作写得更像同步操作。
 
 	var chan=Chan<int>()	// 实例化一个通道
 
@@ -1093,33 +1091,6 @@ C 对象定义
 lib 文件、需要对应的头文件及适配文件等需要的东西，会被某个处理软件打成一个包，并放在编译程序能找到的地方。
 而 Si 可以编译成 c lib, 函数会按**约定**转换成 c 的格式。
 
-非托管对象
------------------
-
-某些类可以用 class* 定义为非托管类，托管类在构造时不使用 GC 以提高性能，并且必须手工 free。
-
-	class *UnmanagedClass{
-	}
-
-	var unmanaged=new UnmanagedClass()
-	free(unmanaged)
-
-备选（思考中）
---------------
-
-对象追踪
-=====
-	
-	class Connect
-
-	class MyObject
-
-	var conn = Connect()
-	var my = MyObject() link conn
-	var myRef = conn..MyObject 
-
-my 对象的生存期将会跟随输入的对象 conn，成为 Connect 的子类。
-
 操作符重载
 ================
 Si 支持有限的操作符重载。对于类内的操作符，可以通过一个函数重载
@@ -1137,6 +1108,37 @@ Si 支持有限的操作符重载。对于类内的操作符，可以通过一�
 	operator + ( int left, MyClass cls ) : MyClass{	// MyClass 在操作符的右边
 	}
 
+
+备选（思考中，暂时吧实现）
+--------------
+
+非托管对象
+==============
+
+某些类可以用 class* 定义为非托管类，托管类在构造时不使用 GC 以提高性能，并且必须手工 free。
+
+	class *UnmanagedClass{
+	}
+
+	var unmanaged=UnmanagedClass()
+	free(unmanaged)
+
+非托管类如果构造托管类，也将使用非托管的方式构造（注：这里可能有危险，谨慎使用）
+
+对象追踪
+=====
+	
+	class Connect
+
+	class MyObject
+
+	var conn = Connect()
+	var my = MyObject() link conn
+	var myRef = conn..MyObject 
+
+my 对象的生存期将会跟随输入的对象 conn，成为 Connect 的子类。
+
+
 编译器插件
 ================
 在代码中可以嵌入由插件程序解析的代码，插件程序会把代码翻译为 si 语言。
@@ -1148,7 +1150,7 @@ Si 支持有限的操作符重载。对于类内的操作符，可以通过一�
 这段代码会调用一个叫json的插件，把中间的代码解析为 si 语言的代码。
 
 接口代理
---------------
+=================
 接口代理是接口的另一种使用方法，会以名称的形式来调用接口内的函数
 
 	interface MyProxy{
@@ -1161,5 +1163,23 @@ Si 支持有限的操作符重载。对于类内的操作符，可以通过一�
 
 	MyProxyImp obj()
 
-	Proxy<MyProxy> imp = Proxy<MyProxy>(obj)	// proxy 是内部类型
+	MyProxy imp = proxy<MyProxy>(obj)	// proxy 是内部函数
 	imp.run("Hello")	// 
+
+编译期反射
+===================
+
+	class A
+	A a
+
+	for( def i : A ){
+		a[i] = xx // 赋值
+		if( i.name == "hi" ){ // 编译期比较
+
+		}
+		i.annotations["CLang"] {
+			var n = it["name"]  
+		} 
+		def T = i
+	}
+	

@@ -1,16 +1,15 @@
 #include "stdafx.h"
 #include "AstContext.h"
 #include "AstGetClass.h"
+#include "../Type/ClassInstanceType.h"
 
-llvm::Type * AstGetClass::llvmType(llvm::LLVMContext & context)
+llvm::Type * AstGetClass::llvmType(llvm::LLVMContext & c)
 {
-	assert(0 && "Can't use get class.");
-	return nullptr;
+	assert(context && "Can't use get class.");
+
+	auto *p=context->findCompiledClass(name);
+	if (p) return p->llvmType(c);
+	throw std::runtime_error("Unknown type " + name);
 }
 
-llvm::Type * AstGetClass::get(AstContext * parent, llvm::Type * hopeType)
-{
-	// TODO: 查找正确的类
-	return hopeType;
-}
 

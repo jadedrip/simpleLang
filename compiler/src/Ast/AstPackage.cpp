@@ -3,7 +3,9 @@
 #include "AstContext.h"
 #include "CodeGenerate/CodeGen.h"
 #include "AstImport.h"
-								   
+#include "AstClass.h"
+#include "modules.h"
+
 using namespace llvm;
 extern LLVMContext llvmContext;
 
@@ -16,6 +18,7 @@ void AstPackage::draw(std::ostream & os) {
 	}
 }
 
+ClassInstanceType* stringCls = nullptr;
 AstContext* AstPackage::preprocessor(llvm::Module *m)
 {
 	if (!names.empty()) {
@@ -25,7 +28,20 @@ AstContext* AstPackage::preprocessor(llvm::Module *m)
 		name.erase(name.size() - 1);
 	}
 
-	auto *block=new AstContext(m);
+	AstContext* block = new AstContext(m);
+	if (name != "si") { // 默认读入 String
+		AstClass* p=AstImport::loadClass("si", "String");
+		block->setCompiledClass("struct.si_String", p->generated);
+
+		//auto *mm=CLangModule::loadLLFile("lib\\si\\String.ll");
+
+		//auto *si = CLangModule::loadSiFile("lib\\si\\String.si", "si", mm);
+		//auto *s = si->findClass("String");
+		//if(s) block->setClass("String", s);
+		//auto *x = si->findCompiledClass("struct.si_String");
+		//if(x) block->setCompiledClass("struct.si_String", x);
+	}
+	
 	block->module = m;
 	block->pathName = name;
 	for (auto a : imports) {

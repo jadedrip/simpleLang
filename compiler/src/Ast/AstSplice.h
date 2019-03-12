@@ -8,7 +8,7 @@ public:
 	virtual void draw(std::ostream& os);
 	virtual CodeGen* makeGen(AstContext* parent);
 public:
-	AstNode* expr;
+	AstNode* expr = nullptr;
 	AstNode* begin = nullptr;
 	AstNode* end = nullptr;
 };

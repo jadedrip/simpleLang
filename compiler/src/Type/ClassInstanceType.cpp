@@ -9,6 +9,7 @@
 #include "../CodeGenerate/ClassMemberGen.h"
 #include "../CodeGenerate/NewGen.h"
 #include "../CodeGenerate/CallGen.h"
+#include "../CodeGenerate/ThisGen.h"
 #include "utility.h"
 #include "../modules.h"
 
@@ -22,17 +23,10 @@ ClassInstanceType * ClassInstanceType::findByName(const std::string & name) {
 	return getMapValue(classTypes, name);
 }
 
-ClassInstanceType * ClassInstanceType::findByStruct(llvm::Type * type) {
-	StructType* p = dyn_cast<StructType>(type);
-	if (!p) throw std::runtime_error("Not struct");;
-	return getMapValue(llvmClassTypes, (uintptr_t)p);
-}
-
-ClassInstanceType::ClassInstanceType(const std::string& path, const std::string& n, llvm::StructType* ty)
+ClassInstanceType::ClassInstanceType(const std::string& path, const std::string& n)
 {
 	this->name = n;
 	this->path = path;
-	this->_type = ty;
 	//classTypes[path + "." + name] = this;
 	//llvmClassTypes[(uintptr_t)ty] = this;
 }
@@ -49,13 +43,10 @@ std::string ClassInstanceType::uniqueName()
 using namespace llvm;
 Type * ClassInstanceType::llvmType(LLVMContext & context)
 {
-	if (_type) return _type;
-
-	
 	return _type;
 }
 
-AstContext * ClassInstanceType::makeContext(AstContext * parent)
+ClassContext * ClassInstanceType::makeContext(AstContext * parent)
 {
 	return new ClassContext(parent, this);
 }
@@ -64,24 +55,48 @@ ClassMemberGen * ClassInstanceType::getMember(CodeGen* value, const std::string 
 	return getMapValue(memberGens, name);
 }
 
-CodeGen * ClassInstanceType::makeCall(llvm::LLVMContext& c, CodeGen* value, const std::string & name, const std::vector<std::pair<std::string, CodeGen*>>& arguments) {
-	auto it = methds.find(name);
-	if (it == methds.end()) {
-		auto *func=funcCache[name];
-		if (func) {
-			return new CallGen(func, arguments, value); //TODO:
+CallGen * ClassInstanceType::makeCall(AstContext* c, CodeGen* value, const std::string & name, std::vector<std::pair<std::string, CodeGen*>>& arguments) {
+	auto it = methds.equal_range(name);
+	if (it.first==it.second) { // 如果没找到
+		auto *v=getMember(value, name);
+		if (v) { // 成员变量
+			if (!v->type->isPointerTy() 
+				|| !v->type->getPointerElementType()->isFunctionTy())
+				throw std::runtime_error("成员变量 " + name + "不是函数");
+
+			std::vector<CodeGen*> gens;
+			assert(value);
+			gens.push_back(value);
+			for (auto i : arguments) {
+				gens.push_back(i.second);
+			}
+			v->object = value;
+			auto ft=dyn_cast<FunctionType>(v->type->getPointerElementType());
+			auto* p=new CallGen(v, ft, std::move(gens));
+			return p;
 		}
-		throw std::runtime_error("Can't find function: " + name); // 找不到函数
+
+		return nullptr;
 	}
-	return it->second->makeCall(c, arguments, value, this);
+	for (auto i = it.first; i != it.second; i++) {
+		if (i->second->isTemplate()) continue;
+		auto *p= i->second->makeCall(c, arguments, value, this);
+		if (p) return p;
+	}
+	for (auto i = it.first; i != it.second; i++) {
+		if (!i->second->isTemplate()) continue;
+		auto *p = i->second->makeCall(c, arguments, value, this);
+		if (p) return p;
+	}
+	return nullptr;
 }
 
-CodeGen * ClassInstanceType::newObject(llvm::LLVMContext& c, std::vector<std::pair<std::string, CodeGen*>>& v)
+CodeGen * ClassInstanceType::newObject(AstContext* c, std::vector<std::pair<std::string, CodeGen*>>& v)
 {
 	auto *p = new NewGen();
-	p->type = llvmType(c);
+	p->type = llvmType(c->context());
 	for (auto i : creators) {
-		auto* call = i->makeCall(v);
+		auto* call = i->makeCall(c, v, p, this);
 		if (call) {
 			p->construstor = call;
 			return p;
@@ -90,4 +105,12 @@ CodeGen * ClassInstanceType::newObject(llvm::LLVMContext& c, std::vector<std::pa
 	if (!v.empty())
 		throw std::runtime_error("没有匹配的构造函数");
 	return p;
+}
+
+CodeGen * ClassInstanceType::thisGen()
+{
+	if (_thisGen) return _thisGen;
+	assert(_type);
+	_thisGen = new ThisGen(_type);
+	return _thisGen;
 }

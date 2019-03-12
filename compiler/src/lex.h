@@ -20,9 +20,10 @@ AstNode* packageName(AstNode* name);
 void packageImport(AstNode* n);
 void setPackageLines(AstNode* n);
 AstNode* importName(AstNode* n, char* name, bool isFunc = false);
+AstNode* stringCat(AstNode* left, AstNode* right);
 
 AstType* getType( int type_id );
-AstType* getClassType( char * name, AstNode* path=nullptr );
+AstType* getClassType( char * name, AstType* templateVars =nullptr );
 AstType* getFuncType();
 AstType* makeArray(AstType* type, AstNode* list = nullptr);
 AstNode* makeSequence(AstNode* list);
@@ -39,6 +40,7 @@ AstNode* binary( int op, AstNode* left, AstNode* right );
 AstNode* binaryIs(AstNode* left, AstType* right);
 
 AstNode* link(AstNode* left, AstNode* right);
+AstType* link(AstType* left, AstType* right);
 
 AstNode* makeValue( const char* name, int32_t v );
 AstNode* makeValue( const char* name, int64_t v );
@@ -69,7 +71,7 @@ AstNode* makeIndex(AstNode* expr, AstNode* index);
 AstNode* makeTuple(AstNode* elem, AstNode* second);
 AstNode* tupleResolve(AstNode* type, AstNode* tuple, bool def=false);
 
-AstNode * makeClass(int type, char * name, AstType * inherit, AstNode* block);
+AstNode* makeClass(int type, char * name, AstNode* templateVars, AstType * inherit, AstNode* block);
 AstNode* makeConst(char* name, AstNode* value );
 
 AstNode* createSwitch(AstNode* cond, AstNode* lines);
@@ -105,3 +107,5 @@ AstNode* makeAnnotation(char* name, AstNode* attrs);
 
 AstNode* makeIsNull(AstNode* value);
 AstNode* makeIIF(AstNode* cond, AstNode* thenValue, AstNode* elseValue=nullptr);
+AstNode* createGo(AstNode* node);
+AstNode* createNode(char* name);

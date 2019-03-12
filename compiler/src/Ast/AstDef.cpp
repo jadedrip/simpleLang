@@ -50,6 +50,8 @@ static string emptyStr;
 CodeGen * AstDef::makeDefGen(AstContext * parent, AstType * type, const std::string& n, AstNode* var)
 {
 	CodeGen*  v = var ? var->makeGen(parent) : nullptr;
+	if (v && !type) return v;
+
 	llvm::Type* t = nullptr;
 
 	LLVMContext& c = parent->context();
@@ -67,7 +69,8 @@ CodeGen * AstDef::makeDefGen(AstContext * parent, AstType * type, const std::str
 		}
 	} else if (type) {
 		t = type->llvmType(parent->context());
-	}
+	} else if (v)
+		t = v->type;
 	
 	return new DefGen(n, t, v);
 }

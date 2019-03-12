@@ -132,16 +132,20 @@ int main(int argc, char* argv[],  char * const *envp)
 		errs() << "Error loading program symbols.\n";
 		return -1;
 	}
-	//if (sys::DynamicLibrary::LoadLibraryPermanently("lib/clib.dll")) {
-	//	errs() << "Error loading clib.dll.\n";
-	//	return -1;
+	std::string err;
+	//if (sys::DynamicLibrary::LoadLibraryPermanently("msvcp_win.dll", &err)) {
+	//	errs() << "Error loading: "<< err<< "\n";
+	//	// return -1;
 	//}
 
 	auto *m = new Module("TOP", llvmContext);
 	module.reset(m);
-	make_c_functions(m);
-	CLangModule::loadLLFile("lib/clib.ll");
-	void* p = sys::DynamicLibrary::SearchForAddressOfSymbol("printf");
+
+	
+
+	// make_c_functions(m);
+	CLangModule::loadLLFile("lib/core.ll");
+	void* p = sys::DynamicLibrary::SearchForAddressOfSymbol("?join@thread@std@@QEAAXXZ");
 	//if (p)
 	// 	EE->addGlobalMapping("printf", (uint64_t)p);
 

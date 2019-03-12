@@ -1,27 +1,57 @@
 ﻿package org.my
-import si.String
+
+// import si.String
 import si.print
 import si.hello
 
-class MyFirst{
-	const data=3
+
+class MyFirst<T>{
+	int data=3
+	T d2
+
+	init(T d){
+		d2=d
+	}
 
 	func show() : int {
 		return data
 	}
+
+	var world=func(){
+		print("Hello world:" + d2 )
+	}
 }
 
-//MyFirst x()
-//x.show()
+MyFirst<int> x(77)
+x.world()
 
-enum MyEnum{ Red=1, Blue=2 }
+//go {
+//	print("Hello world:")
+//}
+
+/*
+func lu(int a){
+	var str="hello"
+	str = str + a
+	print (str)
+	print("Hello world"+a)
+}
+
+lu(12)
+
+
+String v="Hi My World"
+String n=v[3:2]
+print(n)
+*/
+// =int
+
+// enum MyEnum{ Red=1, Blue=2 }
 
 // printf( "red=%d, data=%d\r\n", MyEnum.Red, MyFirst.data )
 
-String str = "Hello world!"
-print(str)
-
-hello()
+// String str = "Hello world!"
+// print(str)
 
 /*
 int c=str.at(0)

@@ -82,6 +82,10 @@ llvm::Type * AstType::llvmType(llvm::LLVMContext & context)
 	{
 	case VoidTyID:
 		return llvm::Type::getVoidTy(context);
+	case FloatTyID:
+		return llvm::Type::getFloatTy(context);
+	case DoubleTyID:
+		return llvm::Type::getDoubleTy(context);
 	default:
 		break;
 	}

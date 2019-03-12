@@ -9,14 +9,28 @@ enum Charsets {
 	UNICODE = Charset(1200)
 }
 
+@CLang("si_String")
 class String {
 	init(byte[] str, Charset charset=Charsets.Default)
-	func at(ulong index) : char
-	func size() : ulong
-	// operator == (String str)
+	init(int value)
+	init(long value)
+	init(float value)
+	init(double value)
+	init(bool value){
+		init( value ? "true" : "false" )
+	}
+	init(String value)
+
+	func at(long index) : char
+	func size() : long
+	// operator == (String str): bool
 	func compare(String another)
 	func sub(ulong index, ulong size)
 	func bytes(Charset charset=Charsets.UTF8) : byte[]
+	operator + (String value): String
+	operator + (var value): String {
+		return this + String(value)
+	}
 }
 
 // func Charset.name()

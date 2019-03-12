@@ -87,6 +87,7 @@ H		[a-fA-F0-9]
 "is"					return ISOPT;
 "init"				return INIT_TOKEN;
 "finalize"			return FINALIZE_TOKEN; 
+"go"				return GO_TOKEN;
 
 [a-z][a-zA-Z0-9]*		SAVETOKEN(L_IDENTIFIER); 
 [A-Z][a-zA-Z0-9]*		SAVETOKEN(U_IDENTIFIER); 
@@ -103,13 +104,13 @@ H		[a-fA-F0-9]
 ":="					return AEQ;
 "!="					return NOEQ;
 "||"					return OR;
-"&&"				return AND;
+"&&"					return AND;
 "++"					return INC;
 "--"					return DEC;
 "..."					return DOTS;
 "?:"					return WHEN_NULL;
 
-[&*+-/~!=^<>\|%\(\):`\?\{\}\[\];@]	return *yytext;
+[&*+-/~!=^<>\|%\(\):`\?\{\}\[\];@\.]	return *yytext;
 
 [ \t\r] { /* ºöÂÔ¿Õ°× */ }
 \n			{  }

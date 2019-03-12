@@ -38,9 +38,13 @@ inline int64_t hex2int( const char* str, int length ) {
 
 /// 把操作符转换成字符串
 std::string operator_to_str(int op);
+/// 把操作符转换成英文
+std::string operator_to_word(int op);
 
 /// 转换成布尔
 llvm::Value* int_to_bool(llvm::IRBuilder<>& builder, llvm::Value* v);
+
+std::string getReadable(llvm::Type *);
 
 class AstNode;
 struct Parameter;

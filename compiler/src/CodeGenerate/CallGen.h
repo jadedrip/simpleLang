@@ -7,11 +7,15 @@ class CallGen : public CodeGen
 {
 public:
 	CallGen(FunctionInstance* func = nullptr);
+	CallGen(CodeGen* gen, llvm::FunctionType*ft, std::vector<CodeGen*>&& attrs);
 	CallGen(FunctionInstance* func, std::vector<CodeGen*>&& attrs);
 	CallGen(FunctionInstance* func, const std::vector<std::pair<std::string, CodeGen*>>& v, CodeGen* object=nullptr);
 
+	CodeGen* pointerGen = nullptr; // 函数指针
+	CodeGen* object = nullptr;
+
 	FunctionInstance* function = nullptr;
-	llvm::Function* llvmFunction = nullptr;
+	llvm::Value* llvmFunction = nullptr;
 	std::vector<CodeGen*> params;
 	virtual llvm::Value* generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>&);
 
@@ -31,5 +35,15 @@ public:
 	}
 
 	static llvm::CallInst* callFunc(llvm::IRBuilder<>& builder, llvm::Function* func, std::vector<llvm::Value*>& values);
+private:
+	llvm::FunctionType* funcType = nullptr;
+	inline void setRealType(llvm::Type *tp)
+	{
+		type = tp;
+		if (!type->isPointerTy()) return;
+		auto *p = type->getPointerElementType();
+		if (p->isStructTy())
+			type = p;
+	}
 };
 

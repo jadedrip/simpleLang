@@ -64,12 +64,12 @@ void CLangModule::moveAll(llvm::ExecutionEngine * engine) {
 
 		std::clog << "Load module:" << v ->getName().str() << std::endl;
 
-		for (auto &i : v->getFunctionList()) {
-			auto n = i.getName();
-			std::clog << "Find function: " << n.str() << std::endl;
+		//for (auto &i : v->getFunctionList()) {
+		//	auto n = i.getName();
+		//	std::clog << "Find function: " << n.str() << std::endl;
 
-			// auto p=engine->getFunctionAddress(n);
-		}	    
+		//	// auto p=engine->getFunctionAddress(n);
+		//}	    
 		engine->addModule(std::move(v));
 	}
 	_modules.clear();
@@ -101,12 +101,12 @@ Module* CLangModule::loadLLFile(const std::string& filename) {
 		return nullptr;
 	}
 
-	for (auto &i : m->getFunctionList()) {
-		std::clog << "\tLoad function: " << i.getName().str() << std::endl;
-	}
+	//for (auto &i : m->getFunctionList()) {
+	//	std::clog << "\tLoad function: " << i.getName().str() << std::endl;
+	//}
 
 	for (auto &i : m->getIdentifiedStructTypes() ){
-		std::clog << "\tLoad struct: " << i->getStructName().str() << std::endl;
+		// std::clog << "\tLoad struct: " << i->getStructName().str() << std::endl;
 		_structs[i->getStructName()] = i;
 	}
 
@@ -160,6 +160,11 @@ void CLangModule::shutdown() {
 }
 
 llvm::StructType * CLangModule::getStruct(const std::string& path, const std::string & name) {
-	auto* p= _structs["struct." + path + "_" + name];
-	return p ? p : _structs[path + "_" + name];
+	return getStruct(path + "_" + name);
+}
+
+llvm::StructType * CLangModule::getStruct(const std::string & name)
+{
+	auto* p = _structs["struct." + name];
+	return p ? p : _structs[name];
 }

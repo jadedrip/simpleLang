@@ -19,11 +19,11 @@
 *.exe
 *.out
 *.app
+Debug
 /*.opensdf
 /*.sdf
 /*.suo
 /generate
-/Debug
 /ipch
 /Release
 /.vs
@@ -51,3 +51,5 @@
 /src/lib/si/x64
 *.user
 /lib
+x64
+/clib/*.ll

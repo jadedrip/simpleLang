@@ -38,8 +38,11 @@ CodeGen * ClassContext::findSymbolValue(const std::string & name, bool recursive
 
 CodeGen * ClassContext::makeCall(llvm::LLVMContext& c, const std::string & name, std::vector<std::pair<std::string, CodeGen*>>& arguments)
 {
-	auto x=_type->makeCall(c, value, name, arguments);
-	if (x) return x;
+	auto x=_type->makeCall(this, value, name, arguments);
+	if (x) {
+		x->object = _type->thisGen();
+		return x;
+	}
 	if (parent) return parent->makeCall(c, name, arguments);
 	return nullptr;
 }

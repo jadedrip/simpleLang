@@ -17,23 +17,23 @@
 	返回时指针指向对象数据，可以直接操作。
 */
 void* createObject(uint64_t size, uint32_t typeId) {
-	assert(sizeof(LONG) == 4);
-	return malloc(size);
-	//LONG* p = (LONG*)malloc(size + 8);
-	//*p++ = 1;		// 引用计数
-	//*p++ = typeId;
-	//return p;
+	//assert(sizeof(LONG) == 4);
+	//return malloc(size);
+	LONG* p = (LONG*)malloc(size + 8);
+	*p++ = 1;		// 引用计数
+	*p++ = typeId;
+	return p;
 }
 
 void freeObject(void * object) {
 	assert(sizeof(LONG) == 4);
 
-	//LONG* p = (LONG*)object;
+	LONG* p = (LONG*)object;
 	//p -= 2;
 	//LONG v = InterlockedDecrement((LONG*)p);	// TODO: 跨平台
 
 	//if (v == 0)	
-		free(object);
+	free(p-2);
 }
 
 const uint32_t arrayMark = 1 << 31;

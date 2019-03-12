@@ -4,6 +4,7 @@
 #include "AstClass.h"
 #include "AstLet.h"
 #include "AstPackage.h"
+#include "AstGetClass.h"
 #include "FunctionInstance.h"
 #include "../AstContext.h"
 #include "../CodeGenerate/NewGen.h"
@@ -34,8 +35,8 @@ CodeGen * AstNew::makeGen(AstContext * parent)
 		else
 			args.push_back(std::make_pair(std::string(), c));
 	}
-
-	CodeGen* a = cls->makeNew(parent, args);
+	auto *o=dynamic_cast<AstGetClass*>(type);
+	CodeGen* a = cls->makeNew(parent, args, (o ? &(o->templateVars): nullptr));
 	if (!a)
 		throw std::runtime_error("Can't make class " + cls->name);
 	if (!name.empty())

@@ -9,8 +9,10 @@
 #include "utility.h"
 #include "AstPackage.h"
 #include "CodeGenerate/CallGen.h"
+#include "CodeGenerate/LambdaGen.h"
 #include "../Type/LLVMType.h"
 #include "../Type/ClassInstanceType.h"
+#include "ClassContext.h"
 using namespace std;
 
 using namespace llvm;
@@ -71,9 +73,17 @@ CodeGen * AstCall::makeGen(AstContext * parent)
 
 	// 如果首字母是大写，说明是类构造
 	if (isupper(name.at(0))) {
-		AstClass *cls = parent->findClass(name);
-		if (cls) {	// 类初始化
-			return cls->makeNew(parent, gens);
+		if (name == "Init") {
+			auto *x=dynamic_cast<ClassContext*>(parent);
+			assert(x);
+			auto *h=parent->findSymbolValue("this");
+			auto* p=x->getClassType()->makeCall(parent, h, "Init", gens);
+			if(p) return p;
+		} else {
+			AstClass *cls = parent->findClass(name);
+			if (cls) {	// 类初始化
+				return cls->makeNew(parent, gens);
+			}
 		}
 
 		throw std::runtime_error("找不到匹配的类：" + name);
@@ -85,8 +95,27 @@ CodeGen * AstCall::makeGen(AstContext * parent)
 
 	auto* p = CLangModule::getFunction(name);
 
+	// 查找变量
+	if (!p) {
+		auto v = parent->findSymbolValue(name);
+		if (v) {
+			std::cout << "Labmda " << name << std::endl;
+			if (!v->type->isPointerTy()
+				|| !v->type->getPointerElementType()->isFunctionTy())
+				throw std::runtime_error("变量" + name + "不是函数");
+			auto *ins=dynamic_cast<LambdaGen*>(v);
+			if (ins) {
+				return ins->makeCall(parent, gens);
+			}else{
+				throw runtime_error("还未支持");
+			}
+		}
+	}
+
+	throw std::runtime_error("找不到匹配的函数：" + name);
+
 	// 尝试查找纯 C 函数
-	
+	/*
 	if (!p) {
 		auto m = module.get();
 		p = m->getFunction(name);
@@ -100,5 +129,5 @@ CodeGen * AstCall::makeGen(AstContext * parent)
 	for (auto &i : gens) {
 		call->params.push_back(i.second);
 	}
-	return call;
+	return call;*/
 }

@@ -113,7 +113,7 @@
       <ModuleDefinitionFile>clib.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y $(ProjectDir)si\String.si $(SolutionDir)lib\si</Command>
+      <Command>copy /Y $(ProjectDir)si\*.si $(SolutionDir)lib\si</Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>
@@ -160,6 +160,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="core.h" />
+    <ClInclude Include="Coroutine.h" />
+    <ClInclude Include="si\Coroutine.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="si\String.h" />
     <ClInclude Include="targetver.h" />
@@ -191,6 +193,7 @@ move /Y %(Filename).ll  $(SolutionDir)\lib\si</Command>
   </ItemGroup>
   <ItemGroup>
     <None Include="clib.def" />
+    <None Include="si\Coroutine.si" />
     <None Include="si\String.si" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

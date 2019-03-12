@@ -30,6 +30,12 @@
     <ClInclude Include="si\String.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Coroutine.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="si\Coroutine.h">
+      <Filter>si</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -46,13 +52,16 @@
     <None Include="si\String.si">
       <Filter>si</Filter>
     </None>
+    <None Include="si\Coroutine.si">
+      <Filter>si</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="core.c">
       <Filter>源文件</Filter>
     </CustomBuild>
     <CustomBuild Include="si\String.c">
-      <Filter>源文件</Filter>
+      <Filter>si</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

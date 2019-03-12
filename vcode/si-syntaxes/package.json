@@ -1,0 +1,26 @@
+{
+    "name": "si-highlighter",
+    "displayName": "Si 语言高亮",
+    "description": "Si 语言的VS Code插件",
+    "version": "0.0.1",
+    "publisher": "jadedrip",
+    "engines": {
+        "vscode": "^1.19.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "si",
+            "aliases": ["si"],
+            "extensions": [".si"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "si",
+            "scopeName": "source.si",
+            "path": "./syntaxes/si.tmLanguage.json"
+        }]
+    }
+}

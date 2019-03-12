@@ -13,4 +13,5 @@ public:
 	static AstContext* loadSiFile(const std::experimental::filesystem::path& file, const std::string& packageName, llvm::Module* m);
 	static void shutdown();
 	static llvm::StructType* getStruct(const std::string& path, const std::string& name);
+	static llvm::StructType* getStruct(const std::string& name);
 };

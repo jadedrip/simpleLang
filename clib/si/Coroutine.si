@@ -1,0 +1,13 @@
+
+@CLang("si_Coroutine")
+class Coroutine<T>{
+    //operator -> (func(T) v)
+    func join()
+    func done(): bool
+    func value(): T
+}
+
+//@CLang("si_Chan")
+//class Chan<T>{
+    //operator ()(T value)
+//}

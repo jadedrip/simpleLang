@@ -93,6 +93,8 @@ CodeGen * AstImport::makeGen(AstContext * parent)
 	fullName = dir;
 	fullName += "." + className;
 
+	std::clog << "import " << fullName << std::endl;
+
 	// 导入包
 	// TODO: 支持压缩包
 	loadPackage(dir);
@@ -166,6 +168,16 @@ void AstImport::draw(std::ostream & os)
 	os << std::endl;
 }
 
+AstClass * AstImport::loadClass(const std::string & path, const std::string & name)
+{
+	loadPackage(path);
+
+	std::string n = path + "." + name;
+	auto iter=classes.find(n);
+	if (iter != classes.end()) return iter->second;
+	return nullptr;
+}
+
 void def(ClassInstanceType* instance, int& index, AstContext* context, AstDef* x, Module* m)
 {
 	string cname = instance->uniqueName();
@@ -181,7 +193,7 @@ void def(ClassInstanceType* instance, int& index, AstContext* context, AstDef* x
 		auto *set = m->getFunction(cname + "_SET_" + name);
 		p->setFunction = Function::Create(set->getFunctionType(), Function::ExternalLinkage, set->getName(), context->module);
 		instance->memberGens[name] = p;
-		if (v) instance->defaultValues[name]=v->makeGen(context);
+		if (v) instance->defaultValues[p->index]=v->makeGen(context);
 	}
 }
 
@@ -205,32 +217,3 @@ FunctionInstance* func(ClassInstanceType* instance, AstContext* context, AstFunc
 	return fun;
 }
 
-void AstImport::loadClassFromModule(AstClass * cls, AstAnnotation * annotation, AstContext* context, llvm::Module * m)
-{
-	AstNode* n=annotation->defaultValue;
-	if (!n) n = annotation->attrs["name"];
-	if (!n) 
-		throw std::runtime_error("No name in CLang annotation.");
-	string name = n->name;
-	StructType* s = m->getTypeByName(name);
-	if (!s) s = m->getTypeByName("struct." + name);
-	if (!s) throw std::runtime_error("Can't find " + name + " struct in ll file.");
-
-	ClassInstanceType* instance = new ClassInstanceType(context->pathName, cls->name, s);
-	int index = 0;
-	for (auto *i : cls->block) {
-		auto *x=dynamic_cast<AstDef*>(i);
-		if (x) {
-			def(instance, index, context, x, m);
-		}
-
-		auto *f = dynamic_cast<AstFunction*>(i);
-		if (f) {
-			auto *x = func(instance, context, f, m);
-			instance->funcCache[f->name] = x;
-		}
-	}
-	string sn=instance->_type->getName();
-	context->setCompiledClass(sn, instance);
-	context->setCompiledClass(cls->name, instance);
-}

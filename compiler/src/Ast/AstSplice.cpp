@@ -1,6 +1,10 @@
 ﻿#include "stdafx.h"
 #include "AstSplice.h"
 #include "AstContext.h"
+#include "modules.h"
+#include "CodeGenerate/CallGen.h"
+#include "CodeGenerate/IntegerGen.h"
+#include "FunctionInstance.h"
 
 void AstSplice::draw(std::ostream & os)
 {
@@ -9,9 +13,29 @@ void AstSplice::draw(std::ostream & os)
 
 CodeGen * AstSplice::makeGen(AstContext * parent)
 {
-	if (begin) begin->makeGen(parent);
-	if (end) end->makeGen(parent);
-	return expr->makeGen(parent);  // TODO: call func
+	llvm::LLVMContext &c = parent->context();
+	std::vector<CodeGen*> arg;
+	auto *obj = expr->makeGen(parent);
+	arg.push_back(obj);
+
+	auto b = begin ? begin->makeGen(parent) : new IntegerGen(c, -1);
+	arg.push_back(b);
+	auto e = end ? end->makeGen(parent) : new IntegerGen(c, -1);
+	arg.push_back(e);
+
+	auto* ty = obj->type;
+	if (!ty->isStructTy()) {
+		throw std::runtime_error("Can't splice");
+	}
+
+	std::string n = ty->getStructName();
+	if (n.substr(0, 7) == "struct.")
+		n = n.substr(7);
+	auto *f=CLangModule::getFunction(n + "_Splice");
+	if (!f)
+		throw std::runtime_error("No splice object for " + n);
+	auto *ins=new FunctionInstance(f);
+	return new CallGen(ins, std::move(arg));
 }
 
 

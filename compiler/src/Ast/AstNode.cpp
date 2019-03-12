@@ -1,9 +1,15 @@
 ﻿#include "stdafx.h"
 #include "AstNode.h"
-
+#include "CodeGenerate/TypeOnlyGen.h"
 /**
 *	输出 dot 语言的绘制信息
 */
+
+/// 用来进行模板推导及生成代码
+CodeGen * AstNode::makeGen(AstContext * parent)
+{
+	return new TypeOnlyGen(nullptr);
+}
 
 void AstNode::draw(std::ostream & os) {
 	dotLable(os, name);

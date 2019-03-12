@@ -54,13 +54,10 @@ llvm::Value * StringLiteGen::generateCode(llvm::Module * m, llvm::Function * fun
 	auto* creator=CLangModule::getFunction("si_String_Init");
 	assert(creator);
 
-	std::vector<Value*> params;
-	params.push_back(obj);
-	params.push_back(v);
-	auto lenType = IntegerType::get(c, 64);
-	params.push_back(ConstantInt::get(lenType, ulen));
-	auto encodeType = IntegerType::get(c, 16);
-	params.push_back(ConstantInt::get(encodeType, 1200));
-	builder.CreateCall(creator, params);
+	auto *call=CallGen::call(builder, creator,
+		obj,
+		v,
+		_data.size(),
+		1200);
 	return obj;
 }
