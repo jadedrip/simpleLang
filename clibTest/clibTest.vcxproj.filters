@@ -18,13 +18,19 @@
     <ClInclude Include="..\clib\core.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\clib\Coroutine.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
     <ClInclude Include="stdafx.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="targetver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\clib\Coroutine.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\clib\DispatchBind.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\clib\GoDispatch.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -35,13 +41,16 @@
     <ClCompile Include="..\clib\core.c">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\clib\Coroutine.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\clib\String.c">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\clib\GoDispatch.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\clib\Coroutine.c">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
