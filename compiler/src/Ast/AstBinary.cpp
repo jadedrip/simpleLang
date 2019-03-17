@@ -53,7 +53,7 @@ CodeGen* AstBinary::makeGen(AstContext * parent)
 			throw std::runtime_error("Unknown type " + n);
 		std::vector<std::pair<std::string, CodeGen*>> args;
 		args.push_back(std::make_pair("", r));
-		auto *p=cs->makeCall(parent, l, word, args);
+		auto *p=cs->makeCall(parent->context(), word, args, l);
 		if (!p) throw std::runtime_error("Can't find function " + word);
 		return p;
 		//return new ClassBinaryGen(op, l, r);

@@ -91,7 +91,6 @@
     <ClCompile Include="src\CodeGenerate\NullGen.cpp" />
     <ClCompile Include="src\lli.cpp" />
     <ClCompile Include="src\Type\LLVMStruct.cpp" />
-    <ClCompile Include="src\packages.cpp" />
     <ClCompile Include="src\CodeGenerate\StringLiteGen.cpp" />
     <ClCompile Include="src\Ast\AstBased.cpp" />
     <ClCompile Include="src\Ast\AstBinary.cpp" />
@@ -250,7 +249,6 @@
     <ClInclude Include="src\CodeGenerate\ClassBinaryGen.h" />
     <ClInclude Include="src\CodeGenerate\NullGen.h" />
     <ClInclude Include="src\Type\LLVMStruct.h" />
-    <ClInclude Include="src\packages.h" />
     <ClInclude Include="src\CodeGenerate\StaticGen.h" />
     <ClInclude Include="src\CodeGenerate\GlobalStroeGen.h" />
     <ClInclude Include="src\Ast\AstBased.h" />

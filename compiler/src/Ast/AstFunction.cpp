@@ -23,6 +23,7 @@
 #include "../Type/AutoType.h"
 #include "../Type/SArrayType.h"
 
+
 using namespace llvm;
 void AstFunction::draw(std::ostream & os) {
 	dotLable(os, "function " + name, "box");
@@ -180,8 +181,9 @@ CallGen * AstFunction::makeCall(
 		: getFunctionInstance(c, ordered->parameters, ordered->variableGen, clsType);
 	auto p = new CallGen(func);
 
-	if (object)
-		p->params.push_back(object);
+	p->object = object;
+	//if (object)
+	//	p->params.push_back(object);
 
 	for (auto &i : ordered->parameters) {
 		p->params.push_back(i.second);
@@ -229,7 +231,8 @@ CodeGen * AstFunction::makeGen(AstContext * parent)
 	if (funcType==Lambda || name.empty()) {// 匿名函数
 		if (_isTemplate) throw std::runtime_error("匿名函数不能是模板的");
 		if (variable)  throw std::runtime_error("匿名函数不允许有可变参数");
-		_funcInstance = getFunctionInstance(c, parameters, nullptr, parent ? parent->thisClass: nullptr);
+		
+		_funcInstance = getFunctionInstance(c, parameters, nullptr, dynamic_cast<ClassInstanceType*>(parent));
 		return new LambdaGen(this, _funcInstance);
 	}
 
@@ -241,6 +244,7 @@ CodeGen * AstFunction::makeGen(AstContext * parent)
 AstFunction * AstFunction::clone()
 {
 	auto *p = new AstFunction();
+	p->name = name;
 	p->pathName = pathName;
 	p->paremeters = paremeters;
 	p->rets = rets;
@@ -248,6 +252,7 @@ AstFunction * AstFunction::clone()
 	p->variable = variable;
 	p->variableName = variableName;
 	p->overload = overload;
+	p->block = block;
 	p->_parent = _parent;
 	p->_cls = _cls;
 	p->_isTemplate = _isTemplate;

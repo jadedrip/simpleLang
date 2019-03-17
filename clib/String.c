@@ -1,7 +1,7 @@
 #include "stdio.h"
 #include "Windows.h"
 #include "String.h"
-#include "../core.h"
+#include "core.h"
 
 //int toUNICODE(struct si_String* str)
 //{

@@ -6,10 +6,6 @@
 #include "utility.h"
 
 using namespace llvm;
-ClassContext::ClassContext(AstContext * parent, ClassInstanceType* type) : AstContext(parent) , _type(type)
-{
-}
-
 ClassContext::ClassContext(AstContext * parent, CodeGen * gen) : AstContext(parent)
 {
 	auto *type = llvm::dyn_cast<StructType>(gen->type);
@@ -38,12 +34,10 @@ CodeGen * ClassContext::findSymbolValue(const std::string & name, bool recursive
 
 CodeGen * ClassContext::makeCall(llvm::LLVMContext& c, const std::string & name, std::vector<std::pair<std::string, CodeGen*>>& arguments)
 {
-	auto x=_type->makeCall(this, value, name, arguments);
+	auto x=_type->makeCall(c, name, arguments, value);
 	if (x) {
-		x->object = _type->thisGen();
 		return x;
 	}
 	if (parent) return parent->makeCall(c, name, arguments);
 	return nullptr;
 }
-

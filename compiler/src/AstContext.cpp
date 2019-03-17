@@ -97,7 +97,11 @@ AstClass * AstContext::loadClass(const std::string & path, const std::string & n
 	return nullptr;
 }
 
-CodeGen * AstContext::makeCall(llvm::LLVMContext& c, const std::string & name, std::vector<std::pair<std::string, CodeGen*>>& arguments)
+CodeGen * AstContext::makeCall(
+	llvm::LLVMContext& c, 
+	const std::string & name, 
+	std::vector<std::pair<std::string, CodeGen*>>& arguments, 
+	CodeGen* object)
 {
 	auto it = _functions.equal_range(name);
 	if (it.first != it.second) {
@@ -115,18 +119,7 @@ CodeGen * AstContext::makeCall(llvm::LLVMContext& c, const std::string & name, s
 			if (p) return p;
 		}
 	}
-	if (parent) return parent->makeCall(c, name, arguments);
-
-	// Find C function
-	//auto *func=module->getFunction(name);
-	//if (func) {
-	//	auto * p=new CallGen();
-	//	p->llvmFunction = func;
-	//	for (auto i : arguments) {
-	//		p->params.push_back(i.second);
-	//	}
-	//	return p;
-	//}
+	if (parent) return parent->makeCall(c, name, arguments, object);
 	return nullptr;
 }
 

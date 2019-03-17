@@ -101,7 +101,8 @@ void execute(char * const *envp){
 
 		// Clear instruction cache before code will be executed.
 		if (RTDyldMM)
-			static_cast<SectionMemoryManager*>(RTDyldMM)->invalidateInstructionCache();
+			static_cast<SectionMemoryManager*>(RTDyldMM)->invalidateInstructionCache(
+			);
 
 
 		// Run static destructors.
@@ -144,7 +145,7 @@ int main(int argc, char* argv[],  char * const *envp)
 	
 
 	// make_c_functions(m);
-	CLangModule::loadLLFile("lib/core.ll");
+	CLangModule::loadPackage("si");
 	void* p = sys::DynamicLibrary::SearchForAddressOfSymbol("?join@thread@std@@QEAAXXZ");
 	//if (p)
 	// 	EE->addGlobalMapping("printf", (uint64_t)p);

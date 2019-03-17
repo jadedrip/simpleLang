@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "caster.h"
 #include "ReturnGen.h"
 #include "../Type/ClassInstanceType.h"
 
@@ -11,7 +12,8 @@ llvm::Value * ReturnGen::generateCode(llvm::Module * m, llvm::Function * func, l
 		llvm::Value* v = p->generate(m, func, builder);
 		if (!p->type->isStructTy())
 			v = load(builder, v);
-		return builder.CreateRet(v);
+		auto rt=func->getReturnType();
+		return builder.CreateRet(try_cast(builder, rt, v));
 	}
 	else {
 		auto *p = new TupleGen();

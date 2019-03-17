@@ -15,24 +15,33 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pch.h">
+    <ClInclude Include="..\clib\core.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\clib\core.h">
+    <ClInclude Include="..\clib\Coroutine.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="pch.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="clibTest.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\clib\core.c">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\clib\si\String.c">
+    <ClCompile Include="..\clib\Coroutine.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\clib\String.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

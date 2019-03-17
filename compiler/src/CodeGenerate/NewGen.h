@@ -10,5 +10,8 @@ public:
 	CodeGen* length = nullptr;
 	std::map<int, CodeGen*> defaultValues;
 public:
+	static llvm::Function* getCreateObject();
+	static llvm::Function* getCreateArray();
+public:
 	virtual llvm::Value* generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>&);
 };

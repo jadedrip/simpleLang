@@ -61,7 +61,7 @@ void AstPackage::generateCode(Module *m)
 
 	// 创建包初始化函数
 	FunctionType *FT = FunctionType::get(type, false);
-	_func = Function::Create(FT, Function::ExternalLinkage, "_P_" + name, m);
+	_func = Function::Create(FT, Function::ExternalLinkage, "main", m);
 	auto alloc = BasicBlock::Create(llvmContext, name, _func);
 	auto basicBlock = BasicBlock::Create(llvmContext, name, _func);
 

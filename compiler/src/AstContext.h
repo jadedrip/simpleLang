@@ -29,7 +29,6 @@ public:
 	llvm::LLVMContext& context();
 
 	std::string pathName;
-	ClassInstanceType* thisClass = nullptr;  // 类内环境时不为 null
 public:
 	// 通过变量名称获取变量的值
 	virtual CodeGen* findSymbolValue(const std::string& name, bool recursive = true);
@@ -55,7 +54,12 @@ public:
 	/// <param name="name">函数名</param>
 	/// <param name="arguments">参数表</param>
 	/// <returns>调用函数</returns>
-	virtual CodeGen* makeCall(llvm::LLVMContext& c, const std::string& name, std::vector<std::pair<std::string, CodeGen*>>& arguments);
+	virtual CodeGen* makeCall(
+		llvm::LLVMContext& c,
+		const std::string& name,
+		std::vector<std::pair<std::string, CodeGen*>>& arguments,
+		CodeGen* object = nullptr
+	);
 	virtual AstType* findType(const std::string& name);
 public:
 	std::multimap<std::string, AstFunction*> _functions;		 // 模板函数

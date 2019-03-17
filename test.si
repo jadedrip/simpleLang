@@ -4,9 +4,12 @@
 import si.print
 import si.hello
 
+class Base {
+	int a = 10
+}
 
-class MyFirst<T>{
-	int data=3
+class MyFirst<T> : Base {
+	int data
 	T d2
 
 	init(T d){
@@ -17,17 +20,22 @@ class MyFirst<T>{
 		return data
 	}
 
-	var world=func(){
-		print("Hello world:" + d2 )
+	//var world=func(){
+		// print("Hello world:" + d2 )
+	//}
+
+	func world(){
+		print("Hello:" + d2 + a )	
 	}
 }
 
 MyFirst<int> x(77)
 x.world()
 
-//go {
-//	print("Hello world:")
-//}
+go {
+	print("Hello world:")
+}
+
 
 /*
 func lu(int a){

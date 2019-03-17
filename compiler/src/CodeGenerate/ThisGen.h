@@ -8,6 +8,7 @@ public:
 	{
 		type = tp;
 	}
+
 	virtual llvm::Value* generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>& builder)
 	{
 		llvm::raw_os_ostream os(std::clog);
@@ -18,15 +19,13 @@ public:
 		auto end = func->args().end();
 		if (!begin || begin == end)
 			throw std::runtime_error("Function do not have 'this'.");
-		llvm::Argument &it = *begin;
-		type = it.getType();
-		llvm::Value* v=&it;
+		llvm::Argument* v = begin;
+		type = v->getType();
 
 		os << " ";
 		v->print(os, true);
 		os.flush();
 		std::clog << std::endl;
-
 		return v;
 	}
 };

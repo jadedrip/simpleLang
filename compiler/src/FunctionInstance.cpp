@@ -38,7 +38,7 @@ void FunctionInstance::generateBody(llvm::Module *m, llvm::LLVMContext & context
 	auto iter = parameters.begin();
 	auto i = func->arg_begin();
 	if (object) {
-		// i->setName("this");
+		i->setName("it");
 		i++;
 	}
 	for (; i != func->arg_end(); i++) {

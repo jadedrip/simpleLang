@@ -12,6 +12,8 @@ public:
 	{
 		return _func->makeCall(c, args);
 	}
+
+	CodeGen* object = nullptr;
 private:
 	AstFunction *_func;
 	FunctionInstance* _instance;

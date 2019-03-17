@@ -86,7 +86,6 @@
     <ClCompile Include="src\CodeGenerate\IntegerBinaryGen.cpp" />
     <ClCompile Include="src\CodeGenerate\StringLiteGen.cpp" />
     <ClCompile Include="src\lli.cpp" />
-    <ClCompile Include="src\packages.cpp" />
     <ClCompile Include="src\Type\AstType.cpp" />
     <ClCompile Include="src\Ast\AstUnary.cpp" />
     <ClCompile Include="src\Ast\AstValue.cpp" />
@@ -195,7 +194,6 @@
     <ClInclude Include="src\CodeGenerate\GlobalStroeGen.h" />
     <ClInclude Include="src\CodeGenerate\StaticTypeGen.h" />
     <ClInclude Include="src\CodeGenerate\ThisGen.h" />
-    <ClInclude Include="src\packages.h" />
     <ClInclude Include="src\Type\AstType.h" />
     <ClInclude Include="src\Ast\AstUnary.h" />
     <ClInclude Include="src\Ast\AstValue.h" />

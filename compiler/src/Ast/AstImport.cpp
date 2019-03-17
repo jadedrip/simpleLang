@@ -17,9 +17,7 @@ using namespace std;
 using namespace llvm;
 namespace stdfs = std::experimental::filesystem;
 
-set<string> packages;
-map<string, AstClass*> classes;
-map<string, AstFunction*> functions;
+
 
 inline void replaceToSlash(std::string& x)
 {
@@ -28,54 +26,7 @@ inline void replaceToSlash(std::string& x)
 
 void AstImport::loadPackage(const std::string& packageName)
 {
-	if (packages.find(packageName) != packages.end())
-		return;
-	packages.insert(packageName);
-
-	string dir = packageName;
-	replaceToSlash(dir);
-	auto base = "lib/" + dir;
-
-	auto dll = base + "/" + packageName + ".dll";
-	if (stdfs::exists(dll)) {
-		string err;
-		if (sys::DynamicLibrary::LoadLibraryPermanently(dll.c_str(), &err)) {
-			std::cerr << "读取 " + dll + " 失败：" << err << std::endl;
-		}
-	}
-
-	for (auto&fe : stdfs::directory_iterator(base)) {
-		auto fp = fe.path();
-		//std::wcout << fp.filename().wstring() << std::endl;
-		auto si = fp.filename();
-		auto ex = fp.extension().string();
-
-		if (ex == ".si") {
-			auto osi = base / si;
-			si.replace_extension(".ll");
-			auto llo = base / si;
-
-			llvm::Module* m;
-			if (stdfs::exists(llo)) {
-				m=CLangModule::loadLLFile(llo.string());
-			} else {
-				m = new llvm::Module(packageName, llvmContext);
-			}
-
-			AstContext* x = CLangModule::loadSiFile(osi, packageName, m);
-			for (auto i : x->_class) {
-				auto full = packageName + "." + i.second->name;
-				classes[full] = i.second;
-			};
-
-			for (auto i : x->_functions) {
-				auto full = packageName + "." + i.second->name;
-				functions[full] = i.second;
-			}
-		}
-		//replace_extension替换扩展名
-		//stem去掉扩展名
-	}
+	CLangModule::loadPackage(packageName);
 }
 
 CodeGen * AstImport::makeGen(AstContext * parent)
@@ -99,15 +50,15 @@ CodeGen * AstImport::makeGen(AstContext * parent)
 	// TODO: 支持压缩包
 	loadPackage(dir);
 	if (isFunction) {
-		auto i = functions.find(fullName);
-		if (i != functions.end()) {
-			parent->defineFunction(className, i->second);
+		auto *f=CLangModule::findFunction(fullName);
+		if (f) {
+			parent->defineFunction(className, f);
 			return nullptr;
 		}
 	} else if ("*" != className) {
-		auto i = classes.find(fullName);
-		if (i != classes.end()) {
-			parent->setClass(className, i->second);
+		auto i = CLangModule::findClass(fullName);
+		if (i) {
+			parent->setClass(className, i);
 			return nullptr;
 		}
 	}
@@ -173,9 +124,7 @@ AstClass * AstImport::loadClass(const std::string & path, const std::string & na
 	loadPackage(path);
 
 	std::string n = path + "." + name;
-	auto iter=classes.find(n);
-	if (iter != classes.end()) return iter->second;
-	return nullptr;
+	return CLangModule::findClass(n);
 }
 
 void def(ClassInstanceType* instance, int& index, AstContext* context, AstDef* x, Module* m)

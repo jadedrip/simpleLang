@@ -77,7 +77,7 @@ CodeGen * AstCall::makeGen(AstContext * parent)
 			auto *x=dynamic_cast<ClassContext*>(parent);
 			assert(x);
 			auto *h=parent->findSymbolValue("this");
-			auto* p=x->getClassType()->makeCall(parent, h, "Init", gens);
+			auto* p=x->getClassType()->makeCall(parent->context(), "Init", gens, h);
 			if(p) return p;
 		} else {
 			AstClass *cls = parent->findClass(name);

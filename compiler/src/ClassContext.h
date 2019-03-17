@@ -5,12 +5,10 @@
 class CodeGen;
 class ClassInterface;
 
-// 类上下文
+// 类上下文，仅用于 a{ .. } 这样的 base 环境
 class ClassContext : public AstContext
 {
 public:
-	// 类定义工作模式
-	ClassContext(AstContext *parent, ClassInstanceType* type);
 	// 对象成员操作模式
 	ClassContext(AstContext *parent, CodeGen* gen);
 	// 通过变量名称查找

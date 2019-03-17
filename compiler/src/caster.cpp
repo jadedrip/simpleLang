@@ -59,5 +59,5 @@ Value* try_cast(IRBuilder<>& builder, Type* dest, Value *v)
 			return structCast(builder, dest, v);
 		}
 	}
-	return v;
+	return builder.CreateBitOrPointerCast(v, dest);
 }

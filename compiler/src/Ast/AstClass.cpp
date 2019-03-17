@@ -71,12 +71,14 @@ CodeGen * AstClass::makeGen(AstContext * parent)
 					}
 				}
 			}
+			continue;
 		}				
 
 		// 是否常量
 		auto *e = dynamic_cast<AstConst*>(i);
 		if (e) {
 			constValues[i->name] = i->makeGen(parent);
+			continue;
 		}
 
 		auto y = dynamic_cast<AstProtected*>(i);
@@ -163,6 +165,14 @@ CodeGen * AstClass::makeNew(AstContext* parent,
 		throw std::runtime_error("类" + name + "没有合适的构造函数");
 
 	classObject->defaultValues = cls->defaultValues;
+	// 把继承的初始值也放入
+	auto cp = cls->inherit;
+	while (cp) {
+		for (auto &i : cp->defaultValues) {
+			classObject->defaultValues.insert(i);
+		}
+		cp = cp->inherit;
+	}
 
 	Type *type = classObject->type = cls->llvmType(c);
 	//type->print(os);
@@ -173,88 +183,43 @@ CodeGen * AstClass::makeNew(AstContext* parent,
 	return classObject;
 }
 
-/**
-* 本函数在 AstClass 类被转换为 ClassInstanceType 时被调用
-*/
-int AstClass::scanClass(ClassInstanceType* cls, AstContext* context, CodeGen* thisGen, std::vector< Type* >& types)
-{
-	bool isProctected = false;
-	int idx = 0;
-	auto &c=context->context();
-
-	for (auto i : block) {
-		// 创建函数、变量索引
-
-		auto v = dynamic_cast<AstDef*>(i);
-		if (v) {
-			// String v="1", b
-			for (auto a : v->vars) {
-				ClassMemberGen* m = new ClassMemberGen();
-				m->object = thisGen;
-				m->name = a.first;
-				m->isProtected = isProctected;
-				// 如果是非模板变量，确定类型
-				if (v->type->isAuto()) {
-					if (!a.second) {
-						auto u = dynamic_cast<AstGetClass*>(v->type);
-						auto *l = context->findType(u ? u->name : a.first);
-						if (!l)
-							throw std::runtime_error("成员变量" + a.first + "无法确定类型");
-						m->type = l->llvmType(c);
-						cls->name += "_" + toReadable(m->type);
-					}
-				} else {
-					auto *l = context->findType(v->type->name);
-					if (l)
-						m->type = l->llvmType(c);
-					else
-						m->type = v->type->llvmType(c);
-				}
-				m->index = idx++;
-				cls->memberGens[a.first] = m;
-				if (a.second) {
-					auto *x=dynamic_cast<AstFunction*>(a.second);
-					auto *g=cls->defaultValues[m->index] = a.second->makeGen(context);
-					if (v->type->isAuto())
-						m->type = g->type;
-				} 
-				context->setSymbolValue(a.first, m);
-				types.push_back(m->type);
-			}
-			continue;
-		}
-
-		// throw std::runtime_error("类内有未知的定义");
-	}
-
-	for (auto i : constValues) {
-		context->setSymbolValue(i.first, i.second);
-	}
-	return idx;
-}
-
 ClassInstanceType * AstClass::generateClass(AstContext* context, std::vector<AstType*>& templateTypes)
 {
 	string n = cStructName;
+	auto &c = context->context();
 	
 	if (!cStructName.empty()) {
 		auto *p=context->findCompiledClass(n);
 		if (p) return p;
 		
-		auto *c=CLangModule::getStruct(n);
-		if (c) {
-			auto *a = new ClassInstanceType(_context->pathName, n);
-			a->_type = c;
+		auto *s=CLangModule::getStruct(n);
+		if (s) {
+			auto *a = new ClassInstanceType(_context, _context->pathName, n);
+			a->_type = s;
 			context->setCompiledClass(n, a);
 			return a;
 		}
 	}
-	return nullptr;
+	auto *cls = new ClassInstanceType(_context, _context->pathName, name);
+	cls->templateTypes = createMappedTemplateTypes(&templateTypes);
+
+	ThisGen* thisGen = new ThisGen();
+	cls->setSymbolValue("this", thisGen);
+	auto types = fillMember(_context->context(), cls, thisGen);
+	fillMemberFunctionsTo(cls);
+	cls->_type= StructType::create(c, types, structName());
+	return cls;
 }
 
+string AstClass::structName()
+{
+	if (!cStructName.empty()) return cStructName;
+	string n = _context->pathName + "_" + name;
+	for (char&i : n) { if (i == '.') i = '_'; }
+	return n;
+}
 
 // 创建模板变量表
-
 std::map<std::string, AstType*> AstClass::createMappedTemplateTypes(std::vector<AstType*>* templateTypes)
 {
 	std::map<std::string, AstType*> mappedTemplateTypes;
@@ -272,13 +237,13 @@ std::map<std::string, AstType*> AstClass::createMappedTemplateTypes(std::vector<
 	return mappedTemplateTypes;
 }
 
-void AstClass::fillMemberFunctionsTo(AstContext* context, ClassInstanceType * cls)
+void AstClass::fillMemberFunctionsTo(ClassInstanceType * cls)
 {
 	for( auto x : _memberFunctions ){
 		// 函数在被调用时才固化
 		auto p = isTemplated() ? x->clone() : x;
 
-		p->makeGen(context);
+		p->makeGen(cls);
 		//->_parent = context;
 		auto it = cls->methds.find(p->name);
 		if (it != cls->methds.end()) {
@@ -290,11 +255,22 @@ void AstClass::fillMemberFunctionsTo(AstContext* context, ClassInstanceType * cl
 	}
 }
 
-std::vector<llvm::Type*> AstClass::fillMember(AstContext *context, CodeGen* thisGen, ClassInstanceType * cls)
+std::vector<llvm::Type*> AstClass::fillMember(llvm::LLVMContext&c, ClassInstanceType *cls, CodeGen* thisGen)
 {
 	int idx = 0;
-	auto &c = context->context();
 	std::vector<llvm::Type*> types;
+	if (cls->inherit) {
+		auto *b = cls->inherit->llvmType(c);
+
+		StructType* s = dyn_cast<StructType>(b);
+		for_each(s->element_begin(), s->element_end(), [&idx, &types](Type* ty) {
+			types.push_back(ty);
+			idx++;
+			});
+		for (auto i : cls->inherit->memberGens) {
+			cls->memberGens[i.first] = i.second;
+		}
+	}
 	// String v="1", b
 	for (auto a : _members) {
 		AstType* v = a.type;
@@ -302,19 +278,18 @@ std::vector<llvm::Type*> AstClass::fillMember(AstContext *context, CodeGen* this
 		ClassMemberGen* m = new ClassMemberGen();
 		m->object = thisGen;
 		m->name = a.name;
-		// m->isProtected = isProctected;
 		// 如果是非模板变量，确定类型
 		if (v->isAuto()) {
 			if (!a.defaultValue) {
 				auto u = dynamic_cast<AstGetClass*>(v);
-				auto *l = context->findType(u ? u->name : a.name);
+				auto *l = cls->findType(u ? u->name : a.name);
 				if (!l)
 					throw std::runtime_error("成员变量" + a.name + "无法确定类型");
 				m->type = l->llvmType(c);
 				cls->name += "_" + toReadable(m->type);
 			}
 		} else {
-			auto *l = context->findType(v->name);
+			auto *l = cls->findType(v->name);
 			if (l)
 				m->type = l->llvmType(c);
 			else
@@ -323,12 +298,11 @@ std::vector<llvm::Type*> AstClass::fillMember(AstContext *context, CodeGen* this
 		m->index = idx++;
 		cls->memberGens[a.name] = m;
 		if (a.defaultValue) {
-			// auto *x = dynamic_cast<AstFunction*>(a.defaultValue);
-			auto *g = cls->defaultValues[m->index] = a.defaultValue->makeGen(context);
+			auto *g = cls->defaultValues[m->index] = a.defaultValue->makeGen(cls);
 			if (v->isAuto())
 				m->type = g->type;
 		}
-		context->setSymbolValue(a.name, m);
+		cls->setSymbolValue(a.name, m);
 		types.push_back(m->type);
 	}
 	return types;
@@ -360,22 +334,18 @@ ClassInstanceType* AstClass::generateClass(
 		}
 	}
 
-	ClassInstanceType* cls = new ClassInstanceType(packageName, name);
-	auto *context=cls->makeContext(_context);
-	context->thisClass = cls;
-	context->templateTypes = templateTypes;
+	ClassInstanceType* cls = new ClassInstanceType(_context, packageName, name);
+	cls->templateTypes = templateTypes;
 
 	ThisGen* thisGen = new ThisGen();
-	context->setSymbolValue("this", thisGen);
+	cls->setSymbolValue("this", thisGen);
 	for (auto i : constValues) {
-		context->setSymbolValue(i.first, i.second);
+		cls->setSymbolValue(i.first, i.second);
 	}
 
 	for (auto &cobj : pathName) {
 		if (cobj == '.') cobj = '_';
 	}
-
-	cls->_context = context;
 
 	bool body = true;
 	// 先创建一个声明
@@ -389,27 +359,48 @@ ClassInstanceType* AstClass::generateClass(
 
 	if (!cls->_type) {
 		body = false;
-		cls->_type = StructType::create(context->context(),  n);
+		cls->_type = StructType::create(cls->context(),  n);
+	}
+
+	// 如果是继承的，那么需要先生成继承对象
+	if (inherit) {
+		auto ic = inherit;
+		auto* icls = _context->findClass(ic->name);
+		std::vector<AstType*> rel;
+
+		if (!ic->templateVars.empty()) {
+			for (auto l : ic->templateVars) {
+				auto* q = dynamic_cast<AstGetClass*>(l);
+				if (q) {
+					auto a=cls->findType(q->name);
+					if(a){
+						rel.push_back(a);
+					} else {
+						auto cc = cls->findClass(q->name);
+						if (cc) {
+							auto *h = cc->generateClass(cls, q->templateVars);
+							rel.push_back(h);
+						}
+					}
+				}
+			}
+		}
+		cls->inherit = icls->generateClass(cls, rel);
 	}
 
 	// 扫描类，初步生成对象
-	std::vector< Type* > types = fillMember(context, thisGen, cls);
-	fillMemberFunctionsTo(context, cls);
+	std::vector< Type* > types = fillMember(c, cls, thisGen);
+	fillMemberFunctionsTo(cls);
 
 	thisGen->type = cls->_type;
-	// int idx = scanClass(cls, context, thisGen, types);
 
 	if (!body) {
 		cls->_type->setName(pathName + "_" + cls->name);
-		cls->_type->setBody(types);
+		cls->_type->setBody(std::move(types));
 	}
 
 	if (!_templated) {
 		generated = cls;
-		//for (auto i : cls->defaultValues) {
-		//	dynamic_cast<Lam(i.second)
-		//}
-
 	}
 	return cls;
 }

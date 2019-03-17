@@ -168,3 +168,81 @@ llvm::StructType * CLangModule::getStruct(const std::string & name)
 	auto* p = _structs["struct." + name];
 	return p ? p : _structs[name];
 }
+
+set<string> packages;
+map<string, AstClass*> classes;
+map<string, AstFunction*> functions;
+ void CLangModule::loadPackage(const std::string & packageName)
+{
+	 // 避免重复读入
+	 if (packages.find(packageName) != packages.end())
+		 return;
+	 packages.insert(packageName);
+
+	 auto name = packageName;
+	 for (char &i : name) 
+		 if (i == '.') i = '/';
+	 
+	auto base = "lib/" + name;
+
+	for (auto&fe : stdfs::directory_iterator(base)) {
+		auto fp = fe.path();
+		//std::wcout << fp.filename().wstring() << std::endl;
+		auto si = fp.filename();
+		auto ex = fp.extension().string();
+		if (ex == ".dll") {
+			string err;
+			string dll = si.string();
+			if (sys::DynamicLibrary::LoadLibraryPermanently(dll.c_str(), &err)) {
+				std::cerr << "读取 " + dll + " 失败：" << err << std::endl;
+			} else {
+				std::clog << "读取 dll：" << dll << std::endl;
+			}
+			continue;
+		}
+
+		if (ex == ".si") {
+			auto osi = base / si;
+			si.replace_extension(".ll");
+			auto llo = base / si;
+
+			llvm::Module* m;
+			if (stdfs::exists(llo)) {
+				m = CLangModule::loadLLFile(llo.string());
+			} else {
+				m = new llvm::Module(packageName, llvmContext);
+			}
+
+			AstContext* x = CLangModule::loadSiFile(osi, packageName, m);
+			for (auto i : x->_class) {
+				auto full = packageName + "." + i.second->name;
+				classes[full] = i.second;
+			};
+
+			for (auto i : x->_functions) {
+				auto full = packageName + "." + i.second->name;
+				functions[full] = i.second;
+			}
+		}
+		//replace_extension替换扩展名
+		//stem去掉扩展名
+	}
+}
+
+ AstClass * CLangModule::findClass(const std::string & fullName)
+ {
+	 auto i = classes.find(fullName);
+	 if (i != classes.end()) {
+		 return i->second;
+	 }
+	 return nullptr;
+ }
+
+ AstFunction * CLangModule::findFunction(const std::string & fullName)
+ {
+	 auto i = functions.find(fullName);
+	 if (i != functions.end()) {
+		 return i->second;
+	 }
+	 return nullptr;
+ }

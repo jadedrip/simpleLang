@@ -4,6 +4,8 @@
 
 class AstPackage;
 class AstContext;
+class AstClass;
+class AstFunction;
 class CLangModule {
 public:
 	static llvm::Function* getFunction(const std::string& full_name);
@@ -14,4 +16,7 @@ public:
 	static void shutdown();
 	static llvm::StructType* getStruct(const std::string& path, const std::string& name);
 	static llvm::StructType* getStruct(const std::string& name);
+	static void loadPackage(const std::string& name);
+	static AstClass* findClass(const std::string& fullName);
+	static AstFunction* findFunction(const std::string& fullName);
 };

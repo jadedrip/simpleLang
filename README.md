@@ -1001,6 +1001,8 @@ si 的函数参数，允许使用延迟生成的技术以优化效率。它让�
 
 	go {	// 通过go来创建一个并行任务
 		print( "go" )
+		yield();  // 放弃 cpu
+		sleep(x); // 放弃 cpu 并等待 x 毫秒后继续
 	}
 
 	go dosomthing()		// 并行执行函数

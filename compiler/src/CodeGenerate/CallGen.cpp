@@ -136,21 +136,25 @@ llvm::CallInst * CallGen::callFunc(llvm::IRBuilder<>& builder, llvm::Function * 
 	llvm::raw_os_ostream os(std::cout);
 	std::vector< llvm::Value* > a;
 	auto *argIterator = func->arg_begin();
-	std::clog << "Call " << func->getName().str() << ' ';
+	std::clog << "Call " << func->getName().str() << ": ";
 	for (auto *i : params) {
 		if (argIterator != func->arg_end()) {
 			auto *tp = argIterator->getType();
 			auto *to = try_cast(builder, tp, i);
 			a.push_back(to);
 			argIterator++;
-			std::clog << toReadable(i->getType()) << ", ";
+			std::clog << toReadable(to->getType()) << ", ";
 		} else if (func->isVarArg()) {
 			a.push_back(i);
 			std::clog << toReadable(i->getType()) << ", ";
 		} else
 			throw std::runtime_error("To many paramter for " + func->getName().str());
 	}
+	auto call=builder.CreateCall(func, a);
+	call->print(os);
+	os.flush();
+
 	std::clog << std::endl;
 
-	return builder.CreateCall(func, a);
+	return call;
 }

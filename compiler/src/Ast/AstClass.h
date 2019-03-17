@@ -55,15 +55,15 @@ private:
 	AstContext* _context;
 	bool _templated = false;
 private:
+	std::string structName();
 	// 创建模板变量表
 	std::map<std::string, AstType*> createMappedTemplateTypes(std::vector<AstType*>* templateTypes);
 	// 向生成的类里填充成员函数
-	void fillMemberFunctionsTo(AstContext*, ClassInstanceType* cls);
+	void fillMemberFunctionsTo(ClassInstanceType* cls);
 	// 向类中填充成员
-	std::vector<llvm::Type*> fillMember(AstContext*, CodeGen*, ClassInstanceType* cls);
+	std::vector<llvm::Type*> fillMember(llvm::LLVMContext&c, ClassInstanceType*, CodeGen*);
 	ClassInstanceType* generateClass(
 		llvm::LLVMContext& c,
 		std::map<std::string, AstType*>& templateTypes
 	);
-	int scanClass(ClassInstanceType * cls, AstContext * context, CodeGen* thisGen, std::vector< llvm::Type* >& types);
 };
