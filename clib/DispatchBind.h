@@ -8,7 +8,7 @@ extern "C" {
 void DispatchCreateCoroutine(Coroutine* co, SiGoFunction *func);
 void DispatchYield();
 Coroutine* DispatchGetCurrent();
-Coroutine* DispatchSetSuspend(long waiting);
+Coroutine* DispatchSetSuspend(Chan*, long waiting);
 
 #ifdef __cplusplus 
 }

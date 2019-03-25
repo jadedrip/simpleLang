@@ -99,7 +99,8 @@
      DELETE_TOKEN = 315,
      INIT_TOKEN = 316,
      FINALIZE_TOKEN = 317,
-     GO_TOKEN = 318
+     GO_TOKEN = 318,
+     BBRACKETS = 319
    };
 #endif
 
@@ -120,7 +121,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 124 "intermediate/silang.tab.hpp"
+#line 125 "intermediate/silang.tab.hpp"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

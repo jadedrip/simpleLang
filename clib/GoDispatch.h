@@ -15,7 +15,7 @@ public:
 	static void createCoroutine(Coroutine* co, SiGoFunction *func);
 	static void yield();
 	static Coroutine* getCurrent();
-	static Coroutine* setSuspend(long waiting = 0);
+	static Coroutine* setSuspend(Chan *chan, long waiting = 0);
 public:
 	// ∂—’ª¥Û–°
 	int INIT_STACK = 1048576;

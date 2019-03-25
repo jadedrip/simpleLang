@@ -5,7 +5,7 @@
 #include <memory>
 #include <llvm/IR/LLVMContext.h>
 
-#include "CodeGenerate/IntegerGen.h"
+#include "CodeGenerate/ValueGen.h"
 #include "AstContext.h"
 #include "AstConstant.h"
 
@@ -13,7 +13,10 @@ using namespace llvm;
 
 CodeGen * AstConstant::makeGen(AstContext * parent)
 {
-	return new IntegerGen(parent->context(), _value, _bits);
+	auto &c=parent->context();
+	auto type = IntegerType::get(c, _bits);
+	auto *v= ConstantInt::get(type, _value);
+	return new ValueGen(v);
 }
 
 AstConstant::AstConstant(const std::string & text) { name = text; }

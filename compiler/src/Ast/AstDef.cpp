@@ -50,7 +50,8 @@ static string emptyStr;
 CodeGen * AstDef::makeDefGen(AstContext * parent, AstType * type, const std::string& n, AstNode* var)
 {
 	CodeGen*  v = var ? var->makeGen(parent) : nullptr;
-	if (v && !type) return v;
+	if (v && !type && v->type->isStructTy())
+		return v;
 
 	llvm::Type* t = nullptr;
 

@@ -3,6 +3,7 @@
 #include "utility.h"
 #include "modules.h"
 #include "CodeGenerate/CallGen.h"
+#include <iostream>
 
 using namespace std;
 using namespace llvm;
@@ -35,6 +36,8 @@ Value* try_cast(IRBuilder<>& builder, Type* dest, Value *v)
 	if (r == dest)
 		return v;
 
+	raw_os_ostream os(std::clog);
+
 	if (dest->isIntegerTy() && r->isIntegerTy()) {
 		return builder.CreateSExtOrTrunc(v, dest);
 	} else if (dest->isFloatingPointTy() && r->isFloatingPointTy()) {
@@ -59,5 +62,10 @@ Value* try_cast(IRBuilder<>& builder, Type* dest, Value *v)
 			return structCast(builder, dest, v);
 		}
 	}
+	os << "Warning, bit cast: ";
+	v->print(os);
+	os << " to ";
+	dest->print(os);
+	os << "\r\n";
 	return builder.CreateBitOrPointerCast(v, dest);
 }

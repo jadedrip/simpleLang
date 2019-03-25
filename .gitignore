@@ -53,3 +53,5 @@ Debug
 /lib
 x64
 /clib/*.ll
+/clibTest/t.c
+/clibTest/t.ll

@@ -66,6 +66,7 @@ enum yytokentype
 	DELETE_TOKEN = 315,
 	INIT_TOKEN = 316,
 	FINALIZE_TOKEN = 317,
-	GO_TOKEN = 318
+	GO_TOKEN = 318,
+	BBRACKETS = 319
 };
 #endif

@@ -33,7 +33,7 @@ void si_String_Init(String * str, char * data, uint64_t length, uint16_t encode)
 	//}
 
 	// wsprintfW(data);
-	wprintf(L"\r\nCall String(data, %lld, %d): %.*ls\r\n", length, encode, (int)length, str->data);
+	// wprintf(L"\r\nCall String(data, %lld, %d): %.*ls\r\n", length, encode, (int)length, str->data);
 }
 
 void si_String_Finalize(struct si_String * str)
@@ -100,12 +100,19 @@ void si_print(String * str)
 	wchar_t* data = (wchar_t*)str->data;
 	size_t len = str->length;
 
-	wprintf(L"\r\nCall print : %ls, %lld\r\n", data, len);
+	// wprintf(L"\r\nCall print : %ls, %lld\r\n", data, len);
 	wprintf(L"%.*ls", (int)len, data);
 }
 
 String * si_String_PLUS_si_String(String * str, String * right)
 {
+	if (!str) {
+		printf("si_String_PLUS_si_String's str is null!\r\n");
+		return str;
+	} else if(!right){
+		printf("si_String_PLUS_si_String's right is null!\r\n");
+		return str;
+	}
 	LONG* p = (LONG*)str;
 	String* n = (String*)createObject(sizeof(String), *(p - 1));
 	n->alloc = 1;
@@ -119,7 +126,7 @@ String * si_String_PLUS_si_String(String * str, String * right)
 
 void si_String_Init_I32(String *n, int32_t v)
 {
-	printf("Call Init I32 %d\r\n", v);
+	// printf("Call Init I32 %d\r\n", v);
 	wchar_t *buf = n->data = (wchar_t*)malloc(30);
 	_itow_s(v, buf, 15, 10);
 	n->length = lstrlenW(buf);

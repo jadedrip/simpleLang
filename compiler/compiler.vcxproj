@@ -142,6 +142,7 @@
     <ClInclude Include="intermediate\silang.tab.hpp" />
     <ClInclude Include="limbo\silang.tab.hpp" />
     <ClInclude Include="src\Ast\AstAnnotation.h" />
+    <ClInclude Include="src\CodeGenerate\GlobelWrapValue.h" />
     <ClInclude Include="src\CodeGenerate\GoGen.h" />
     <ClInclude Include="src\CodeGenerate\IifGen.h" />
     <ClInclude Include="src\CodeGenerate\IsNullGen.h" />
@@ -191,9 +192,9 @@
     <ClInclude Include="src\CodeGenerate\ClassBinaryGen.h" />
     <ClInclude Include="src\CodeGenerate\IntegerBinaryGen.h" />
     <ClInclude Include="src\CodeGenerate\StaticGen.h" />
-    <ClInclude Include="src\CodeGenerate\GlobalStroeGen.h" />
     <ClInclude Include="src\CodeGenerate\StaticTypeGen.h" />
     <ClInclude Include="src\CodeGenerate\ThisGen.h" />
+    <ClInclude Include="src\GoContext.h" />
     <ClInclude Include="src\Type\AstType.h" />
     <ClInclude Include="src\Ast\AstUnary.h" />
     <ClInclude Include="src\Ast\AstValue.h" />

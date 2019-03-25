@@ -16,15 +16,16 @@ extern "C" {
 
 	struct si_Coroutine;
 	struct si_Chan {
-		struct si_Coroutine* co;
+		void* data;
+		volatile char setted;
 	};
 	typedef struct si_Chan Chan;
 
 	struct si_Coroutine {
 		int64_t timeout;		// 超时时间（超时检测用）
 		short status;			// 状态 CoroutineStatus
-		void* data;				// 返回值& Chan 塞进来的数据
-
+		void* data;				// 返回值
+		struct si_Chan* chan;	
 		void* lpFiber;
 	};
 
@@ -44,6 +45,7 @@ extern "C" {
 	void* si_Coroutine_getData(Coroutine* co);
 	void* si_GetCurrentCoroutineData();
 
+	void si_Chan_Init(Chan*);
 	/// 通过管道唤醒一个协程
 	void si_Chan_BRACKETS(Chan*, void* data);
 #ifdef __cplusplus

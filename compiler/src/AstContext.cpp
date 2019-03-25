@@ -8,7 +8,6 @@
 #include "Type/ClassInstanceType.h"
 #include "CodeGenerate/CallGen.h"
 #include "CodeGenerate/ValueGen.h"
-#include "CodeGenerate/GlobalStroeGen.h"
 #include "utility.h"
 
 using namespace std;
@@ -31,11 +30,12 @@ llvm::LLVMContext & AstContext::context() {
 }
 
 CodeGen * AstContext::findSymbolValue(const std::string & name, bool recursive) {
-	auto *v=module->getGlobalVariable(name);
-	if (v) return new ValueGen(v);
 	auto *p=getMapValue(_symbols, name);
 	if (p) return p;
+
 	if (recursive && parent) return parent->findSymbolValue(name, recursive);
+	auto *v = module->getGlobalVariable(name);
+	if (v) return new ValueGen(v);
 	return nullptr;
 }
 

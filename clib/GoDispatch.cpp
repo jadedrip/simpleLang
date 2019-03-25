@@ -13,6 +13,7 @@ volatile bool interrupt = false;
 
 void DispatchCreateCoroutine(Coroutine* co, SiGoFunction *func)
 {
+	co->chan = nullptr;
 	co->lpFiber = nullptr;
 	co->timeout = 0;
 	co->data = 0;
@@ -29,9 +30,9 @@ Coroutine* DispatchGetCurrent()
 {
 	return Dispatch::getCurrent();
 }
-Coroutine* DispatchSetSuspend(long waiting)
+Coroutine* DispatchSetSuspend(Chan *chan, long waiting)
 {
-	return Dispatch::setSuspend(waiting);
+	return Dispatch::setSuspend(chan, waiting);
 }
 
 // TODO: 做成线程池
@@ -92,8 +93,9 @@ Coroutine* Dispatch::getCurrent()
 	return current;
 }
 
-Coroutine* Dispatch::setSuspend(long waiting)
+Coroutine* Dispatch::setSuspend(Chan *chan, long waiting)
 {
+	current->chan = chan;
 	current->status = COROUTINE_SUSPEND;
 	current->timeout = waiting ? now() + waiting : 0;
 	return current;
@@ -151,10 +153,19 @@ void Dispatch::run()
 			for (auto i = suspends.begin(); i != suspends.end(); ) {
 				Coroutine* x = *i;
 				if (isRun(x->status)) {
-					p = *i;
+					p = x;
 					i = suspends.erase(i);
 					break;
-				} else if (x->timeout > 0 && x->timeout > n) {// 等待
+				}
+				// 检查 chan
+				if (x->chan && x->chan->setted) {
+					x->data = x->chan->data;
+					p = x;
+					i = suspends.erase(i);
+					break;
+				}
+
+				if (x->timeout > 0 && x->timeout > n) {// 等待
 					x->status = COROUTINE_TIMEOUT;
 					i = suspends.erase(i);
 				} else {
@@ -162,6 +173,7 @@ void Dispatch::run()
 				}
 			}
 		}
+
 		if (p) {
 			current = p;
 			p->status = COROUTINE_RUNNING;

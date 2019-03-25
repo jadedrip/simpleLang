@@ -14,9 +14,9 @@ void si_YieldCoroutine()
 
 void* si_AwaitCoroutine(Chan *chan, int64_t waiting)
 {
-	chan->co = DispatchSetSuspend(waiting);
+	DispatchSetSuspend(chan, waiting);
 	DispatchYield();
-	return chan->co->data;
+	return chan->data;
 }
 
 void* si_Coroutine_getData(Coroutine* co)
@@ -29,13 +29,14 @@ void* si_GetCurrentCoroutineData()
 	return DispatchGetCurrent()->data;
 }
 
+void si_Chan_Init(Chan *chan)
+{
+	chan->data = 0;
+	chan->setted = 0;
+}
+
 void si_Chan_BRACKETS(Chan* chan, void* data)
 {
-	Coroutine* co = chan->co;
-	if (co) {
-		if (co->status == COROUTINE_SUSPEND) {
-			co->data = data;
-			co->status = COROUTINE_READY;
-		} 
-	} 
+	chan->data = data;
+	chan->setted = 1;
 }

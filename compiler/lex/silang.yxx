@@ -41,10 +41,10 @@ void yyerror( const char* error );
 %type<expr>		tuple tupleResolve assignment splice index  while_loop type_expr if_expr function_ret
 %type<expr>		line const enum function rtn if_cond switch object_block lines tupleResolveParams block_or_line
 %type<expr>		interface if_else try object_delete operator_overload annotation block return_tuple_elem return_tuple_elems
-%token CALL IF ELSE WHILE FOR RETURN CLASS INTERF PROTECTED
+%token CALL IF ELSE WHILE FOR RETURN CLASS INTERF PROTECTED 
 %token PACKAGE IMPORT NULLPTR STATIC CONST ENUM SWITCH CASE DEFAULT SINGLETON
 %token TRY_TOKEN CATCH FINALLY GET_TOKEN SET_TOKEN OPERATOR NEW_TOKEN DELETE_TOKEN
-%token INIT_TOKEN FINALIZE_TOKEN GO_TOKEN
+%token INIT_TOKEN FINALIZE_TOKEN GO_TOKEN BBRACKETS
 
 %defines
 
@@ -393,6 +393,8 @@ function_parameters
 operator_overload
 	: OPERATOR operator '(' function_parameters ')' function_ret block_or_none 
 		 { $$=createOperator($2, $4, $6, $7); }
+	| OPERATOR '(' ')' '(' function_parameters ')' function_ret block_or_none 
+		 { $$=createOperator(BBRACKETS, $5, $7, $8); }
 	;
 
 function_ret

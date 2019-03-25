@@ -25,15 +25,18 @@ class MyFirst<T> : Base {
 	//}
 
 	func world(){
-		print("Hello:" + d2 + a )	
+		// var s = "Hello:" + d2 + a
+		//print( s )	
 	}
 }
-
+var out="Out of "
 MyFirst<int> x(77)
 x.world()
-
+var c=10
+c=c+1
+// print(out)
 go {
-	print("Hello world:")
+	print("Hello world:" + out + c)
 }
 
 
