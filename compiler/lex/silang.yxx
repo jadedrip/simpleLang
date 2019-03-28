@@ -33,7 +33,7 @@ void yyerror( const char* error );
 %token<type>	ITYPE 
 %token<str>		L_IDENTIFIER U_IDENTIFIER 
 %token<expr>	INTEGER FLOAT INT64 FLOAT64 BOOLEAN STRING_LITERAL 
-%type<tp>		def_type def_types cls_inherit
+%type<tp>		def_type def_types cls_inherit func_type
 %type<expr>		typeLet function_variable equal block_or_none
 %type<expr>		typeLets function_parameters class_new go types
 %type<type>		cls_type cls_construct operator operator_binary operator_unary
@@ -148,7 +148,8 @@ exprs
 // Type i { = x } 
 typeLet 
 	: 	def_type L_IDENTIFIER			  			{ $$=let($1, $2); }
-	|	def_type L_IDENTIFIER '=' expr				{ $$=let($1, $2, $4); }
+	|	def_type  L_IDENTIFIER '=' expr				{ $$=let($1, $2, $4); }
+	|	func_type L_IDENTIFIER			  			{ $$=let($1, $2); }
 	;
 
 typeLets
@@ -284,6 +285,8 @@ set
 	var i=20, a
 	int[] a=...
 	tuple<int,float> tup=
+	func x=...
+	func()
 /**********************************************/
 def_type
 	:	U_IDENTIFIER							{ $$=getClassType($1); }
@@ -291,12 +294,19 @@ def_type
 	|	ITYPE									{ $$=getType($1); }
 	|	def_type '[' ']'						{ $$=makeArray($1); }
 	|	def_type '[' expr ']'					{ $$=makeArray($1,$3); }
-	|	FUNC									{ $$=getFuncType(); }
 	|   def_type '?'							{ $$=nullAble($1); }
+	;
+
+func_type
+	:	FUNC									{ $$=getFuncType(); }
+	|	FUNC '(' ')'							{ $$=getFuncType(NULL); }
+	|   FUNC '(' def_types ')'					{ $$=getFuncType($3, NULL); }
+	|	FUNC '(' def_types ')' ':' def_type		{ $$=getFuncType($3, $6); }
 	;
 
 def_types
 	: def_type
+	| func_type		
 	| def_types ',' def_type	{ $$=link($1, $3); }
 	;
 
@@ -307,7 +317,6 @@ def
 	|	def_type L_IDENTIFIER AEQ expr			{ $$=tupleResolve(let($2), $<expr>4, true); }	// 单元组解构
 	|	def_type '(' tupleResolveParams ')' AEQ expr	{ $$=tupleResolve($<expr>3, $<expr>5, true); }
 	;
-
 
 sequence
 	:	'[' exprs ']'		{ $$=makeSequence( $2 ); }
@@ -347,6 +356,8 @@ call_arg
 	:	expr				
 	|	equal				/* 命名调用 */			
 	;
+
+
 
 /*******************************************
 *	类的实例化
@@ -395,6 +406,8 @@ operator_overload
 		 { $$=createOperator($2, $4, $6, $7); }
 	| OPERATOR '(' ')' '(' function_parameters ')' function_ret block_or_none 
 		 { $$=createOperator(BBRACKETS, $5, $7, $8); }
+	| OPERATOR ARRAY '(' function_parameters ')' function_ret block_or_none 
+		 { $$=createOperator(ARRAY, $4, $6, $7); }
 	;
 
 function_ret
@@ -415,6 +428,17 @@ return_tuple_elems
 lambda
 	: FUNC '(' function_parameters ')' function_ret block 
 		 { $$=createFunction(6, "", $3, $5, $6); }
+	;
+
+/*
+	expr-> {}
+	expr-> (int v){}
+*/
+array_call
+	: expr ARRAY block
+		{ $<expr>$=makeArrayCall($1, createFunction(6, "", NULL, NULL, $3)); }
+	| expr ARRAY '(' function_parameters ')' function_ret block 
+		{ $<expr>$=makeArrayCall($1, createFunction(6, "", $4, $6, $7)); }
 	;
 
 go
@@ -603,6 +627,7 @@ expr
 	| expr AEQ expr		{ $$=binary(AEQ, $1, $3);  }
 	| expr OR expr		{ $$=binary(OR, $1, $3);  }
 	| expr AND expr		{ $$=binary(AND, $1, $3);  }
+	| array_call		{ $$=$<expr>1; }
 	;
 
 type_expr

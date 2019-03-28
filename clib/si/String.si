@@ -36,5 +36,6 @@ class String {
 // func Charset.name()
 
 func print( String text )
+func println( String text )
 
 func hello()

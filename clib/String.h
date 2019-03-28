@@ -31,6 +31,7 @@ wchar_t si_String_at(String* str, uint64_t index);
 char* si_String_Cast_i8_ptr(String*);
 
 void si_print(String* str);
+void si_println(String* str);
 
 String* si_String_PLUS_si_String(String* str, String* right);
 void si_String_Init_I32(String* str, int32_t v);

@@ -12,7 +12,7 @@ llvm::Value * SwitchIntGen::generateCode(llvm::Module *m, llvm::Function *func, 
 
 	CaseGen* d= nullptr;	// default
 	for (auto i : cases) {
-		size_t c = i->conditions.size();
+		auto c = (unsigned int)i->conditions.size();
 		all += c == 0 ? 1 : c;
 
 		if (i->conditions.empty()) {	 

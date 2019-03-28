@@ -25,6 +25,7 @@ AstNode* stringCat(AstNode* left, AstNode* right);
 AstType* getType( int type_id );
 AstType* getClassType( char * name, AstType* templateVars =nullptr );
 AstType* getFuncType();
+AstType* getFuncType(AstType* types, AstType* ret = nullptr);
 AstType* makeArray(AstType* type, AstNode* list = nullptr);
 AstNode* makeSequence(AstNode* list);
 
@@ -109,3 +110,4 @@ AstNode* makeIsNull(AstNode* value);
 AstNode* makeIIF(AstNode* cond, AstNode* thenValue, AstNode* elseValue=nullptr);
 AstNode* createGo(AstNode* node);
 AstNode* createNode(char* name);
+AstNode* makeArrayCall(AstNode* expr, AstNode* func);

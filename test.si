@@ -1,7 +1,7 @@
 ﻿package org.my
 
 // import si.String
-import si.print
+import si.println
 import si.hello
 
 class Base {
@@ -20,23 +20,32 @@ class MyFirst<T> : Base {
 		return data
 	}
 
-	//var world=func(){
-		// print("Hello world:" + d2 )
-	//}
-
-	func world(){
-		// var s = "Hello:" + d2 + a
-		//print( s )	
+	var world=func(){
+		println("Hello world:" + d2 )
 	}
+
+
+	operator -> ( func() what ){
+		what()
+	}
+
+	//func world(){
+	//	var s = "Hello:" + d2 + a
+	//	println( s )	
+	//}
 }
 var out="Out of "
 MyFirst<int> x(77)
 x.world()
+x-> {
+	println("Array!")
+}
+
 var c=10
 c=c+1
-// print(out)
+// println(out)
 go {
-	print("Hello world:" + out + c)
+	println("Hello world:" + out + c)
 }
 
 
@@ -44,8 +53,8 @@ go {
 func lu(int a){
 	var str="hello"
 	str = str + a
-	print (str)
-	print("Hello world"+a)
+	println (str)
+	println("Hello world"+a)
 }
 
 lu(12)
@@ -53,7 +62,7 @@ lu(12)
 
 String v="Hi My World"
 String n=v[3:2]
-print(n)
+println(n)
 */
 // =int
 
@@ -62,7 +71,7 @@ print(n)
 // printf( "red=%d, data=%d\r\n", MyEnum.Red, MyFirst.data )
 
 // String str = "Hello world!"
-// print(str)
+// println(str)
 
 /*
 int c=str.at(0)

@@ -104,6 +104,17 @@ void si_print(String * str)
 	wprintf(L"%.*ls", (int)len, data);
 }
 
+void si_println(String* str)
+{
+	if (!str || !str->data) return;
+
+	wchar_t* data = (wchar_t*)str->data;
+	size_t len = str->length;
+
+	// wprintf(L"\r\nCall print : %ls, %lld\r\n", data, len);
+	wprintf(L"%.*ls\r\n", (int)len, data);
+}
+
 String * si_String_PLUS_si_String(String * str, String * right)
 {
 	if (!str) {

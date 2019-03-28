@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Ast\AstArrayCall.cpp" />
     <ClCompile Include="src\Ast\AstGetClass.cpp" />
     <ClCompile Include="src\Ast\AstGetConstValue.cpp" />
     <ClCompile Include="src\Ast\AstGo.cpp" />
@@ -134,6 +135,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Ast\AstArrayCall.h" />
     <ClInclude Include="src\Ast\AstGetConstValue.h" />
     <ClInclude Include="src\Ast\AstGo.h" />
     <ClInclude Include="src\Ast\AstIif.h" />
@@ -195,6 +197,7 @@
     <ClInclude Include="src\CodeGenerate\StaticTypeGen.h" />
     <ClInclude Include="src\CodeGenerate\ThisGen.h" />
     <ClInclude Include="src\GoContext.h" />
+    <ClInclude Include="src\Type\AstFuncType.h" />
     <ClInclude Include="src\Type\AstType.h" />
     <ClInclude Include="src\Ast\AstUnary.h" />
     <ClInclude Include="src\Ast\AstValue.h" />
@@ -271,7 +274,7 @@
     <ProjectGuid>{977D1F50-BF04-4B0D-8B69-4C337838D6AC}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Silang</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>compiler</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -279,25 +282,25 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>

@@ -142,6 +142,7 @@
     <ClCompile Include="src\CodeGenerate\LambdaGen.cpp" />
     <ClCompile Include="src\Ast\AstGo.cpp" />
     <ClCompile Include="src\CodeGenerate\GoGen.cpp" />
+    <ClCompile Include="src\Ast\AstArrayCall.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\CodeGenerate\BinaryGen.h">
@@ -308,6 +309,8 @@
     <ClInclude Include="src\CodeGenerate\GoGen.h" />
     <ClInclude Include="src\GoContext.h" />
     <ClInclude Include="src\CodeGenerate\GlobelWrapValue.h" />
+    <ClInclude Include="src\Ast\AstArrayCall.h" />
+    <ClInclude Include="src\Type\AstFuncType.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="lex\silang.l">

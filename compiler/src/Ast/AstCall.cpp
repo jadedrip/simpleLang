@@ -10,6 +10,7 @@
 #include "AstPackage.h"
 #include "CodeGenerate/CallGen.h"
 #include "CodeGenerate/LambdaGen.h"
+#include "CodeGenerate/ParamenterGen.h"
 #include "../Type/LLVMType.h"
 #include "../Type/ClassInstanceType.h"
 #include "ClassContext.h"
@@ -103,6 +104,17 @@ CodeGen * AstCall::makeGen(AstContext * parent)
 			if (!v->type->isPointerTy()
 				|| !v->type->getPointerElementType()->isFunctionTy())
 				throw std::runtime_error("变量" + name + "不是函数");
+
+			auto *x=dynamic_cast<ParamenterGen*>(v);
+			if (x && x->type->isPointerTy()) {
+				auto ft=dyn_cast<FunctionType>(x->type->getPointerElementType());
+				std::vector<CodeGen*> params;
+				for (auto i : gens) {
+					params.push_back(i.second);
+				}
+				return new CallGen(x, ft, std::move(params));
+			}
+
 			auto *ins=dynamic_cast<LambdaGen*>(v);
 			if (ins) {
 				return ins->makeCall(parent, gens);

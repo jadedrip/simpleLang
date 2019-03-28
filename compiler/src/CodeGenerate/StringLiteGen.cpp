@@ -13,7 +13,7 @@ StringLiteGen::StringLiteGen(llvm::LLVMContext& c, const std::string & s) : _str
 {
 	// ±àÂë±ä»Ã
 	UINT code = utf8File ? CP_UTF8 : CP_ACP;
-	int  len = _str.length();
+	int  len = (int)_str.length();
 	int  unicodeLen = ::MultiByteToWideChar(code,
 											0,
 											_str.c_str(),
@@ -44,7 +44,7 @@ void StringLiteGen::append(StringLiteGen * g)
 llvm::Value * StringLiteGen::generateCode(llvm::Module * m, llvm::Function * func, llvm::IRBuilder<>& builder)
 {
 	auto &c = func->getContext();
-	int ulen = _data.size() * sizeof(wchar_t);
+	int ulen = (int)_data.size() * sizeof(wchar_t);
 	auto *v=builder.CreateGlobalStringPtr(StringRef(
 		(const char*)_data.c_str(), ulen
 	));

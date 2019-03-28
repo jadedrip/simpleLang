@@ -12,7 +12,12 @@ Value * TupleSpreadGen::generateCode(llvm::Module *m, llvm::Function *func, llvm
 
 	for (size_t i = 0; i < vars.size(); i++) {
 		auto *v = vars[i]->generate(m, func, builder);
-		Value* g = builder.CreateConstInBoundsGEP2_32(t->getType(), ptr, 0, i);
+		Value* g = builder.CreateConstInBoundsGEP2_32(
+			t->getType(), 
+			ptr, 
+			0, 
+			(unsigned int)i
+		);
 		Value* gv = builder.CreateLoad(g);
 
 		assert(v->getType()->isPointerTy());

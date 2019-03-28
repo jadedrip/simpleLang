@@ -29,12 +29,12 @@ H		[a-fA-F0-9]
 "/*"			{ comment(); }
 "//".*			{ /* 忽略注释 */ }
 
-"var"			yylval.type=0;	return ITYPE;	/* 内部变量 */
+"var"		yylval.type=0;	return ITYPE;	/* 内部变量 */
 "bool"		yylval.type=1;	return ITYPE; 
 "byte"		yylval.type=2;	return ITYPE; 
 "char"		yylval.type=3;	return ITYPE;
 "short"		yylval.type=4;	return ITYPE; 
-"int"		    yylval.type=5;	return ITYPE; 
+"int"		yylval.type=5;	return ITYPE; 
 "long"		yylval.type=6;	return ITYPE; 
 "float"		yylval.type=7;	return ITYPE; 
 "double"	yylval.type=8;	return ITYPE; 

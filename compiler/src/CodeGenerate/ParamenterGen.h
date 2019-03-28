@@ -16,6 +16,8 @@ public:
 			if (!type->isPointerTy()) {	// 为了处理方便，数值变量处理为指针
 				value = builder.CreateAlloca(v->getType());
 				builder.CreateStore(v, value);
+			} else {
+				value = v;
 			}
 		}
 		return value;

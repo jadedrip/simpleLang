@@ -130,6 +130,16 @@ std::string getReadable(llvm::Type *type)
 	}
 
 	std::ostringstream ss;
+	if (type->isFunctionTy()) {
+		ss << "F";
+		auto *tp=dyn_cast<FunctionType>(type);
+		for (auto i = tp->param_begin(); i != tp->param_end(); i++) {
+			ss << getReadable(*i);
+		}
+		ss << "$";
+		return ss.str();
+	}
+
 	llvm::raw_os_ostream os(ss);
 	type->print(os);
 		

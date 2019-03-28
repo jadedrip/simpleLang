@@ -27,7 +27,6 @@
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
-#include <llvm/IR/TypeBuilder.h>
 #include <llvm/IR/ValueSymbolTable.h>
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/ExecutionEngine/ExecutionEngine.h>
@@ -37,5 +36,6 @@
 #include <llvm/ADT/StringRef.h>
 #include <llvm/ADT/APInt.h>
 #include <llvm/Support/Chrono.h>
+#include <llvm/Support/MathExtras.h>
 #pragma warning( pop )
 

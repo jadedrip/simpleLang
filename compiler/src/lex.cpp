@@ -43,11 +43,13 @@
 #include "Ast/AstAnnotation.h"
 #include "Ast/AstGetConstValue.h"
 #include "Ast/AstGo.h"
+#include "Ast/AstArrayCall.h"
 #include "token.h"
 #include "utility.h"
 #include "Type/AutoType.h"
 #include "Type/TupleType.h"
 #include "Type/SArrayType.h"
+#include "Type/AstFuncType.h"
 #include "Type/SIntegerType.h"
 #include "Type/ClassInstanceType.h"
 
@@ -365,6 +367,18 @@ AstNode* callReturn(AstNode * val)
 AstType * getFuncType()
 {
 	return new AstType(AstType::FunctionTyID);
+}
+
+AstType* getFuncType(AstType* types, AstType* ret)
+{
+	auto *p = new AstFuncType();
+	auto *x=dynamic_cast<AstTypeList*>(types);
+	if (x) {
+		p->attrs = std::move(x->lines);
+	} else if (types)
+		p->attrs.push_back(types);
+	p->ret = ret;
+	return p;
 }
 
 AstType * makeArray(AstType * type, AstNode* list)
@@ -712,4 +726,12 @@ AstNode * createNode(char * name)
 {
 	auto* p = new AstNode(name);
 	return p;
+}
+
+AstNode* makeArrayCall(AstNode* expr, AstNode* func)
+{
+	auto v = new AstArrayCall();
+	v->expr = expr;
+	v->func = (AstFunction*)func;
+	return v;
 }

@@ -16,7 +16,6 @@
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/Module.h"
 #include "llvm/IR/Type.h"
-#include "llvm/IR/TypeBuilder.h"
 #include "llvm/IRReader/IRReader.h"
 #include "llvm/Object/Archive.h"
 #include "llvm/Object/ObjectFile.h"

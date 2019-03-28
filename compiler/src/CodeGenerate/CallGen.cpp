@@ -82,10 +82,16 @@ Value * CallGen::generateCode(Module *m, Function *func, llvm::IRBuilder<>&build
 	if (!llvmFunction) {
 		if (pointerGen) { // 函数指针
 			Value* v = pointerGen->generate(m, func, builder);
-			// 函数是作为指针保存的
-			Type* t = PointerType::get(pointerGen->type,0);
-			llvmFunction = builder.CreateBitOrPointerCast(v, t);
-			llvmFunction = builder.CreateLoad(llvmFunction);
+			auto *x=dyn_cast<PointerType>(v->getType());
+
+			if (x->getElementType()->isPointerTy()) {
+				// 函数是作为指针保存的
+				Type* t = PointerType::get(pointerGen->type, 0);
+				// v = builder.CreateBitOrPointerCast(v, t);
+				llvmFunction = builder.CreateLoad(v);
+			} else {
+				llvmFunction = v;
+			}
 		} else {
 			assert(function);
 			llvmFunction = function->generateCode(m, builder.getContext());

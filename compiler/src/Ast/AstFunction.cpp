@@ -67,6 +67,8 @@ AstFunction::OrderedParameters* AstFunction::orderParameters(
 	bool force
 )
 {
+	raw_os_ostream log(std::clog);
+
 	llvm::LLVMContext& c = content->context();
 	auto * ordered = new OrderedParameters();
 	std::vector<CodeGen*> cache;  // 这里保存生成的转换器，匹配失败退出时，清理
@@ -114,7 +116,18 @@ AstFunction::OrderedParameters* AstFunction::orderParameters(
 				if (force) { // 强制完全相同
 					if (tp != type) 
 						return nullptr;
-				}else if (!instanceOf(type, aType->llvmType(c)))
+				} else if (tp->isFunctionTy() && type->isPointerTy()) {
+					auto *pt=type->getPointerElementType();
+					if (pt != tp) {
+						throw std::runtime_error("函数指针类型不匹配");
+					}
+					/*log << "Func array ";
+					tp->print(log);
+					log << " is ";
+					pt->print(log);
+					log << " : " << (tp==pt? "true" : "false") << "\r\n";
+					log.flush();*/
+				} else if (!instanceOf(type, aType->llvmType(c)))
 					return nullptr;		// 输入类型不匹配函数签名
 			}
 		}
