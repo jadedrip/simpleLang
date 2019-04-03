@@ -23,7 +23,6 @@ BinaryGen::BinaryGen(int op, CodeGen * l, CodeGen * r) {
 		type = r->type;
 	else
 		type = l->type;
-	l->hopeType = r->hopeType = type;
 }
 
 llvm::Value * BinaryGen::generateCode(Module *m, Function *function, IRBuilder<>&builder) {

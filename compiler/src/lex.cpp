@@ -299,6 +299,7 @@ AstNode * createFunction(int funcType, const string& name, AstNode * parameters,
 	p->name = name;
 	p->funcType = (AstFunction::FunctionType)funcType;
 	moveLines(p->block, block);
+	p->def = block == nullptr;
 
 	foreach(parameters, [p](AstLet* i) {
 		FunctionArgument arg = { i->name, i->type, i->right };

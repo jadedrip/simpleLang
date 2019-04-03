@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <set>
 #include "AstContext.h"
 #include "CodeGenerate/CallGen.h"
 
@@ -22,7 +23,7 @@ public:
 	bool variable = false;
 	llvm::StructType* object = nullptr;
 	bool overload = false;
-
+	std::set<std::string> excapes; // 逃逸的参数索引
 	void generateBody(llvm::Module *m, llvm::LLVMContext & context);
 public:
 	llvm::Function* generateCode(llvm::Module*, llvm::LLVMContext& context);

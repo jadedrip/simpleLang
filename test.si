@@ -34,12 +34,16 @@ class MyFirst<T> : Base {
 	//	println( s )	
 	//}
 }
+
 var out="Out of "
+var b=out
+
 MyFirst<int> x(77)
 x.world()
 x-> {
 	println("Array!")
 }
+
 
 var c=10
 c=c+1

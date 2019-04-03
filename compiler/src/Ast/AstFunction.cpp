@@ -174,6 +174,7 @@ AstFunction::OrderedParameters* AstFunction::orderParameters(
 	}
 	else if (!indexes.empty())	// 有多余未匹配的参数
 		return clearGen(ordered, cache);
+
 	return ordered;
 }
 
@@ -197,8 +198,14 @@ CallGen * AstFunction::makeCall(
 	p->object = object;
 	//if (object)
 	//	p->params.push_back(object);
+	auto& excapes = func->excapes;
+	// 如果函数是空的，所有参数被认为是会逃逸的
+	bool empty = func->block.empty();
 
 	for (auto &i : ordered->parameters) {
+		assert(!i.first.empty());
+		if (empty || excapes.find(i.first) != excapes.end())
+			i.second->escape = true;
 		p->params.push_back(i.second);
 	}
 
@@ -368,6 +375,7 @@ void AstFunction::fillFunctionBlock(AstContext * s, FunctionInstance *instance)
 			if (i->right)
 				v = i->right->makeGen(s);
 			auto *p = new DefGen(i->name, i->type->llvmType(c), v);
+			p->escape = true; // 返回值必定是逃逸的
 			s->setSymbolValue(i->name, p);
 			instance->block.push_back(p);
 			namedReturn.push_back(p);
@@ -378,6 +386,13 @@ void AstFunction::fillFunctionBlock(AstContext * s, FunctionInstance *instance)
 	for (auto i : block) {
 		auto a = i->makeGen(s);
 		instance->block.push_back(a);
+
+		if (a->escape) {
+			auto *x=dynamic_cast<ParamenterGen*>(a);
+			if (x) { // 参数逃逸了
+				instance->excapes.insert(x->name);
+			}
+		}
 
 		auto r = dynamic_cast<ReturnGen*>(a);
 		// 尝试通过 return 推导返回值类型

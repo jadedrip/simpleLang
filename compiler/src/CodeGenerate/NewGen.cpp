@@ -62,17 +62,23 @@ Value * NewGen::generateCode(Module *m, Function *func, IRBuilder<>&builder)
 	auto &c=builder.getContext();
 	Constant* allocSize = ConstantExpr::getSizeOf(type);
 	auto ITy = Type::getInt32Ty(c);
+	// 类型 ID
 	Value* typeId=ConstantInt::get(ITy, (uintptr_t) type);
 
-	if (length) {	  // 是数组
-		auto *v=length->generate(m, func, builder);
-		value=CallGen::call(builder, createArray, allocSize, typeId, v);
+	auto* pType = PointerType::get(type, 0);
+	if (this->escape) {
+		// 如果是逃逸变量，那么通过 create 创建
+		if (length) {	  // 是数组
+			auto* v = length->generate(m, func, builder);
+			value = CallGen::call(builder, createArray, allocSize, typeId, v);
+		} else {
+			value = CallGen::call(builder, createObject, allocSize, typeId);
+		}
+		value = builder.CreateBitCast(value, pType);
+	} else {
+		auto* lv = length ? length->generate(m, func, builder) : nullptr;
+		value = builder.CreateAlloca(type, lv, name);
 	}
-	else {
- 		value=CallGen::call(builder, createObject, allocSize, typeId);
-	}
-	auto *pType = PointerType::get(type, 0);
-	value = builder.CreateBitCast(value, pType);
 
 	Value* zero = ConstantInt::get(c, APInt(32, 0));
 

@@ -14,6 +14,7 @@ CodeGen * AstReturn::makeGen(AstContext * parent)
 		if (!x) {
 			throw std::runtime_error("Return a non value:" + i->name);
 		}
+		x->escape = true;
 		p->returnValues.push_back(x);
 	}
 	return p;
