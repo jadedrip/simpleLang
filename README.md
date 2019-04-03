@@ -4,6 +4,8 @@ A compiler for silang which is a modern language.
 
 Compiler = Flex + Bison + llvm
 
+特别鸣谢： [![996.icu](https://img.shields.io/badge/link-996.icu-red.svg)](https://996.icu)
+
 目标 & 简介
 ==============
 
