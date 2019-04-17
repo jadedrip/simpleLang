@@ -13,14 +13,23 @@ GoGen::GoGen(CodeGen * func)
 	assert(_func);
 }
 
-llvm::Value* GoGen::generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>&builder)
+llvm::Value* GoGen::generateCode(const Generater& generater)
 {
+	auto* m = generater.module;
+	auto &builder = generater.builder();
+
 	raw_os_ostream log(std::clog);
 	for (auto i : globles) {
 		//auto *ptr=(GlobalVariable*)m->getOrInsertGlobal(i.first, i.second->type);
-		auto *v=i.second->generate(m, func, builder);
+		auto *v=i.second->generate(generater);
 		if (!i.second->type->isStructTy())
 			v = builder.CreateLoad(v, i.first);
+		else {
+			// 添加引用计数
+			auto* i = CLangModule::getFunction("referenceIncrease");
+			assert(i);
+			CallGen::call(builder, i, v);
+		}
 
 		auto tp = i.second->type;
 		bool st = tp->isStructTy();
@@ -56,7 +65,7 @@ llvm::Value* GoGen::generateCode(llvm::Module *m, llvm::Function *func, llvm::IR
 		//os.flush();
 	}
 
-	llvm::Value* funcPtr=_func->generateCode(m, func, builder);
+	llvm::Value* funcPtr=_func->generateCode(generater);
 
 	auto *type=CLangModule::getStruct("si", "Coroutine");
 	assert(type);

@@ -4,30 +4,30 @@
 
 using namespace llvm;
 
-llvm::Value * IfGen::generateCode(Module *m, Function *func, llvm::IRBuilder<>&builder)
+llvm::Value * IfGen::generateCode(const Generater& generater)
 {
+	auto func = generater.func;
+	auto& builder = generater.builder();
+	auto m = generater.module;
+
 	_funcBlock = &(func->getEntryBlock());
-	Value* cond = condition->generate(m, func, builder);
+	Value* cond = condition->generate(generater);
 	cond = load(builder, cond);
 	auto tp = cond->getType();
 	if (!tp->isIntegerTy(1))
 		cond = builder.CreateTrunc(cond, builder.getInt1Ty());
 
 	auto &context = builder.getContext();
-	auto *current = builder.GetInsertBlock();
-
-	BasicBlock *outBB = BasicBlock::Create(context, "EndIf", func);
-	thenBlock->br = false;
+	// 创建退出块
+	BasicBlock* outBB = BasicBlock::Create(context, "EndIf", func);
 	thenBlock->next = outBB;
-	thenBlock->generate(m, func, builder);
+	thenBlock->generate(generater);
 
 	if (elseBlock) {
-		elseBlock->br = false;
 		elseBlock->next = outBB;
-		elseBlock->generate(m, func, builder);
+		elseBlock->generate(generater);
 	}
 
-	builder.SetInsertPoint(current);
 	builder.CreateCondBr(cond, thenBlock->block, elseBlock ? elseBlock->block : outBB);
 	builder.SetInsertPoint(outBB);
 	return outBB;

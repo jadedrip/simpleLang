@@ -42,6 +42,7 @@ public:
 	);
 private:
 	std::vector<AstFunction *> _construstor;	// 构造函数
+	AstFunction* _finalize = nullptr;			// 析构函数
 	std::vector<AstFunction*> _memberFunctions;
 
 	struct Member {

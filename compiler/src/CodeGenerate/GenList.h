@@ -2,10 +2,10 @@
 
 class GenList : public CodeGen {	
 public:
-	virtual llvm::Value* generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>& builder) {
+	virtual llvm::Value* generateCode(const Generater& generater) {
 		llvm::Value *v = nullptr;
 		for (auto *i : generates) {
-			v=i->generate(m, func, builder);
+			v=i->generate(generater);
 		}
 		return v;
 	};

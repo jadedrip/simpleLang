@@ -2,16 +2,18 @@
 #include "TupleSpreadGen.h"
 
 using namespace llvm;
-Value * TupleSpreadGen::generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<> &builder)
+Value * TupleSpreadGen::generateCode(const Generater& generater)
 {
-	auto *t = tuple->generate(m, func, builder);
+	auto& builder = generater.builder();
+
+	auto *t = tuple->generate(generater);
 	assert(t->getType()->isStructTy());
 
 	auto* ptr=builder.CreateAlloca(t->getType());
 	builder.CreateStore(t, ptr);
 
 	for (size_t i = 0; i < vars.size(); i++) {
-		auto *v = vars[i]->generate(m, func, builder);
+		auto *v = vars[i]->generate(generater);
 		Value* g = builder.CreateConstInBoundsGEP2_32(
 			t->getType(), 
 			ptr, 

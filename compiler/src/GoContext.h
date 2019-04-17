@@ -22,6 +22,8 @@ public:
 		// 从外界获取的，需要闭包
 		p=parent->findSymbolValue(name, recursive);
 		if (!p) return nullptr;
+		// 标记为逃逸
+		p->escape = true;
 
 		if (dynamic_cast<ValueGen*>(p))
 			return p;

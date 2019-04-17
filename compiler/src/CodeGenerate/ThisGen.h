@@ -9,8 +9,10 @@ public:
 		type = tp;
 	}
 
-	virtual llvm::Value* generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>& builder)
+	virtual llvm::Value* generateCode(const Generater& generater)
 	{
+		auto func = generater.func;
+
 		llvm::raw_os_ostream os(std::clog);
 		std::clog << "Get this: ";
 		func->print(os);

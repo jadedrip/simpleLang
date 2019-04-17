@@ -26,15 +26,14 @@ void FunctionInstance::generateBody(llvm::Module *m, llvm::LLVMContext & context
 		return;
 
 	// 仅有定义
-	if (block.empty()) {
+	if (block.codes.empty()) {
 		auto *p=CLangModule::getFunction(name);
 		if (!p)
 			std::clog << "Warning, not find function " << name << std::endl;
 		return;
 	}
 
-	auto basicBlock = BasicBlock::Create(context, name, func);
-
+	// 注册参数名称
 	auto iter = parameters.begin();
 	auto i = func->arg_begin();
 	if (object) {
@@ -46,10 +45,15 @@ void FunctionInstance::generateBody(llvm::Module *m, llvm::LLVMContext & context
 		iter++;
 	}
 
-	IRBuilder<> bd(basicBlock);
-	for (auto&i : block) {
-		i->generate(m, func, bd);
-	}
+	// 分配块
+	auto allocBlock = BasicBlock::Create(context, name + "_alloc", func);
+
+	// 函数体
+	IRBuilder<> bd(allocBlock);
+	Generater g = { m, func, &bd, nullptr };
+	block.generate(g);
+	// 分配块跳转到函数体
+	bd.CreateBr(block.block);
 }
 
 llvm::Function * FunctionInstance::generateCode(llvm::Module *m, llvm::LLVMContext & context)

@@ -38,7 +38,8 @@ void si_String_Init(String * str, char * data, uint64_t length, uint16_t encode)
 
 void si_String_Finalize(struct si_String * str)
 {
-	if (str->alloc)
+	printf("si_String_Finalize\r\n");
+	if (str && str->alloc)
 		free(str->data);
 }
 
@@ -52,8 +53,7 @@ String* si_String_Splice(String * str, int64_t index, int64_t length)
 	if (str->length == 0 || (index < 0 && length < 0))
 		return str;
 
-	LONG* p = (LONG*)str;
-	String* n = (String*)createObject(sizeof(String), *(p - 1));
+	String* n = (String*)createObject(sizeof(String), 0);
 	n->alloc = 0;
 
 	if (index < 0) {
@@ -89,10 +89,10 @@ wchar_t si_String_at(struct si_String *str, uint64_t index)
 	return d[index];
 }
 
-char * si_String_Cast_i8_ptr(struct si_String *str)
-{
-	return (char*)str->data;
-}
+//char * si_String_Cast_i8_ptr(struct si_String *str)
+//{
+//	return (char*)str->data;
+//}
 
 void si_print(String * str)
 {
@@ -124,8 +124,8 @@ String * si_String_PLUS_si_String(String * str, String * right)
 		printf("si_String_PLUS_si_String's right is null!\r\n");
 		return str;
 	}
-	LONG* p = (LONG*)str;
-	String* n = (String*)createObject(sizeof(String), *(p - 1));
+
+	String* n = (String*)createObject(sizeof(String), 0);
 	n->alloc = 1;
 	n->length = str->length + right->length;
 	n->data = (wchar_t*)malloc(sizeof(wchar_t)* (n->length+1));
@@ -173,3 +173,4 @@ void si_String_Init_si_String(String * str, String * v)
 	str->alloc = 0;
 	str->length = v->length;
 }
+

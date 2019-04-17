@@ -14,8 +14,11 @@ DefGen::DefGen(const std::string & n, Type * t, CodeGen* value, int s) : name(n)
 	this->type = t;
 }
 
-llvm::Value * DefGen::generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>&builder)
+llvm::Value * DefGen::generateCode(const Generater& generater)
 {
+	auto func = generater.func;
+	auto& builder = generater.builder();
+
 	isClass = type ? type->isStructTy() : true;
 	bool isSeq = arraySize > 1;
 		
@@ -25,12 +28,19 @@ llvm::Value * DefGen::generateCode(llvm::Module *m, llvm::Function *func, llvm::
 	IRBuilder<> b(&block);
 
 	if (_value) {
-		llvm::Value* v = _value->generate(m, func, builder);
+		auto *x=dynamic_cast<NewGen*>(_value);
+		if (x) {
+			x->name = name;
+		} 
+		llvm::Value* v = _value->generate(generater);
 
-		if (isClass) {
-			return v;
-		}
-		else if (isSeq) { 
+		if (isClass || isSeq) {
+			if (!x && this->escape) {
+				// 如果变量会逃逸, 赋值的时候添加引用计数
+				auto *i=CLangModule::getFunction("referenceIncrease");
+				assert(i);
+				CallGen::call(builder, i, v);
+			};
 			return v;
 		}else{
 			v = load(builder, v);

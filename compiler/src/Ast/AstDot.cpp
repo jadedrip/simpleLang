@@ -15,6 +15,7 @@ AstDot::AstDot(AstNode * o, AstNode * r)
 
 CodeGen * AstDot::makeGen(AstContext * parent)
 {
+	assert(right);
 	auto o = object->makeGen(parent);
 	if (!o->type)
 		throw std::runtime_error("Can't use " + object->name + " before new");
@@ -27,13 +28,17 @@ CodeGen * AstDot::makeGen(AstContext * parent)
 			auto * cls=parent->findCompiledClass(sty->getName());
 			if (!cls)
 				throw std::runtime_error("Can't find class:" + sty->getName().str());
-			return cls->makeCall(parent->context(), right->name, c->getArguments(parent), o);
+			auto p = cls->makeCall(parent->context(), right->name, c->getArguments(parent), o);
+			p->parameter = o->parameter;
+			return p;
 		}
 
 		auto* cls = parent->findCompiledClass(sty->getName());
 		if (!cls)
 			throw std::runtime_error("Can't find member:" + sty->getName().str());
-		return cls->getMember(o, right->name);
+		auto p=cls->getMember(o, right->name);
+		p->parameter = o->parameter;
+		return p;
 	}
 	else {
 		throw std::runtime_error("点的左边不是对象类型");

@@ -17,6 +17,8 @@ inline Function* makeLink(Module*from, Module* to, StringRef name)
 
 Function *createObject = nullptr;
 Function *createArray = nullptr;
+Function *referenceIncrease = nullptr;
+Function* freeObject = nullptr;
 extern std::unique_ptr<Module> module;
 
 inline void initCore()
@@ -28,6 +30,8 @@ inline void initCore()
 		assert(clib);
 		createObject = makeLink(clib, m, "createObject");
 		createArray = makeLink(clib, m, "createArray");
+		referenceIncrease = makeLink(clib, m, "referenceIncrease");
+		freeObject = makeLink(clib, m, "freeObject");
 	}
 }
 
@@ -45,8 +49,10 @@ Function * NewGen::getCreateArray()
 
 NewGen::NewGen(Type * type, CodeGen * c, CodeGen * len) : CodeGen(type), construstor(c), length(len) {}
 
-Value * NewGen::generateCode(Module *m, Function *func, IRBuilder<>&builder)
+Value * NewGen::generateCode(const Generater& generater)
 {
+	auto& builder = generater.builder();
+
 	initCore();
 
 	raw_os_ostream os(std::clog);
@@ -62,24 +68,57 @@ Value * NewGen::generateCode(Module *m, Function *func, IRBuilder<>&builder)
 	auto &c=builder.getContext();
 	Constant* allocSize = ConstantExpr::getSizeOf(type);
 	auto ITy = Type::getInt32Ty(c);
+	// 类型 ID
 	Value* typeId=ConstantInt::get(ITy, (uintptr_t) type);
 
-	if (length) {	  // 是数组
-		auto *v=length->generate(m, func, builder);
-		value=CallGen::call(builder, createArray, allocSize, typeId, v);
+	auto* pType = PointerType::get(type, 0);
+	if (this->escape) {
+		// 如果是逃逸变量，那么通过 create 创建
+		if (length) {	  // 是数组
+			auto* v = length->generate(generater);
+			value = CallGen::call(builder, createArray, allocSize, typeId, v);
+		} else {
+			value = CallGen::call(builder, createObject, allocSize, typeId);
+		}
+		value = builder.CreateBitCast(value, pType);
+		//raw_os_ostream os(std::clog);
+		//generater.deallocate->print(os);
+		//os.flush();
+		// 同时在销毁块调用销毁
+		IRBuilder<> bd(generater.deallocate);
+		Value* v = nullptr;
+		if (finalize) {
+			Generater g = generater;
+			g._builder = &bd;
+			v = finalize->generate(g);
+			//assert(v->getType()->isFunctionTy());
+		}
+		CallGen::call(bd, freeObject, value, v);
+	} else {
+		// 非逃逸变量创建在 alloc 块里，避免在循环里导致多次创建 
+		auto* lv = length ? length->generate(generater) : nullptr;
+		auto &allocBlock = generater.func->getBasicBlockList().front();
+		IRBuilder<> allocBuilder(&allocBlock);
+		value = allocBuilder.CreateAlloca(type, lv, name);
+
+		// 同时在销毁块调用析构
+		if (finalize) {
+			Generater g = generater;
+			IRBuilder<> bd(generater.deallocate);
+			g._builder = &bd;
+			// TODO: 构造函数
+			llvm::Value* v=finalize->generate(g);
+			// assert(v->getType()->isFunctionTy());
+			CallGen::call(bd, dyn_cast<Function>(v), value);
+		}
 	}
-	else {
- 		value=CallGen::call(builder, createObject, allocSize, typeId);
-	}
-	auto *pType = PointerType::get(type, 0);
-	value = builder.CreateBitCast(value, pType);
 
 	Value* zero = ConstantInt::get(c, APInt(32, 0));
 
 	// 通过默认构造函数来设置默认值，避免 This 指针找不到
 	if(!defaultValues.empty()){
 		auto type = FunctionType::get(Type::getVoidTy(c), pType, false);
-		auto fu = Function::Create(type, Function::InternalLinkage, "", m);
+		auto fu = Function::Create(type, Function::InternalLinkage, "", generater.module);
 		auto* basicBlock = BasicBlock::Create(c, "", fu);
 		IRBuilder<> builder2(basicBlock);
 		auto obj=fu->args().begin();
@@ -88,7 +127,7 @@ Value * NewGen::generateCode(Module *m, Function *func, IRBuilder<>&builder)
 		for (auto i : defaultValues) {
 			// auto *u=dynamic_cast<LambdaGen*>(i.second);
 			// if(u) u->object
-			Value* v = i.second->generate(m, fu, builder2);
+			Value* v = i.second->generate(generater);
 
 			Value* idx = ConstantInt::get(c, APInt(32, i.first));
 			// Type* pt = PointerType::get(v->getType(), 0);
@@ -108,8 +147,9 @@ Value * NewGen::generateCode(Module *m, Function *func, IRBuilder<>&builder)
 	if (construstor) {
 		auto* p=dynamic_cast<CallGen*>(construstor);
 		p->object = new ValueGen(value);
-		construstor->generate(m, func, builder);
+		construstor->generate(generater);
 	}
+
 	//auto *c = _type->constructor;
 	//if (c) {
 	//	std::vector<Value*> a;

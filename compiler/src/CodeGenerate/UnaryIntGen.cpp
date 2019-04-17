@@ -2,9 +2,11 @@
 #include "UnaryIntGen.h"
 
 using namespace llvm;
-llvm::Value * UnaryIntGen::generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>&builder)
+llvm::Value * UnaryIntGen::generateCode(const Generater& generater)
 {
-	Value *p = expr->generate(m, func, builder);
+	IRBuilder<> builder = generater.builder();
+
+	Value *p = expr->generate(generater);
 	switch (op) {
 	case '-':
 	{

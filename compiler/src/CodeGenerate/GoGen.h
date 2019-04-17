@@ -9,7 +9,7 @@ public:
 	GoGen(CodeGen* func);
 	std::map<std::string, CodeGen*> globles;
 protected:
-	virtual llvm::Value* generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>&);
+	virtual llvm::Value* generateCode(const Generater& generater);
 private:
 	LambdaGen* _func = nullptr;
 };

@@ -13,11 +13,11 @@ public:
 	bool isProtected = false;
 	llvm::Function* setFunction = nullptr;
 	llvm::Function* getFunction = nullptr;
-	llvm::Value* generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>&);
+	llvm::Value* generateCode(const Generater& generater);
 	
 	ClassMemberGen* clone(CodeGen* thisGen);
-	virtual llvm::Value* generate(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>&builder){
-		return generateCode(m, func, builder);
+	virtual llvm::Value* generate(const Generater& generater){
+		return generateCode(generater);
 	}
 };
 

@@ -31,6 +31,8 @@ class String {
 	operator + (var value): String {
 		return this + String(value)
 	}
+
+	finalize
 }
 
 // func Charset.name()

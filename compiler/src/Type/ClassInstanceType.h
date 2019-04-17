@@ -42,6 +42,7 @@ public:
 	std::multimap<std::string, AstFunction*>		methds;		// 方法
 	std::map<std::string, ClassMemberGen*> memberGens; 
 	std::map<std::string, AstType*> templateTypes;
+	FunctionInstance* finalize = nullptr;	// 析构函数
 protected:
 	CodeGen* findSymbolValue(const std::string& name, bool recursive);
 	// virtual CallGen* makeCall(AstContext*, CodeGen* value, const std::string& name, std::vector<std::pair<std::string, CodeGen*>>& arguments);

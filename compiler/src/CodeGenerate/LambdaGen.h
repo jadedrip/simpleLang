@@ -7,7 +7,7 @@ class LambdaGen :
 	public CodeGen {
 public:
 	LambdaGen(AstFunction* func, FunctionInstance* instance);
-	virtual llvm::Value* generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>&);
+	virtual llvm::Value* generateCode(const Generater& generater);
 	inline CodeGen* makeCall(AstContext* c, const std::vector<std::pair<std::string, CodeGen*> >& args)
 	{
 		return _func->makeCall(c, args);

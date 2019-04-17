@@ -10,7 +10,7 @@ private:
 	CodeGen	*left;
 	CodeGen *right;
 protected:
-	llvm::Value* generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>&);
+	llvm::Value* generateCode(const Generater& generater);
 private:
 	//llvm::Value* genBooleanCode(llvm::IRBuilder<>& builder, llvm::Value* l, llvm::Value* r);
 	//llvm::Value* classBinary(llvm::IRBuilder<>& builder);

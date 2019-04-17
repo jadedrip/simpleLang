@@ -8,7 +8,15 @@ public:
 	std::string name;
 	llvm::Value* value = nullptr;
 
-	virtual llvm::Value* generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>&builder) {
+	ParamenterGen()
+	{
+		parameter = true;
+	}
+
+	virtual llvm::Value* generateCode(const Generater& generater) {
+		auto& builder = generater.builder();
+		auto func = generater.func;
+
 		if (!value) {
 			auto* s=func->getValueSymbolTable();
 			auto *v=s->lookup(name);

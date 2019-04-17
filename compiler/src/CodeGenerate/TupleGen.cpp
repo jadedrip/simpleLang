@@ -5,12 +5,15 @@
 
 using namespace std;
 using namespace llvm;
-llvm::Value * TupleGen::generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>&builder)
+llvm::Value * TupleGen::generateCode(const Generater& generater)
 {
+	auto func = generater.func;
+	auto& builder = generater.builder();
+
 	std::vector< Value* > values;
 	std::vector< Type* > types;
 	for (auto i : elements) {
-		Value* v = i->generate(m, func, builder);
+		Value* v = i->generate(generater);
 		v = load(builder, v);
 		values.push_back(v);
 		types.push_back(v->getType());

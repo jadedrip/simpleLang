@@ -2,28 +2,32 @@
 #include "LoopGen.h"	   
 
 using namespace llvm;
-llvm::Value * LoopGen::generateCode(llvm::Module *m, llvm::Function *func, IRBuilder<>&builder)
+llvm::Value * LoopGen::generateCode(const Generater& generater)
 {
-	if (let) let->generate(m, func, builder);
+	auto func = generater.func;
+	auto& context = func->getContext();
 
-	BasicBlock *condBlock = BasicBlock::Create(builder.getContext(), "loop_cond", func);
-	BasicBlock *begin = BasicBlock::Create(builder.getContext(), "loop_begin", func);
-	BasicBlock *out = BasicBlock::Create(builder.getContext(), "loop_out", func);
+	if (let) let->generate(generater);
 
-	builder.CreateBr(condBlock);
+	BasicBlock *condBlock = BasicBlock::Create(context, "loop_cond", func);
+	//BasicBlock *begin = BasicBlock::Create(context, "loop_begin", func);
+	BasicBlock *out = BasicBlock::Create(context, "loop_out", func);
 
-	builder.SetInsertPoint(condBlock);
-	auto c = cond->generate(m, func, builder);
+	IRBuilder<> builder(condBlock);
+	Generater gen = { generater.module, func, &builder, out };
+
+	// 条件
+	auto c = cond->generate(generater);
 	c = load(builder, c);
-	builder.CreateCondBr(c, begin, out);
 
-	builder.SetInsertPoint(begin);
-	for (auto i : block) {
-		i->generate(m, func, builder);
-	}
+	// 生成循环体
+	block.next = condBlock;
+	block.name = "loop_block";
+	if (inc) block.codes.push_back(inc);
+	block.generate(generater);
 
-	if (inc) inc->generate(m, func, builder);
-	builder.CreateBr(condBlock);
+	builder.CreateCondBr(c, block.block, out);
+
 	builder.SetInsertPoint(out);
 	return nullptr;
 }

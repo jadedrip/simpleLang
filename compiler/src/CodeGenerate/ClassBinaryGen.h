@@ -10,6 +10,6 @@ private:
 	CodeGen	*left;
 	CodeGen *right;
  protected:
-	 llvm::Value* generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>&);
+	 llvm::Value* generateCode(const Generater& generater);
 };
 

@@ -8,18 +8,22 @@ public:
 		this->type = type;
 	}
 
-	virtual llvm::Value* generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>&builder) {
+	virtual llvm::Value* generateCode(const Generater& generater)
+	{
+		auto* m = generater.module;
+		auto& builder = generater.builder();
 
-		 //llvm::raw_os_ostream os(std::clog);
-		 //os << "GlobelWrapValue " << _uname << " :";
-		 //v->print(os);
-		 //os << "\r\n";
-		 //os.flush();
+		//llvm::raw_os_ostream os(std::clog);
+		//os << "GlobelWrapValue " << _uname << " :";
+		//v->print(os);
+		//os << "\r\n";
+		//os.flush();
 		if (!type->isStructTy()) {
 			auto* v = m->getOrInsertGlobal(_uname, type);
 			return builder.CreateLoad(v);
-		} else {
-			auto ty=llvm::PointerType::get(type, 0);
+		}
+		else {
+			auto ty = llvm::PointerType::get(type, 0);
 			auto* v = m->getOrInsertGlobal(_uname, ty);
 			return v;
 		}

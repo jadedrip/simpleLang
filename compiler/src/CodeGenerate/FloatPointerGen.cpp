@@ -8,7 +8,7 @@ FloatPointerGen::FloatPointerGen(llvm::LLVMContext & c, double v, bool isDouble)
 	type = _value->getType();
 }
 
-llvm::Value * FloatPointerGen::generateCode(llvm::Module * m, llvm::Function * func, llvm::IRBuilder<>&builder)
+llvm::Value * FloatPointerGen::generateCode(const Generater& generater)
 {
 	return _value;
 }

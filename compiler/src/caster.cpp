@@ -23,7 +23,7 @@ Value* structCast(IRBuilder<>& builder, Type* dest, Value *v)
 	if (func) {
 		return CallGen::call(builder, func, v);
 	}
-	return v;
+	return builder.CreateBitOrPointerCast(v, dest);
 }
 
 /**

@@ -23,13 +23,14 @@ BinaryGen::BinaryGen(int op, CodeGen * l, CodeGen * r) {
 		type = r->type;
 	else
 		type = l->type;
-	l->hopeType = r->hopeType = type;
 }
 
-llvm::Value * BinaryGen::generateCode(Module *m, Function *function, IRBuilder<>&builder) {
-	Value* l = left->generate(m, function, builder);
+llvm::Value* BinaryGen::generateCode(const Generater& generater)
+{
+	auto& builder = generater.builder();
+	Value* l = left->generate(generater);
 	l = load(builder, l);
-	Value* r = right->generate(m, function, builder);
+	Value* r = right->generate(generater);
 	r = load(builder, r);
 
 	// 二元操作符左右有空值
@@ -48,28 +49,28 @@ llvm::Value * BinaryGen::generateCode(Module *m, Function *function, IRBuilder<>
 	r = try_cast(builder, type, r);
 
 	switch (op) {
-		case '+':
-			return builder.CreateFAdd(l, r);
-		case '-':
-			return builder.CreateFSub(l, r);
-		case '*':
-			return builder.CreateFMul(l, r);
-		case '/':
-			return builder.CreateFDiv(l, r);
-		case '>':
-			return builder.CreateFCmpOGT(l, r);
-		case '<':
-			return builder.CreateFCmpOLT(l, r);
-		case EQ:	// ==
-			return builder.CreateFCmpOEQ(l, r);
+	case '+':
+		return builder.CreateFAdd(l, r);
+	case '-':
+		return builder.CreateFSub(l, r);
+	case '*':
+		return builder.CreateFMul(l, r);
+	case '/':
+		return builder.CreateFDiv(l, r);
+	case '>':
+		return builder.CreateFCmpOGT(l, r);
+	case '<':
+		return builder.CreateFCmpOLT(l, r);
+	case EQ:	// ==
+		return builder.CreateFCmpOEQ(l, r);
 		//case NOEQ:	// !=
 		//	return builder.CreateFCmpONE(l, r);
-		case REQ:	// >=
-			return builder.CreateFCmpOGE(l, r);
-		case LEQ:	// <=
-			return builder.CreateFCmpOLE(l, r);
-		default:
-			// 不支持的浮点运算符
-			throw std::runtime_error("Unknown operator: " + operator_to_str(op));
+	case REQ:	// >=
+		return builder.CreateFCmpOGE(l, r);
+	case LEQ:	// <=
+		return builder.CreateFCmpOLE(l, r);
+	default:
+		// 不支持的浮点运算符
+		throw std::runtime_error("Unknown operator: " + operator_to_str(op));
 	}
 }

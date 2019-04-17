@@ -55,9 +55,6 @@
     <None Include="clib.def">
       <Filter>源文件</Filter>
     </None>
-    <None Include="si\String.si">
-      <Filter>si</Filter>
-    </None>
     <None Include="si\Coroutine.si">
       <Filter>si</Filter>
     </None>
@@ -74,6 +71,9 @@
     </CustomBuild>
     <CustomBuild Include="Coroutine.c">
       <Filter>ll</Filter>
+    </CustomBuild>
+    <CustomBuild Include="si\String.si">
+      <Filter>si</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

@@ -42,7 +42,6 @@ Debug
 /*.s
 /*.li
 /clib/Debug
-/compiler/intermediate/silang.yy.c
 /core/Si/String.ll
 /clib/x64/Debug
 /compiler/x64/Debug
@@ -55,3 +54,7 @@ x64
 /clib/*.ll
 /clibTest/t.c
 /clibTest/t.ll
+/compiler/intermediate/silang.yy.c
+/compiler/intermediate/silang.tab.cpp
+/compiler/intermediate/silang.yy.cpp
+

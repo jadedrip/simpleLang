@@ -2,9 +2,10 @@
 #include "ClassMemberGen.h"
 
 using namespace llvm;
-Value * ClassMemberGen::generateCode(Module *m, Function *func, IRBuilder<>&builder)
+Value * ClassMemberGen::generateCode(const Generater& generater)
 {
-	Value* o = object->generate(m, func, builder);
+	auto& builder = generater.builder();
+	Value* o = object->generate(generater);
 	if (getFunction) {
 		std::vector<Value*> params;
 		params.push_back(o);

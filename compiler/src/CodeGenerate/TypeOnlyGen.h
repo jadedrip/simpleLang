@@ -3,7 +3,7 @@
 
 class TypeOnlyGen : public CodeGen {
 public:
-	virtual llvm::Value* generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>&) { return nullptr; };
+	virtual llvm::Value* generateCode(const Generater& generater) { return nullptr; };
 
 	TypeOnlyGen(llvm::Type* type) {
 		this->type = type;

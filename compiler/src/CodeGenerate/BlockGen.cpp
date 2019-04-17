@@ -5,22 +5,27 @@
 
 using namespace llvm;
 
-//BlockGen * BlockGen::createGen(AstContext * context, std::vector<AstNode*> lines, const std::string & name) {
-//	return nullptr;
-//}
-
-Value * BlockGen::generateCode(Module *m, Function *func, IRBuilder<>&builder)
+Value * BlockGen::generateCode(const Generater& generater)
 {
-	block = BasicBlock::Create(builder.getContext(), name, func);
-	if (br) builder.CreateBr(block);
-	builder.SetInsertPoint(block);
+	Generater g = generater;
+	auto &c=generater.context();
+	
+	block = BasicBlock::Create(c, name, generater.func);
+
+	// Îö¹¹¿é
+	g.deallocate = BasicBlock::Create(c, name + ".dealloc", generater.func);
+
+	// Ö÷Òª¿é
+	IRBuilder<> builder(block);
+	g._builder = &builder;
 
 	for (auto i : codes) {
-		i->generate(m, func, builder);
+		i->generate(g);
 	}
-
-	if (!next) next = BasicBlock::Create(builder.getContext(), name + "_end", func);
-	builder.CreateBr(next);
-	builder.SetInsertPoint(next);
-	return nullptr;
+	
+	if (next) {
+		builder.SetInsertPoint(g.deallocate);
+		builder.CreateBr(next);
+	}
+	return builder.GetInsertBlock();
 }

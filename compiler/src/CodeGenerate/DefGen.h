@@ -7,7 +7,7 @@ public:
 	DefGen(const std::string& n, llvm::Type* t, CodeGen* value=nullptr, int arraySize=1);
 	std::string name;
 
-	virtual llvm::Value* generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>&);
+	virtual llvm::Value* generateCode(const Generater& generater);
 private:
 	CodeGen* _value = nullptr;
 	bool isClass = false;

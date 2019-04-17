@@ -11,6 +11,7 @@
 #include "AstGetClass.h"
 #include "../Type/AutoType.h"
 #include "../Type/ClassInstanceType.h"
+#include "../FunctionInstance.h"
 #include "CodeGenerate/NewGen.h"
 #include "CodeGenerate/DefGen.h"
 #include "CodeGenerate/ThisGen.h"
@@ -51,6 +52,8 @@ CodeGen * AstClass::makeGen(AstContext * parent)
 				if (!_construstor.empty())
 					p->overload = true;
 				_construstor.push_back(p);
+			} else if(p->name== "Finalize"){
+				_finalize = p;
 			} else {
 				_memberFunctions.push_back(p);
 			}
@@ -109,6 +112,7 @@ CodeGen * AstClass::makeNew(AstContext* parent,
 {						  
 	llvm::LLVMContext &c = parent->context();
 	NewGen* classObject = new NewGen();		// TODO: malloc
+	classObject->name = name;
 	//llvm::raw_os_ostream os(std::clog);
 	//std::clog << "make New: ";
 
@@ -172,6 +176,11 @@ CodeGen * AstClass::makeNew(AstContext* parent,
 			classObject->defaultValues.insert(i);
 		}
 		cp = cp->inherit;
+	}
+
+	if (_finalize) {
+		static std::vector<pair<string, CodeGen*>> emptyTypes;
+		classObject->finalize = _finalize->makeCall(parent, emptyTypes, classObject, cls);
 	}
 
 	Type *type = classObject->type = cls->llvmType(c);
