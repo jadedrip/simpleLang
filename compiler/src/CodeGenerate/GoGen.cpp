@@ -5,7 +5,10 @@
 #include "NewGen.h"
 #include "CallGen.h"
 #include "caster.h"
+#include "../AstContext.h"
+#include "../Type/ClassInstanceType.h"
 
+using namespace std;
 using namespace llvm;
 GoGen::GoGen(CodeGen * func)
 {
@@ -18,6 +21,7 @@ llvm::Value* GoGen::generateCode(const Generater& generater)
 	auto* m = generater.module;
 	auto &builder = generater.builder();
 
+	vector<Value*> structs;
 	raw_os_ostream log(std::clog);
 	for (auto i : globles) {
 		//auto *ptr=(GlobalVariable*)m->getOrInsertGlobal(i.first, i.second->type);
@@ -29,6 +33,7 @@ llvm::Value* GoGen::generateCode(const Generater& generater)
 			auto* i = CLangModule::getFunction("referenceIncrease");
 			assert(i);
 			CallGen::call(builder, i, v);
+			structs.push_back(v);
 		}
 
 		auto tp = i.second->type;
@@ -37,7 +42,6 @@ llvm::Value* GoGen::generateCode(const Generater& generater)
 			tp = PointerType::get(tp, 0);
 		}
 
-		
 		GlobalVariable* ptr = new GlobalVariable(/*Module=*/*m,
 			/*Type=*/tp,
 			/*isConstant=*/false,
@@ -65,7 +69,23 @@ llvm::Value* GoGen::generateCode(const Generater& generater)
 		//os.flush();
 	}
 
+	// 在函数最后写入析构代码
 	llvm::Value* funcPtr=_func->generateCode(generater);
+	Function* f = dyn_cast<Function>(funcPtr);
+	auto &allocBlock=f->back();
+	assert(allocBlock.getName() == "dealloc");
+
+	IRBuilder<> db(&allocBlock);
+	for (auto i : structs) {
+		auto ty = dyn_cast<StructType>(i->getType());
+		auto *c=AstContext::findCompiledClassByLLVMType(ty);
+		assert(c);
+		Value* fz = nullptr;
+		if (c->finalize) {
+			fz = c->finalize->func;
+		}
+		CallGen::call(db, "freeObject", i, fz);
+	}
 
 	auto *type=CLangModule::getStruct("si", "Coroutine");
 	assert(type);
@@ -74,8 +94,6 @@ llvm::Value* GoGen::generateCode(const Generater& generater)
 	auto *createObject = NewGen::getCreateObject();
 	Value* coroutine = CallGen::call(builder, createObject, allocSize, (uintptr_t)type);
 
-	auto* create=CLangModule::getFunction("si_CoroutineCreate");
-	assert(create);
-	CallGen::call(builder, create, coroutine, funcPtr);
+	CallGen::call(builder, "si_CoroutineCreate", coroutine, funcPtr);
 	return coroutine;
 }

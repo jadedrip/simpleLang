@@ -86,6 +86,12 @@ ClassInstanceType * AstContext::findCompiledClass(const std::string & name)
 	return parent ? parent->findCompiledClass(name) : nullptr;
 }
 
+ClassInstanceType* AstContext::findCompiledClassByLLVMType(const llvm::Type* type)
+{
+	auto i= _compiledClass.find(type->getStructName());
+	return i != _compiledClass.end() ? i->second : nullptr;
+}
+
 map<std::string, AstClass*> loadClassCache;
 AstClass * AstContext::loadClass(const std::string & path, const std::string & name)
 {

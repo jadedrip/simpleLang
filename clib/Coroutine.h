@@ -26,11 +26,16 @@ extern "C" {
 		short status;			// 状态 CoroutineStatus
 		void* data;				// 返回值
 		struct si_Chan* chan;	
-		void* lpFiber;
+		void* lpFiber;			// 协程句柄
+		long parameterSize;		// 变量数量
+		int64_t* params;		// 闭包传递的变量一个变量，一个析构函数(如果是对象）
 	};
 
 	typedef void* (SiGoFunction)();
 	typedef struct si_Coroutine Coroutine;
+
+	// 创建协程对象
+	Coroutine* CreateCoroutine(long size);
 
 	// 创建一个协程
 	void si_CoroutineCreate(Coroutine*, SiGoFunction*);

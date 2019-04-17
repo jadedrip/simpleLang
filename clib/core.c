@@ -40,9 +40,7 @@ void freeObject(void* object, destructor func)
 		printf("freeObject end\r\n");
 
 		free(p);
-
 	}
-
 }
 
 const uint32_t arrayMark = 1 << 31;

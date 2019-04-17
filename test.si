@@ -10,6 +10,13 @@ func world(){
 }
 
 world()
+
+var c="Ni hao"
+// println(out)
+go {
+	println("Hello world:" + c)
+}
+
 /*
 class Base {
 	int a = 10

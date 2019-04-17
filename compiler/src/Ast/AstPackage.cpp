@@ -64,7 +64,7 @@ void AstPackage::generateCode(Module *m)
 	_func = Function::Create(FT, Function::ExternalLinkage, "main", m);
 	auto alloc = BasicBlock::Create(llvmContext, name, _func);
 	auto basicBlock = BasicBlock::Create(llvmContext, name, _func);
-	auto deallocate = BasicBlock::Create(llvmContext, name+"deallocate", _func);
+	auto deallocate = BasicBlock::Create(llvmContext, "dealloc", _func);
 
 	// 写进入模块
 	IRBuilder<> builder(basicBlock);

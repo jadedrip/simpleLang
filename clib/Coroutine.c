@@ -1,6 +1,19 @@
 #include "stdafx.h"
+#include <malloc.h>
 #include "Coroutine.h"
 #include "DispatchBind.h"
+
+Coroutine* CreateCoroutine(long size)
+{
+	Coroutine* p=(Coroutine*)malloc(sizeof(Coroutine));
+	memset(p, 0, sizeof(Coroutine));
+	if (size > 0) {
+		p->parameterSize = size;
+		p->params = (int64_t*)malloc(2 * size * sizeof(int64_t));
+	}
+	p->status = COROUTINE_READY;
+	return p;
+}
 
 void si_CoroutineCreate(Coroutine* co, SiGoFunction *func)
 {

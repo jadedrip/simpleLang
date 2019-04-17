@@ -40,6 +40,7 @@ public:
 	void setClass(const std::string& name, AstClass* cls);
 	AstClass* findClass(const std::string& name);
 	ClassInstanceType* findCompiledClass(const std::string& name);
+	static ClassInstanceType* findCompiledClassByLLVMType(const llvm::Type* type);
 
 	void setCompiledClass(const std::string& name, ClassInstanceType* cls)
 	{
@@ -71,5 +72,5 @@ private:
 	* 记录 c 的 struct 到 ClassInstanceType 的映射，以便
 	*  “点”生成器对 cls.method() 这样的代码，能够快速通过类名反查类
 	*/
-	std::map<std::string, ClassInstanceType* > _compiledClass;
+	static std::map<std::string, ClassInstanceType* > _compiledClass;
 };

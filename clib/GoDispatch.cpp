@@ -13,11 +13,6 @@ volatile bool interrupt = false;
 
 void DispatchCreateCoroutine(Coroutine* co, SiGoFunction *func)
 {
-	co->chan = nullptr;
-	co->lpFiber = nullptr;
-	co->timeout = 0;
-	co->data = 0;
-	co->status = COROUTINE_READY;
 	Dispatch::createCoroutine(co, func);
 }
 

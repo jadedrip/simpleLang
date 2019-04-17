@@ -13,7 +13,7 @@ Value * BlockGen::generateCode(const Generater& generater)
 	block = BasicBlock::Create(c, name, generater.func);
 
 	// Îö¹¹¿é
-	g.deallocate = BasicBlock::Create(c, name + ".dealloc", generater.func);
+	g.deallocate = BasicBlock::Create(c, "dealloc", generater.func);
 
 	// Ö÷Òª¿é
 	IRBuilder<> builder(block);
