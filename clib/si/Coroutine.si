@@ -2,9 +2,7 @@
 @CLang("si_Coroutine")
 class Coroutine<T>{
     //operator -> (func(T) v)
-    func join()
-    func done(): bool
-    func value(): T
+    func await(): T
 }
 
 //@CLang("si_Chan")

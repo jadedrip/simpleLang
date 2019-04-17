@@ -1021,23 +1021,19 @@ si 的函数参数，允许使用延迟生成的技术以优化效率。它让�
 
 	func doSomthing() : int 
 	
-	Coroutine<int> c=go doSomethine()
-	c->(int v){
-		// 这里的代码会在 协程 结束后被调用，v 为代码块的返回值
-	}
-	c.join(4000)	// 强制等待结束, 4000 毫秒后还未结束将抛异常
-	
-	if(c.done()){ // 如果已经结束
-		int v=c.get()
-	}
+	Coroutine<int> c1=go doSomethine()
+	Coroutine<int> c2=go doSomethine()
+	....
+	var v1= c1.await(4000)  // 等待协程执行完毕，4000 毫秒后还未结束将抛异常
+	var v2= c2.await()
 
-Si 通过通道来支持跨协程数据交换，一个特别的内置函数 await 来支持协程，可以把异步操作写得更像同步操作。
+Si 通过通道来支持跨协程数据交换，成员函数 await 可以把异步操作写得更像同步操作。
 
 	var chan=Chan<int>()	// 实例化一个通道
 	
 	go {				 // 并行执行语句块
-		int i = await(chan, 4000) // 这里会阻塞，直到 4000毫秒后超时抛出 TimeoutException 异常，或者 chan 被其他线程调用，参数会作为 await 的返回值返回。
-		catch(TimeoutException e){
+		int i = chan.await(4000) // 这里会阻塞，直到 4000毫秒后超时抛出 TimeoutException 异常，或者 chan 被其他线程调用，参数会作为 await 的返回值返回。
+			catch(TimeoutException e){
 	
 		}		 
 	
