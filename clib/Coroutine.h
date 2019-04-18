@@ -25,9 +25,9 @@ extern "C" {
 		int64_t timeout;		// 超时时间（超时检测用）
 		short status;			// 状态 CoroutineStatus
 		void* data;				// 返回值
-		struct si_Chan* chan;	
+		struct si_Chan* chan;	// 当前等待的通道
 		void* lpFiber;			// 协程句柄
-		long parameterSize;		// 变量数量
+		long parameterCount;	// 闭包变量数量
 		int64_t* params;		// 闭包传递的变量一个变量，一个析构函数(如果是对象）
 	};
 

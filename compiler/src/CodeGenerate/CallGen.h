@@ -33,11 +33,12 @@ public:
 		convertToValue(values, funcParams...);
 		return callFunc(builder, func, values);
 	}
+
 	template< class ... Params >
 	static llvm::CallInst* call(llvm::IRBuilder<>& builder, const std::string& name, Params ... funcParams) {
 		auto *f=CLangModule::getFunction(name);
 		assert(f);
-		call(builder, f, funcParams);
+		return call(builder, f, funcParams...);
 	}
 
 	static llvm::CallInst* callFunc(llvm::IRBuilder<>& builder, llvm::Function* func, std::vector<llvm::Value*>& values);

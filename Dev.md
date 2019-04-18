@@ -3,8 +3,9 @@ CodeGen 用来生成 llvm 代码，CodeGen::type 是 llvm 类型，但和生成�
 
 # 对象的数据结构
 
-  4字节引用计数 *
-  4字节队列长度（如果是队列）*
+  8字节析构函数地址			*2
+  4字节引用计数				*1
+  4字节队列长度（如果是队列）	*0
   1字节标志 + 7字节类型
 
 标志定义
@@ -12,11 +13,12 @@ CodeGen 用来生成 llvm 代码，CodeGen::type 是 llvm 类型，但和生成�
 
 	0	是否数组，如果是数组，上面有长度字段
 	1	是否具有引用计数（没引用计数的话，需要手工释放）
-	4	是否有符号
-	5	是否指针 （ 一般在 interface 的成员变量，都保存指针）
+	2	是否有析构函数
+	3	（保留）
+	4	是否有符号(保留)
+	5	是否指针 （一般在 interface 的成员变量，都保存指针）
 	6	是否是接口
 	7	是否默认类型
-	其他保留
 
 如果是默认类型，类型为:
 	
@@ -28,12 +30,13 @@ CodeGen 用来生成 llvm 代码，CodeGen::type 是 llvm 类型，但和生成�
 	| 5 | int		
 	| 6 | long		
 	| 7 | float		
-	| 8 | double	
-	| 9 | Any
-	| 10 | Delay
-	| 11 | Func 函数指针
-	| 12 | Thread
-	| 13 | Coroutine
+	| 8 | double
+	| 9 | interface
+	| 10 | Any
+	| 11 | Delay
+	| 12 | Func 函数指针
+	| 13 | Thread
+	| 14 | Coroutine
 	
 * 对象数据
 

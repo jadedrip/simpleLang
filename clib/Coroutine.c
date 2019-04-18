@@ -2,13 +2,13 @@
 #include <malloc.h>
 #include "Coroutine.h"
 #include "DispatchBind.h"
+#include "core.h"
 
 Coroutine* CreateCoroutine(long size)
 {
-	Coroutine* p=(Coroutine*)malloc(sizeof(Coroutine));
-	memset(p, 0, sizeof(Coroutine));
+	Coroutine* p = (Coroutine*)createObject(sizeof(Coroutine), 14);
 	if (size > 0) {
-		p->parameterSize = size;
+		p->parameterCount = size;
 		p->params = (int64_t*)malloc(2 * size * sizeof(int64_t));
 	}
 	p->status = COROUTINE_READY;
