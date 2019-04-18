@@ -33,6 +33,7 @@ CodeGen 用来生成 llvm 代码，CodeGen::type 是 llvm 类型，但和生成�
 	| 10 | Delay
 	| 11 | Func 函数指针
 	| 12 | Thread
+	| 13 | Coroutine
 	
 * 对象数据
 
