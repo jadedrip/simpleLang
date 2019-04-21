@@ -38,8 +38,8 @@ llvm::Function * CLangModule::getFunction(const std::string & name) {
 	for (auto& iter : _modules) {
 		auto f = iter.second->getFunction(name);
 		if (f) {
-			return f;
-			// return Function::Create(f->getFunctionType(), Function::ExternalLinkage, f->getName(), module.get());
+			//return f;
+			return Function::Create(f->getFunctionType(), Function::ExternalLinkage, f->getName(), module.get());
 		}
 	}
 

@@ -73,7 +73,6 @@ void execute(char * const *envp){
 	//
 	llvm::ExecutionEngine *EE = buildEngine(std::move(module));
 	if (EE) {
-		CLangModule::moveAll(EE);
 
 		auto target = EE->getTargetMachine();
 
@@ -87,14 +86,17 @@ void execute(char * const *envp){
 		EE->DisableLazyCompilation(false);
 
 		// Give MCJIT a chance to apply relocations and set page permissions.
-		 //EE->finalizeObject();
+		// EE->finalizeObject();
 		// EE->runStaticConstructorsDestructors(false);
+		CLangModule::moveAll(EE);
 
-		auto *p=EE->FindFunctionNamed("si_printHello");
-		os << "\r\n ***** \r\n";
-		p->print(os);
-		os << "\r\n ***** \r\n";
-		os.flush();
+		//auto *p=EE->FindFunctionNamed("si_printHello");
+		//auto v=EE->getFunctionAddress("si_printHello");
+		//assert(v);
+		//os << "\r\n ***** \r\n";
+		//p->print(os);
+		//os << "\r\n ***** \r\n";
+		//os.flush();
 		std::vector<std::string> noargs;
 		EE->runFunctionAsMain(mainFunction, noargs, envp);
 
@@ -139,7 +141,7 @@ int main(int argc, char* argv[],  char * const *envp)
 
 	// make_c_functions(m);
 	CLangModule::loadPackage("si");
-	// CLangModule::loadLLFile("lib/si/core.ll");
+	CLangModule::loadLLFile("lib/si/core.ll");
 
 	// void* p = sys::DynamicLibrary::SearchForAddressOfSymbol("si_printHello");
 	//if (p)
