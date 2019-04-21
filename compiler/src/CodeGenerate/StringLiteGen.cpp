@@ -50,6 +50,7 @@ llvm::Value * StringLiteGen::generateCode(llvm::Module * m, llvm::Function * fun
 	));
 
 	NewGen n(type);
+	n.escape = escape;
 	auto* obj = n.generate(m, func, builder);
 	auto* creator=CLangModule::getFunction("si_String_Init");
 	assert(creator);

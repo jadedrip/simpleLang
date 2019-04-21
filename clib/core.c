@@ -20,7 +20,7 @@ void* createObject(uint64_t size, uint32_t typeId) {
 	//assert(sizeof(LONG) == 4);
 	//return malloc(size);
 	LONG* p = (LONG*)malloc(size + 8);
-	*p++ = 1;		// 引用计数
+	*p++ = 0;		// 引用计数
 	*p++ = typeId;
 	return p;
 }

@@ -52,8 +52,7 @@ String* si_String_Splice(String * str, int64_t index, int64_t length)
 	if (str->length == 0 || (index < 0 && length < 0))
 		return str;
 
-	LONG* p = (LONG*)str;
-	String* n = (String*)createObject(sizeof(String), *(p - 1));
+	String* n = (String*)createObject(sizeof(String), 0);
 	n->alloc = 0;
 
 	if (index < 0) {
@@ -124,8 +123,8 @@ String * si_String_PLUS_si_String(String * str, String * right)
 		printf("si_String_PLUS_si_String's right is null!\r\n");
 		return str;
 	}
-	LONG* p = (LONG*)str;
-	String* n = (String*)createObject(sizeof(String), *(p - 1));
+
+	String* n = (String*)createObject(sizeof(String), 0);
 	n->alloc = 1;
 	n->length = str->length + right->length;
 	n->data = (wchar_t*)malloc(sizeof(wchar_t)* (n->length+1));

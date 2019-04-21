@@ -8,6 +8,11 @@ public:
 	std::string name;
 	llvm::Value* value = nullptr;
 
+	ParamenterGen()
+	{
+		parameter = true;
+	}
+
 	virtual llvm::Value* generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>&builder) {
 		if (!value) {
 			auto* s=func->getValueSymbolTable();

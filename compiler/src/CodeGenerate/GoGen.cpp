@@ -21,6 +21,12 @@ llvm::Value* GoGen::generateCode(llvm::Module *m, llvm::Function *func, llvm::IR
 		auto *v=i.second->generate(m, func, builder);
 		if (!i.second->type->isStructTy())
 			v = builder.CreateLoad(v, i.first);
+		else {
+			// 添加引用计数
+			auto* i = CLangModule::getFunction("referenceIncrease");
+			assert(i);
+			CallGen::call(builder, i, v);
+		}
 
 		auto tp = i.second->type;
 		bool st = tp->isStructTy();

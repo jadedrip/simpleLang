@@ -6,6 +6,7 @@
 #include "AstIf.h"
 #include "../Type/AutoType.h"
 #include "CodeGenerate/LetGen.h"
+#include "CodeGenerate/ParamenterGen.h"
 #include <llvm/IR/LLVMContext.h>
 
 CodeGen * AstLet::makeGen(AstContext * parent)
@@ -22,6 +23,9 @@ CodeGen * AstLet::makeGen(AstContext * parent)
 	}
 
 	auto *l = parent->findSymbolValue(name, true);
+	// 如果是参数的成员，说明会逃逸，参数本身不算逃逸
+	if (!isType<ParamenterGen>(l) && l->parameter)
+		p->escape = true;
 	return new LetGen(l, p);
 }
 

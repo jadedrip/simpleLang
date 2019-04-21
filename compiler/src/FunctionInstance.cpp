@@ -50,6 +50,9 @@ void FunctionInstance::generateBody(llvm::Module *m, llvm::LLVMContext & context
 	for (auto&i : block) {
 		i->generate(m, func, bd);
 	}
+
+	// 分析逃逸状况
+
 }
 
 llvm::Function * FunctionInstance::generateCode(llvm::Module *m, llvm::LLVMContext & context)

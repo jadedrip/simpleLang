@@ -80,6 +80,7 @@ public:
 		ClassInstanceType* object
 	);
 	bool isTemplate() const { return _isTemplate; }
+	bool def = false;
 private:
 	void fillFunctionBlock(AstContext *context, FunctionInstance*);
 private:

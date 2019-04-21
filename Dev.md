@@ -1,3 +1,6 @@
+# CodeGen
+CodeGen 用来生成 llvm 代码，CodeGen::type 是 llvm 类型，但和生成的 llvm::Value 有区别，type 可以能是整数、浮点、结构，但返回 Value 固定为指针。
+
 # 数据结构
 
 * 4字节引用计数
@@ -80,15 +83,15 @@ SiLang 需要在编译期进行逃逸分析以优化性能。
 我们以函数为单位进行逃逸分析，首先分析函数内变量是否会被返回，如果会，标记内部变量为“会逃逸”
 
 	func myFunc( ) {
-		MyCls a()
-		return a	// a 会逃逸
+		MyCls a()		// a 创建为引用计数1		
+		return a		// a 会逃逸
 	}
 
 当变量被整体赋值（引用）时标记为会逃逸
 
 	func myFunc( Cls x ) {
 		MyCls a()
-		x.a = a // // a 会逃逸
+		x.a = a  		// a 会逃逸
 	}
 
 变量被用于线程内，被标记为会逃逸
