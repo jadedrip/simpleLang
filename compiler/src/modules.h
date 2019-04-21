@@ -9,7 +9,7 @@ class AstFunction;
 class CLangModule {
 public:
 	static llvm::Function* getFunction(const std::string& full_name);
-	static llvm::Function* CLangModule::getFunction(const std::string& package, const std::string & name);
+	static llvm::Function* getFunction(const std::string& package, const std::string & name);
 	static void moveAll(llvm::ExecutionEngine* engine);
 	static llvm::Module* loadLLFile(const std::string & file);
 	static AstContext* loadSiFile(const std::experimental::filesystem::path& file, const std::string& packageName, llvm::Module* m);

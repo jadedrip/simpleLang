@@ -115,7 +115,7 @@ H		[a-fA-F0-9]
 
 [ \t\r] { /* ºöÂÔ¿Õ°× */ }
 \n			{  }
-.   { printf("Mystery %c\n", *yytext); }
+.   { /*printf("Mystery %c\n", *yytext);*/ }
 %%
 
 void comment(void)

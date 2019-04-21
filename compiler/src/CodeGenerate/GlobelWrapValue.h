@@ -1,10 +1,10 @@
 #pragma once
 #include "CodeGen.h"
 
-class GlobelWrapValue : public CodeGen
+class GoWrapValue : public CodeGen
 {
 public:
-	GlobelWrapValue(std::string&& uname, llvm::Type* type) : _uname(uname) {
+	GoWrapValue(size_t index, llvm::Type* type) : _index(index) {
 		this->type = type;
 	}
 
@@ -18,16 +18,14 @@ public:
 		//v->print(os);
 		//os << "\r\n";
 		//os.flush();
+		auto* v = CallGen::call(builder, "GetCoroutineParams", _index);
 		if (!type->isStructTy()) {
-			auto* v = m->getOrInsertGlobal(_uname, type);
 			return builder.CreateLoad(v);
 		}
 		else {
-			auto ty = llvm::PointerType::get(type, 0);
-			auto* v = m->getOrInsertGlobal(_uname, ty);
 			return v;
 		}
 	}
 private:
-	std::string _uname;
+	size_t _index;
 };

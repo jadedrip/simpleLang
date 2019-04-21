@@ -62,21 +62,21 @@ void AstPackage::generateCode(Module *m)
 	// 创建包初始化函数
 	FunctionType *FT = FunctionType::get(type, false);
 	_func = Function::Create(FT, Function::ExternalLinkage, "main", m);
-	auto alloc = BasicBlock::Create(llvmContext, name, _func);
+	//auto alloc = BasicBlock::Create(llvmContext, name, _func);
 	auto basicBlock = BasicBlock::Create(llvmContext, name, _func);
-	auto deallocate = BasicBlock::Create(llvmContext, "dealloc", _func);
+	//auto deallocate = BasicBlock::Create(llvmContext, "dealloc", _func);
 
 	// 写进入模块
 	IRBuilder<> builder(basicBlock);
-	Generater generater = { m, _func,  &builder, deallocate };
+	Generater generater = { m, _func,  &builder, basicBlock };
 	for (auto i : _gens) {
 		i->generate(generater);
 	}
 	// 写退出模块
-	builder.CreateBr(deallocate);
+	//builder.CreateBr(deallocate);
 
-	builder.SetInsertPoint(alloc);
-	builder.CreateBr(basicBlock);
-	builder.SetInsertPoint(deallocate);
+	//builder.SetInsertPoint(alloc);
+	//builder.CreateBr(basicBlock);
+	//builder.SetInsertPoint(deallocate);
 	builder.CreateRetVoid();
 }

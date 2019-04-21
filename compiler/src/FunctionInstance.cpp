@@ -27,7 +27,7 @@ void FunctionInstance::generateBody(llvm::Module *m, llvm::LLVMContext & context
 
 	// 仅有定义
 	if (block.codes.empty()) {
-		auto *p=CLangModule::getFunction(name);
+		auto *p=CLangModule::findFunction(name);
 		if (!p)
 			std::clog << "Warning, not find function " << name << std::endl;
 		return;
@@ -51,6 +51,7 @@ void FunctionInstance::generateBody(llvm::Module *m, llvm::LLVMContext & context
 	// 函数体
 	IRBuilder<> bd(allocBlock);
 	Generater g = { m, func, &bd, nullptr };
+	block.name = name + ".body";
 	block.generate(g);
 	// 分配块跳转到函数体
 	bd.CreateBr(block.block);
@@ -90,8 +91,9 @@ llvm::Function * FunctionInstance::generateCode(llvm::Module *m, llvm::LLVMConte
 
 	func = m->getFunction(n);
 	if (!func) {
-		FunctionType *FT = FunctionType::get(retType, param, variable);
-		func = Function::Create(FT, Function::ExternalLinkage, n, m);
+		func = CLangModule::getFunction(n);
+		//FunctionType *FT = FunctionType::get(retType, param, variable);
+		//func = Function::Create(FT, Function::ExternalLinkage, n, m);
 	}
 	return func;
 }

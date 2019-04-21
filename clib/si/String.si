@@ -32,12 +32,15 @@ class String {
 		return this + String(value)
 	}
 
-	finalize
+	// finalize
 }
 
 // func Charset.name()
 
+func printHello()
+func printInt( int value )
 func print( String text )
+
 func println( String text )
 
 func hello()

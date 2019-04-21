@@ -11,6 +11,7 @@
 #include "utility.h"
 
 using namespace std;
+std::map<std::string, ClassInstanceType* > AstContext::_compiledClass;
 AstContext::AstContext(AstContext * p) : parent(p)
 {
 	if (p) {

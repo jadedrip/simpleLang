@@ -62,10 +62,12 @@ Value* try_cast(IRBuilder<>& builder, Type* dest, Value *v)
 			return structCast(builder, dest, v);
 		}
 	}
+	/*
 	os << "Warning, bit cast: ";
 	v->print(os);
 	os << " to ";
 	dest->print(os);
 	os << "\r\n";
+	*/
 	return builder.CreateBitOrPointerCast(v, dest);
 }

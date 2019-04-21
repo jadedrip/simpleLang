@@ -367,7 +367,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
-      <AdditionalDependencies>chkstk.obj;LLVMInstrumentation.lib;LLVMCodeGen.lib;LLVMCore.lib;LLVMExecutionEngine.lib;LLVMGlobalISel.lib;LLVMIRReader.lib;LLVMInterpreter.lib;LLVMMC.lib;LLVMMCJIT.lib;LLVMOrcJIT.lib;LLVMObject.lib;LLVMRuntimeDyld.lib;LLVMSelectionDAG.lib;LLVMSupport.lib;LLVMX86CodeGen.lib;LLVMX86AsmPrinter.lib;LLVMX86AsmParser.lib;LLVMX86Desc.lib;LLVMX86Info.lib;LLVMX86Disassembler.lib;LLVMAsmParser.lib;LLVMAsmPrinter.lib;LLVMScalarOpts.lib;LLVMInstCombine.lib;LLVMProfileData.lib;LLVMTransformUtils.lib;LLVMAnalysis.lib;LLVMTarget.lib;LLVMBitReader.lib;LLVMX86Utils.lib;LLVMMCParser.lib;LLVMMCDisassembler.lib;LLVMDebugInfoCodeView.lib;LLVMDebugInfoMSF.lib;LLVMBinaryFormat.lib</AdditionalDependencies>
+      <AdditionalDependencies>chkstk.obj;LLVMInstrumentation.lib;LLVMCodeGen.lib;LLVMCore.lib;LLVMExecutionEngine.lib;LLVMGlobalISel.lib;LLVMIRReader.lib;LLVMInterpreter.lib;LLVMMC.lib;LLVMMCJIT.lib;LLVMOrcJIT.lib;LLVMObject.lib;LLVMRuntimeDyld.lib;LLVMSelectionDAG.lib;LLVMSupport.lib;LLVMX86CodeGen.lib;LLVMX86AsmPrinter.lib;LLVMX86AsmParser.lib;LLVMX86Desc.lib;LLVMX86Info.lib;LLVMX86Disassembler.lib;LLVMAsmParser.lib;LLVMAsmPrinter.lib;LLVMScalarOpts.lib;LLVMInstCombine.lib;LLVMProfileData.lib;LLVMTransformUtils.lib;LLVMAnalysis.lib;LLVMTarget.lib;LLVMBitReader.lib;LLVMX86Utils.lib;LLVMMCParser.lib;LLVMMCDisassembler.lib;LLVMDebugInfoCodeView.lib;LLVMDebugInfoMSF.lib;LLVMBinaryFormat.lib;LLVMDemangle.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

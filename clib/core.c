@@ -19,6 +19,7 @@
 void* createObject(uint64_t size, uint32_t typeId) {
 	//assert(sizeof(LONG) == 4);
 	//return malloc(size);
+	printf("createObject %lld, %x", size, typeId);
 	LONG* p = (LONG*)malloc(size + 8);
 	if (!p) return NULL;
 	*p++ = 1L;		// 引用计数

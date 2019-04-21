@@ -16,6 +16,11 @@ void DispatchCreateCoroutine(Coroutine* co, SiGoFunction *func)
 	Dispatch::createCoroutine(co, func);
 }
 
+int64_t DispatchGetCoroutineParam(size_t index)
+{
+	return Dispatch::getCoroutineParam(index);
+}
+
 void DispatchYield()
 {
 	Dispatch::yield();
@@ -194,6 +199,14 @@ void Dispatch::create(Coroutine* co, SiGoFunction* func)
 	co->lpFiber = CreateFiberEx(INIT_STACK, 0, FIBER_FLAG_FLOAT_SWITCH, coroutineMain, func);
 	co->status = COROUTINE_READY;
 	co->timeout = 0;
+}
+
+int64_t Dispatch::getCoroutineParam(size_t index)
+{
+	auto* c = getCurrent();
+	int64_t* p = c->params;
+	p += index * 2;
+	return *p;
 }
 
 Dispatch::~Dispatch()

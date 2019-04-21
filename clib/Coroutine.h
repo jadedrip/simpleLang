@@ -34,14 +34,20 @@ extern "C" {
 	typedef void* (SiGoFunction)();
 	typedef struct si_Coroutine Coroutine;
 
+	int64_t GetCoroutineParams(uint32_t index);
+
 	// 创建协程对象
-	Coroutine* CreateCoroutine(long size);
+	Coroutine* CreateCoroutine(uint32_t size);
+	void SetCoroutineParams(Coroutine*, size_t index, int64_t v, void* func);
 
 	// 创建一个协程
 	void si_CoroutineCreate(Coroutine*, SiGoFunction*);
 
 	/// 当前协程主动切换 
 	void si_YieldCoroutine();
+
+	/// 析构
+	void si_CoroutineFinalize(Coroutine*);
 
 	/// 设置管道
 	/// waiting 为0永久等待，否则等待指定时间后将状态改为 timeout

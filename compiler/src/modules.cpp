@@ -38,7 +38,8 @@ llvm::Function * CLangModule::getFunction(const std::string & name) {
 	for (auto& iter : _modules) {
 		auto f = iter.second->getFunction(name);
 		if (f) {
-			return Function::Create(f->getFunctionType(), Function::ExternalLinkage, name, module.get());
+			return f;
+			// return Function::Create(f->getFunctionType(), Function::ExternalLinkage, f->getName(), module.get());
 		}
 	}
 
@@ -50,7 +51,8 @@ llvm::Function * CLangModule::getFunction(const std::string& package, const std:
 	if (iter !=_modules.end()) {
 		auto f = iter->second->getFunction(name);
 		if (f) {
-			return Function::Create(f->getFunctionType(), Function::ExternalLinkage, name, module.get() );
+			return f;
+			//return Function::Create(f->getFunctionType(), Function::ExternalLinkage, name, module.get() );
 		}
 	}
 	return nullptr;
@@ -110,13 +112,13 @@ Module* CLangModule::loadLLFile(const std::string& filename) {
 		_structs[i->getStructName()] = i;
 	}
 
-	std::string dll = filename + ".dll";
-	if (stdfs::exists(stdfs::path(dll))) {
-		std::string err;
-		if (sys::DynamicLibrary::LoadLibraryPermanently(dll.c_str(), &err)) {
-			std::cerr << "读取 " + dll + " 失败：" << err << std::endl;
-		}
-	}
+	//std::string dll = filename + ".dll";
+	//if (stdfs::exists(stdfs::path(dll))) {
+	//	std::string err;
+	//	if (sys::DynamicLibrary::LoadLibraryPermanently(dll.c_str(), &err)) {
+	//		std::cerr << "读取 " + dll + " 失败：" << err << std::endl;
+	//	}
+	//}
 
 	auto *p = m.get();
 	_modules.insert(std::make_pair(filename, std::move(m)));
@@ -240,6 +242,7 @@ map<string, AstFunction*> functions;
 
  AstFunction * CLangModule::findFunction(const std::string & fullName)
  {
+	 std::clog << "Find function :" << fullName << std::endl;
 	 auto i = functions.find(fullName);
 	 if (i != functions.end()) {
 		 return i->second;

@@ -7,7 +7,7 @@ class GoGen : public CodeGen
 {
 public:
 	GoGen(CodeGen* func);
-	std::map<std::string, CodeGen*> globles;
+	std::vector<CodeGen*> globles;
 protected:
 	virtual llvm::Value* generateCode(const Generater& generater);
 private:

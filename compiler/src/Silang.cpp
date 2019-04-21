@@ -9,6 +9,7 @@
 #include <llvm/Support/TargetSelect.h>
 #include <llvm/Support/ManagedStatic.h>
 #include <llvm/Support/Signals.h>
+#include <llvm/ExecutionEngine/MCJIT.h>
 #include <llvm/ExecutionEngine/Interpreter.h>
 #include <llvm/ExecutionEngine/SectionMemoryManager.h>
 #include <llvm/ExecutionEngine/JITEventListener.h>
@@ -59,15 +60,14 @@ void execute(char * const *envp){
 	std::cout << "MCPU: " << MCPU.str() << std::endl;
 	std::cout << "Triple: " << ::sys::getDefaultTargetTriple() << std::endl;
 
-	module->setTargetTriple("x86_64-pc-windows-msvc");
-
+	// module->setTargetTriple("x86_64-pc-windows-msvc");
 	Function *mainFunction = currentPackage->getFunc();
 
-	auto iter=module->functions();
-	for( auto i=iter.begin(); i!=iter.end(); i++){
-		std::cout << i->getName().str() << std::endl;
-	}
-
+	//auto iter=module->functions();
+	//for( auto i=iter.begin(); i!=iter.end(); i++){
+	//	std::cout << i->getName().str() << std::endl;
+	//}
+	raw_os_ostream os(std::clog);
 	//
 	// Execute the program
 	//
@@ -75,12 +75,7 @@ void execute(char * const *envp){
 	if (EE) {
 		CLangModule::moveAll(EE);
 
-		//void* p = sys::DynamicLibrary::SearchForAddressOfSymbol("_chkstk");
-		//if (p)
-		//	EE->addGlobalMapping("__chkstk", (uint64_t)p);
-
 		auto target = EE->getTargetMachine();
-
 
 		// The following functions have no effect if their respective profiling
 		// support wasn't enabled in the build configuration.
@@ -92,9 +87,14 @@ void execute(char * const *envp){
 		EE->DisableLazyCompilation(false);
 
 		// Give MCJIT a chance to apply relocations and set page permissions.
-		EE->finalizeObject();
+		 //EE->finalizeObject();
 		// EE->runStaticConstructorsDestructors(false);
 
+		auto *p=EE->FindFunctionNamed("si_printHello");
+		os << "\r\n ***** \r\n";
+		p->print(os);
+		os << "\r\n ***** \r\n";
+		os.flush();
 		std::vector<std::string> noargs;
 		EE->runFunctionAsMain(mainFunction, noargs, envp);
 
@@ -103,22 +103,18 @@ void execute(char * const *envp){
 			static_cast<SectionMemoryManager*>(RTDyldMM)->invalidateInstructionCache(
 			);
 
-
 		// Run static destructors.
 		// EE->runStaticConstructorsDestructors(true);
 	}
 	else
 		std::cerr << "无法创建 JIT 引擎: " << ErrStr << std::endl;
 	CLangModule::shutdown();
-	// llvm::llvm_shutdown();
-	// delete engine;
 }
 
 using namespace llvm;
 
 int main(int argc, char* argv[],  char * const *envp)
 {
-	sys::PrintStackTraceOnErrorSignal(argv[0]);
 	PrettyStackTraceProgram X(argc, argv);
 
 	atexit(llvm_shutdown); // Call llvm_shutdown() on exit.
@@ -141,11 +137,11 @@ int main(int argc, char* argv[],  char * const *envp)
 	auto *m = new Module("TOP", llvmContext);
 	module.reset(m);
 
-	
-
 	// make_c_functions(m);
 	CLangModule::loadPackage("si");
-	void* p = sys::DynamicLibrary::SearchForAddressOfSymbol("?join@thread@std@@QEAAXXZ");
+	// CLangModule::loadLLFile("lib/si/core.ll");
+
+	// void* p = sys::DynamicLibrary::SearchForAddressOfSymbol("si_printHello");
 	//if (p)
 	// 	EE->addGlobalMapping("printf", (uint64_t)p);
 

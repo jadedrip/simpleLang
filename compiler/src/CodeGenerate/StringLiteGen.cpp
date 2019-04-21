@@ -57,11 +57,8 @@ llvm::Value * StringLiteGen::generateCode(const Generater& generater)
 	assert(finalize);
 	n.finalize = new ValueGen(finalize);
 	auto* obj = n.generate(generater);
-	auto* creator=CLangModule::getFunction("si_String_Init");
-	assert(creator);
 
-
-	auto *call=CallGen::call(builder, creator,
+	auto *call=CallGen::call(builder, "si_String_Init",
 		obj,
 		v,
 		_data.size(),
