@@ -121,9 +121,15 @@ inline llvm::Value* toLLValue(llvm::Type* type)
 	return llvm::ConstantInt::getNullValue(type);
 }
 
+inline llvm::Value* toLLValue(std::nullptr_t v)
+{
+	auto* type = llvm::IntegerType::get(llvmContext, 32);
+	return llvm::ConstantInt::getNullValue(type);
+}
+
 inline llvm::Value* toLLValue(llvm::Value* v)
 {
-	return v;
+	return v ? v : toLLValue(nullptr);
 }
 
 inline llvm::Value* toLLValue(int16_t v)

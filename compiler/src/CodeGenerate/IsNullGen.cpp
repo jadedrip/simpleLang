@@ -4,8 +4,8 @@
 IsNullGen::IsNullGen(CodeGen * p) : expr(p) {}
 
 using namespace llvm;
-llvm::Value * IsNullGen::generateCode(llvm::Module * m, llvm::Function * func, llvm::IRBuilder<>&builder)
+llvm::Value * IsNullGen::generateCode(const Generater& generater)
 {
-	Value *v=expr->generate(m, func, builder);
-	return builder.CreateIsNull(v);
+	Value *v=expr->generate(generater);
+	return generater.builder().CreateIsNull(v);
 }

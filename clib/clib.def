@@ -6,3 +6,4 @@ DispatchYield @1
 DispatchCreateCoroutine @2
 DispatchGetCurrent @3
 DispatchSetSuspend @4
+DispatchGetCoroutineParam @5

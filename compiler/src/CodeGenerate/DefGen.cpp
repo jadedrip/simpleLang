@@ -14,8 +14,11 @@ DefGen::DefGen(const std::string & n, Type * t, CodeGen* value, int s) : name(n)
 	this->type = t;
 }
 
-llvm::Value * DefGen::generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>&builder)
+llvm::Value * DefGen::generateCode(const Generater& generater)
 {
+	auto func = generater.func;
+	auto& builder = generater.builder();
+
 	isClass = type ? type->isStructTy() : true;
 	bool isSeq = arraySize > 1;
 		
@@ -29,7 +32,7 @@ llvm::Value * DefGen::generateCode(llvm::Module *m, llvm::Function *func, llvm::
 		if (x) {
 			x->name = name;
 		} 
-		llvm::Value* v = _value->generate(m, func, builder);
+		llvm::Value* v = _value->generate(generater);
 
 		if (isClass || isSeq) {
 			if (!x && this->escape) {

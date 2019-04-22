@@ -11,6 +11,7 @@
 #include "utility.h"
 
 using namespace std;
+std::map<std::string, ClassInstanceType* > AstContext::_compiledClass;
 AstContext::AstContext(AstContext * p) : parent(p)
 {
 	if (p) {
@@ -84,6 +85,12 @@ ClassInstanceType * AstContext::findCompiledClass(const std::string & name)
 		if (i != _compiledClass.end()) return i->second;
 	}
 	return parent ? parent->findCompiledClass(name) : nullptr;
+}
+
+ClassInstanceType* AstContext::findCompiledClassByLLVMType(const llvm::Type* type)
+{
+	auto i= _compiledClass.find(type->getStructName());
+	return i != _compiledClass.end() ? i->second : nullptr;
 }
 
 map<std::string, AstClass*> loadClassCache;

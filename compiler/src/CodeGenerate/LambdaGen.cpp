@@ -11,9 +11,12 @@ LambdaGen::LambdaGen(AstFunction* func, FunctionInstance * instance)
 }
 
 // 当匿名函数作为右值时会被调用，返回函数指针
-llvm::Value * LambdaGen::generateCode(llvm::Module * m, llvm::Function * func, llvm::IRBuilder<>& builder)
+llvm::Value * LambdaGen::generateCode(const Generater& generater)
 {
-	_instance->generateBody(m, builder.getContext());
+	auto* m = generater.module;
+	auto& builder = generater.builder();
+
 	llvm::Value* fun = _instance->generateCode(m, builder.getContext());
+	_instance->generateBody(m, builder.getContext());
 	return fun;
 }

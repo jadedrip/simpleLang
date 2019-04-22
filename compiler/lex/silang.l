@@ -43,6 +43,7 @@ H		[a-fA-F0-9]
 "ushort"		yylval.type=11;	return ITYPE; 
 "uint"		    yylval.type=12;	return ITYPE; 
 "ulong"		yylval.type=13;	return ITYPE; 
+	
 
 "0"[lL]|(\-?[1-9]{D}*)[lL] { yylval.expr=makeValue(yytext,std::stoll(yytext));			return INT64; }
 "0"|("-"?[1-9]{D}*)			{ yylval.expr=makeValue(yytext,std::stol(yytext));			return INTEGER;  }
@@ -114,7 +115,7 @@ H		[a-fA-F0-9]
 
 [ \t\r] { /* ºöÂÔ¿Õ°× */ }
 \n			{  }
-.   { printf("Mystery %c\n", *yytext); }
+.   { /*printf("Mystery %c\n", *yytext);*/ }
 %%
 
 void comment(void)

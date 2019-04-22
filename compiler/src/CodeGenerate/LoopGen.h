@@ -1,12 +1,14 @@
 ﻿#pragma once
 #include "CodeGen.h"
+#include "BlockGen.h"
 
 class LoopGen : public CodeGen {
-	virtual llvm::Value* generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>&);
+	virtual llvm::Value* generateCode(const Generater& generater);
 public:
 	CodeGen* let = nullptr;
 	CodeGen* cond = nullptr;
 	CodeGen* inc = nullptr;
 
-	std::vector<CodeGen*> block;
+	BlockGen block;
+	//std::vector<CodeGen*> block;
 };

@@ -3,6 +3,7 @@
 #include <llvm/IR/Constants.h>
 
 #include "StringLiteGen.h"
+#include "ValueGen.h"
 #include "CallGen.h"
 #include "NewGen.h"
 #include "../modules.h"
@@ -41,9 +42,10 @@ void StringLiteGen::append(StringLiteGen * g)
 	_str += g->_str;
 }
 
-llvm::Value * StringLiteGen::generateCode(llvm::Module * m, llvm::Function * func, llvm::IRBuilder<>& builder)
+llvm::Value * StringLiteGen::generateCode(const Generater& generater)
 {
-	auto &c = func->getContext();
+	auto& builder = generater.builder();
+	auto &c = generater.context();
 	int ulen = (int)_data.size() * sizeof(wchar_t);
 	auto *v=builder.CreateGlobalStringPtr(StringRef(
 		(const char*)_data.c_str(), ulen
@@ -51,11 +53,12 @@ llvm::Value * StringLiteGen::generateCode(llvm::Module * m, llvm::Function * fun
 
 	NewGen n(type);
 	n.escape = escape;
-	auto* obj = n.generate(m, func, builder);
-	auto* creator=CLangModule::getFunction("si_String_Init");
-	assert(creator);
+	auto* finalize = CLangModule::getFunction("si_String_Finalize");
+	assert(finalize);
+	n.finalize = new ValueGen(finalize);
+	auto* obj = n.generate(generater);
 
-	auto *call=CallGen::call(builder, creator,
+	auto *call=CallGen::call(builder, "si_String_Init",
 		obj,
 		v,
 		_data.size(),

@@ -12,10 +12,10 @@ ClassBinaryGen::ClassBinaryGen(int op, CodeGen * l, CodeGen * r)
 	type = l->type;
 }
 
-llvm::Value * ClassBinaryGen::generateCode(llvm::Module * m, llvm::Function * func, llvm::IRBuilder<> &builder)
+llvm::Value * ClassBinaryGen::generateCode(const Generater& generater)
 {
-	auto *o=left->generate(m, func, builder);
-	auto *r = right->generate(m, func, builder);
+	auto *o=left->generate(generater);
+	auto *r = right->generate(generater);
 	string word = operator_to_word(op);
 	string n = getReadable(left->type) + "_" + word + "_" + getReadable(right->type);
 

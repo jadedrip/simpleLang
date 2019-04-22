@@ -16,6 +16,7 @@ public:
 	static void yield();
 	static Coroutine* getCurrent();
 	static Coroutine* setSuspend(Chan *chan, long waiting = 0);
+	static int64_t getCoroutineParam(size_t index);
 public:
 	// ∂—’ª¥Û–°
 	int INIT_STACK = 1048576;
@@ -30,7 +31,7 @@ public:
 	std::queue<Coroutine*> died;
 
 	void create(Coroutine* co, SiGoFunction* func);
-
+	void destroy(Coroutine* co);
 	~Dispatch();
 private:
 	bool isRun(int status);

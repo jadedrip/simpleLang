@@ -5,6 +5,12 @@
 *	输出 dot 语言的绘制信息
 */
 
+extern int yylineno;
+AstNode::AstNode(const std::string& n) : name(n) 
+{
+	lineNo = yylineno;
+}
+
 /// 用来进行模板推导及生成代码
 CodeGen * AstNode::makeGen(AstContext * parent)
 {

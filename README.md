@@ -1,5 +1,5 @@
 Si 语言
-======
+
 A compiler for silang which is a modern language.
 
 Compiler = Flex + Bison + llvm
@@ -49,41 +49,41 @@ Si 是拍脑袋的产物，试验性的产品，现在仅仅处于最初级阶�
 ------------
 支持的内置类型：
 
-| 名称       | 符号	| 位宽  
-|:----------|:------|:-------
-| boolean	| 无		| 1 bit  
-| byte	    | 无		| 8 bit 
-| char	    | 无		| 16 bit  
-| short		| 有		| 16 bit 
-| int		| 有		| 32 bit 
-| long		| 有		| 64 bit 
-| float		| 有		| 32 bit 
-| double	| 有		| 64 bit 
+| 名称    | 符号 | 位宽   |
+| :------ | :--- | :----- |
+| boolean | 无   | 1 bit  |
+| byte    | 无   | 8 bit  |
+| char    | 无   | 16 bit |
+| short   | 有   | 16 bit |
+| int     | 有   | 32 bit |
+| long    | 有   | 64 bit |
+| float   | 有   | 32 bit |
+| double  | 有   | 64 bit |
 
 注：内部类型在函数中使用传值方式传递，其他类型传引用
 
 其他类型：
 
-| 类型			| 说明		
-|:----			|:-----	
-|	class		|
-|	interface	|
-|	singleton	| 单例
-|	TRUE		| 真类型（用于推导）
-|	FALSE		| 假类型（用于推导）
+| 类型      | 说明               |
+| --------- | ------------------ |
+| class     |                    |
+| interface |                    |
+| singleton | 单例               |
+| TRUE      | 真类型（用于推导） |
+| FALSE     | 假类型（用于推导） |
 
 语言级别支持的内部类
 
-| 类型		| 说明		
-|:----		|:-----	
-| Tuple		| 元组
-| String	| 字符串
-| Array<?>	| 数组模板类，可以和数组无缝切换
-| Any		| 可变类型
-| Func		| 函数对象
-| Delay		| 延迟对象
-| Delegate	| 委托（保留）
-| Proxy		| 代理（保留）
+| 类型     | 说明                           |
+| -------- | ------------------------------ |
+| Tuple    | 元组                           |
+| String   | 字符串                         |
+| Array<?> | 数组模板类，可以和数组无缝切换 |
+| Any      | 可变类型                       |
+| Func     | 函数对象                       |
+| Delay    | 延迟对象                       |
+| Delegate | 委托（保留）                   |
+| Proxy    | 代理（保留）                   |
 
 使用 const 来定义常量：
 
@@ -116,7 +116,7 @@ Si 语言中除了内置类型（整数和浮点），其他类型都保存在�
 不过变量的类型是确定不变的。因此以下代码是错误的
 
 	var name = "Hei"		// 这里 name 自动成为 String 类型
-	name = 15			// 而这里会出错，因为 name 不能改变类型
+	name = 15			    // 而这里会出错，因为 name 不能改变类型
 
 另外，内部变量有初始值。
 
@@ -128,7 +128,7 @@ Si 语言中除了内置类型（整数和浮点），其他类型都保存在�
     int[] a=[ 0, 1 ]			// 数组可以直接初始化
     int[] array2=int[10]		// 初始化一个空的数组  
     int v=array2[1]     		// 数组取值
-
+    
     // 通过内置的 size 成员函数来获取数组的长度
     var len = a.size()			// 注意，这个是编译期方法
 
@@ -158,7 +158,7 @@ Any 类型允许在**运行期**保存任何对象，可以判断它内部是什
 然后你可以这样用
 
 	assert( i is Any )
-
+	
 	when(i){   // 用 when 关键字进行运行期类型判断
 		int : print(i)	// 在这个分支，i 被自动转换为 int 类型
 		
@@ -169,12 +169,12 @@ Any 类型允许在**运行期**保存任何对象，可以判断它内部是什
 			printf("unknown Type")
 		}
 	}
-
+	
 	if( i is int ){	// if 中如果有类型判断，块中会自动转换为相应的类型
 		int b=i+1
 		... 
 	}
-
+	
 	Type type=i.type	// 获取类型（参见**反射**）
 	float x=i			// 或者 (float)i 强制获取 float 类型的值
 
@@ -211,20 +211,20 @@ Si 语言中支持元组，替代 C++ 中的 pair, tuple。Si 里的元组用圆
 	var a=(1, "second", x)				// 直接创建
 	print( a[0] )						// 取第一个值（注：[] 操作是编译期的）
 	if( a[1] is int ) print("yes")		// 通过索引取类型
-
+	
 	for( var i : a ){					// 通过 for 循环，在编译期解开元组
 		print( i )
 	}
-
+	
 	var b0, b1 := a				// 元组的自动解构，注意复制的是引用，变量数量可以比实际的少，但不能多。
 	int c0, float c1 := (10， 10.0)
-
+	
 	var c=(0)			// 这不是元组，c是 int 类型
 
 另外，元组的成员也可以命名：
 
 	var tuple=( key=1, value=2 )
-    print( tuple.key )
+	print( tuple.key )
 
 特别的，元组必须放在 = 右边，也就是无根的元组是违法的。
 
@@ -239,7 +239,7 @@ Si 语言中支持元组，替代 C++ 中的 pair, tuple。Si 里的元组用圆
 	for( var i : arrays ){
 		i = 30		// i是引用，这里将改变 arrays 中的内容
 	}
-
+	
 	for( int i : 1..20 ){
 		...
 	}
@@ -332,7 +332,7 @@ remove 的返回值赋值给 i, 重新开始循环体 (continue)
 
 
 return
-==========
+----------
 * return 语句必须写在区块的最后，本区块后面不能有其他语句
 * 如果函数返回值都是命名的，那么可以不带后面的返回参数，特别的，没填充的变量会以默认值返回
 * 如果 return 后面带了返回参数，那么必须写全
@@ -390,7 +390,7 @@ Si 语言中，传入的参数（不包括 int 等内部参数）都被视为引
 	func myFunc( var a, int b ) : var ret {
 	   return a+b   // 这时推断返回值为 int 类型
 	}
-
+	
 	int x=myFunc( 10, 20 )
 
 函数调用
@@ -438,7 +438,7 @@ Si 在语言级别支持函数对象、匿名函数，匿名函数**不能**是�
 
 	int myVal = 10
 	var x=func(int a){ return a+myVal }		// 注意这个 myVal 是引用，在匿名函数调用时取*当前*值
-
+	
 	assert( x(20)==30 )
 
 上面的代码演示了简单闭包，不过要注意的是，并行的情况下，myVal 可能被更改、互斥，这时候使用闭包需要特别小心。
@@ -453,13 +453,13 @@ Si 支持的异常。
 	class Exception(
 		String resource	// 字符串资源 ID，默认会直接使用类名
 	}
-
+	
 	// 定义一个异常
 	class IOException : Exception("IOException")		// 定义一个新异常
 	class HttpException : IOException{		// resource="HttpException"
 		int code
 	}
-
+	
 	try{
 		var a=func( 10 )
 	}catch( HttpException | IOException e ){	// catch 允许多个异常类型
@@ -467,12 +467,12 @@ Si 支持的异常。
 	}finally{
 		// 最后会执行的代码
 	}
-
+	
 	// 简化的异常处理格式，对函数的异常直接处理，需要注意的是，函数后面的 catch 只能有一个
 	var i=func( 10 ) catch {
-    	print(it)  // it 是 Exception 类型
-    }
-
+		print(it)  // it 是 Exception 类型
+	}
+	
 	func(10) catch {}	//明确忽略异常
 
 如果一个异常未被捕获，会转去 **公共异常处理函数**，对于线程/协程 将打印日志，然后结束线程/协程, 如果主线程被关闭，那么程序将推出。
@@ -490,9 +490,9 @@ Si 支持的异常。
 
 	int? k 		// 通过 ? 明确标记可空
 	assert (k is null)
-    k = 10
-    k = null
-    k = 20
+	k = 10
+	k = null
+	k = 20
 
 某个默认打开的编译参数可以在运行时让空指针抛出 NullPointerException 异常，当然，这会略微的降低执行效率。
 ?: 操作符可以在指针值为空时提供默认值
@@ -511,24 +511,24 @@ Si 支持的异常。
 
 	/* File MyCls.sc 开始 *
 	package org.jadedrip	// 定义包
-
+	
 	class MyCls {	// 定义类
 		// 语法糖在变量前加个点，会自动赋值到内部变量
 		init(int .privateValue = 20 ){}	// 等同 this.privateValue = privateValue
-
+	
 		finalize{           // 析构函数始终是无参数的，不需要括号
 		}
-
+	
 		clone{              // 克隆函数
 			return MyCls(){
 				it.key = clone(this.key)
 				it.value = clone(this.value)
 			}
 		}
-
+	
 		int key = 1			// 创建时初始化（先于构造函数）
 		int value			// 创建时默认为0
-
+	
 		func do_something(){
 			this.key++  // this 是自己
 		}
@@ -544,10 +544,10 @@ Si 支持的异常。
 	class Mydata {
 		int a
 		int b
-
+	
 		init( int .a=0, int .b=0 ){}	// 默认生成的构造函数
 	}
-
+	
 	Mydata mydata( a=10, b=20 )	
 
 *设计语：使用 Type name 这样的方式构造，可以帮助 IDE 自动补全（输入 My, IDE可以帮你连变量名一起补全了)*
@@ -559,34 +559,34 @@ Si 支持的异常。
 
 	class Base{
 		func cantOverload(){	// 普通函数不可以重载
-
+	
 		}
-
+	
 		var virtualFunction=func( int v ) 	// 定义一个函数对象，可以实现纯虚函数的功能
-
+	
 		var canOverload = func(int v){	// 以函数对象的语法定义函数，可以通过替换函数对象的方法达到重载的目的
 			print(v)
 			virtualFunction(v)	// 调用虚函数
 		}
 	}
-
-    // 类可以继承，只能单继承，但可以有多个接口
+	
+	// 类可以继承，只能单继承，但可以有多个接口
 	class Second : Base, Interface0, Interface1 {        
 		func cantOverload(){	  // 这会是个全新函数
-
+	
 		}
-
+	
 		virtualFunction=func(int v){	// 实例之
 			print(v)
 		}
-
+	
 		canOverload = func(int v){
 			Base.canOverload(v)		// 这可以视为调用基类函数
 		}
-
+	
 		func third(int name) = Third.third		// 从第三方类偷（引用）一个实现
 	}
-
+	
 	Interface0 obj = Second()	// TODO: 这个如何实现需要思考
 
 类的构造
@@ -594,10 +594,10 @@ Si 支持的异常。
 对象构造使用构造函数的形式，括号不可省略。
 
     MyCls my()              // 括号不可省略
-	var a=MyCls(10, 20)		// 通过构造函数构造，参数表使用逗号分割，当然可以 var 推断
-	MyCls c(){     			// 在构造时，后面直接接大括号，将在构造后，直接执行语句块
-		key=0				// 在构造函数执行后执行
-		val=20
+    var a=MyCls(10, 20)		// 通过构造函数构造，参数表使用逗号分割，当然可以 var 推断
+    MyCls c(){     			// 在构造时，后面直接接大括号，将在构造后，直接执行语句块
+    	key=0				// 在构造函数执行后执行
+    	val=20
     }
 
 如果对象可以为空，那必须明确指出：
@@ -619,7 +619,7 @@ Si 支持的异常。
 	if( x==null ){			// 可空对象和 null 的比较，会判断对象是否为空
 		x=Cs()          	// 这里会改变 x 指向的对象
 	}
-
+	
 	Cs a()
 	Cs b = a    // b 指向 a
 	b.val = 1   // 这里同时会改变 a 指向的对象值
@@ -635,11 +635,11 @@ Si 支持的异常。
 通过在类外部定义额外方法，可以增强类
 
 	package org.other
-
+	
 	fun MyCls.other(){	// 本函数定义在外部，通过 import org.other 引入
 		this.val++
 	}
-
+	
 	MyCls cls()
 	cls.other()			// 可以像内部方法一样使用
 
@@ -654,15 +654,15 @@ Si 支持的异常。
 		int var=0
 		class SubCls{
 			int subVar=2
-
+	
 			func incVar(){
 				var+=subVar // 子类可以访问父类的成员变量
 				super.print()  // super 是父类的指针
 			}
 		}
-
+	
 		SubCls cls=SubCls()
-
+	
 		func print(){
 			Console.print(cls.subVar)
 		}
@@ -698,7 +698,7 @@ Si 支持的异常。
 		a.name = "hello"
 	}
 	var i=a
-	
+
 *设计语：块还是限定为禁止返回，否则最后一个空荡荡的变量容易引起混淆*
 
 某些时候，为了防止多重嵌套代码块中 it 冲突，你可以通过 it 重命名来给 it 指针命名：
@@ -739,7 +739,7 @@ Si 支持的异常。
 	import org.MySingleton	// 引用就初始化
 
 模板
-------------------
+==================
 可以通过把类中的成员函数，定义为 var 来创建模板类，模板类必须在构造时，能确定所有模板成员的类型。
 
 	class MyTuple {
@@ -747,7 +747,7 @@ Si 支持的异常。
 		var right
 		init( var .left, var .right ){}		
 	}
-
+	
 	MyTuple<int, int> v = MyTuple(10,20)	// 通过构造函数确定所有类型
 
 或者和 Java 类似，用命名的类型占位符来定义模板类
@@ -755,49 +755,49 @@ Si 支持的异常。
 	class MyMap<KEY, VAL>{	// 注意：类型占位符的约束是必须全大写
 		KEY key
 		VAL val
-
+	
 		init(String name){	// 
 	  	}
-
+	
 		func templateFunc( var a ){		// 函数直接使用 var 来定义模板函数
 			if( a is int ){		        // 这里的 is 是编译期的操作符，因此这里的 if 也是编译期的
 				a++
 			}
-
+	
 			def A = b
 			A b							// b 定义为 a 相同的类型
-
+	
 			Type c=typeof(a)			// Type 是种描述类型的特殊类型
 			when( a ){					// 用 when 判断类型
 				int : {
-
+	
 				}
 				float : {
-
+	
 				}
 				default : {
-
+	
 				}
 			}
 		}
 	}
-
+	
 	var my = MyMap<String,int>("Hello")		// 构造时必须可以推导类中所有类型
 
 类型定义 def
-==================
+------------------
 可以使用 def 来为复杂类型，取一个别名
 
 	def AFun = func(int, int):int
-    def MapClass = MyMap<int, String>		// 定义模板类
-
+	def MapClass = MyMap<int, String>		// 定义模板类
+	
 	var m = MyMap( 10, "Hi" )
-    def IntMap = m						// 可以理解为 def IntMap = typeof(m) 的语法糖
+	def IntMap = m						// 可以理解为 def IntMap = typeof(m) 的语法糖
 
 需要注意的是，def 定义的类型是仅仅是原类型的别名。
 
 常量推导
-==================
+------------------
 如果常量传入模板函数，那么函数在编译器，就会被计算
 
 	func myTemp( var a ) : var c{
@@ -807,12 +807,12 @@ Si 支持的异常。
 			return "World"
 		}
 	}
-
+	
 	myTemp( 10 )	// 在编译时不会生成函数，直接替换为 a+10
-
+	
 	var x = 10
 	myTemp( x )		// 编译错误，传入的是变量，参数固定为 int 后，模板函数无法编译
-
+	
 	const y = "Hello"
 	myTems( y )		// 传入的是常量，按模板编译
 
@@ -821,7 +821,7 @@ Si 支持的异常。
 Si 将支持一些类型操作符，结合模板，可以实现编译期编程。因此特别定义了两个内置类型·TRUE·和·FALSE·。
 
 操作符 is
-============
+------------
 
 在编译期判断类型可以使用 is，语法是
 
@@ -833,7 +833,7 @@ A 允许是变量或者模板变量
 但相对的，如果 A 和 B 都是模板类型，那么模板参数不一致（即使他们有继承关系），那也返回 FALSE
 
 操作符 ===
-=============
+-------------
 在编译期判断类型是否完全相等
 
 	A === B
@@ -841,7 +841,7 @@ A 允许是变量或者模板变量
 A 可以是变量或者模板变量，B 必须为类型或接口，和 is 相近，但 === 要求类型完全相等。
 
 操作符 if
-============
+------------
 当 if 后的括号内是一个类型，那么它就成为一个编译期的类型操作符，仅当类型为 FALSE 时，编译 else 语句块，
 其他任何类型都编译 then 语句块。
 
@@ -852,21 +852,21 @@ A 可以是变量或者模板变量，B 必须为类型或接口，和 is 相近
 	}
 
 操作符 `（反引号）
-=================
+-----------------
 反引号将尝试从类型中按名称取出成员，如果成员不存在返回 FALSE，存在返回成员的类型。 这可以在编译期判断类是否包含某个成员。
 
 	 if( a`name` ) ...
 	 if( a`myfunc` is func(int, String):String ) ...
 
 操作符 for
-=================
+-----------------
 for 可以用来解开通过 ... 传入的多个参数等，也可以解开元组，这个过程是编译期的。
 
 	func my( var ... attrs ){
 		for( var i: attrs ){
 			// 这里 i 的类型会按输入变化
 		}
-
+	
 		var x=( 10, 20, "Hello")
 		for( var i: x ){
 			print i
@@ -874,13 +874,30 @@ for 可以用来解开通过 ... 传入的多个参数等，也可以解开元�
 	}
 
 操作符 ==,!=,||,&&
-================
+----------------
 当两个常量进行布尔运算，他们也会在编译期运算为 TRUE 或 FALSE。
 
 	var a=(1==1)		// TRUE
 
-接口
--------------
+## 模板推导函数
+
+由于函数的返回值可以通过 return 来推导，因此可以通过写一个完全静态的函数，来实现计算类型的模板函数。
+
+```
+func TplFunc( var? a, var? b ) = {
+	if( a is int && b is int)
+		return TRUE()		// 真类型，if( TRUE ) 永远真，并且在编译期就处理
+	else
+		return FALSE()
+}
+
+var a = 10, b=10
+if( TplFunc(a,b) ){	// 静态语句，在编译期展开
+	int c = 10
+}
+```
+
+# 接口
 
 Si 可以通过 interface 关键字定义接口，接口所有的方法、变量都是公开的。
 接口可以带默认方法、变量默认值，但需要注意的是，接口的方法会被认为是函数对象。
@@ -895,7 +912,7 @@ Si 可以通过 interface 关键字定义接口，接口所有的方法、变量
 		int b
 		func getSome():int	// 这是个函数定义
 	}
-
+	
 	void aFunc( MyInterface inc ){	// aFunc 实际上是一个模板函数。
 		// 这样，任何对象，只要包含名字为 a, b 的成员变量，以及 getSome 这样一个方法，
 		// 就可以被传入这个函数
@@ -911,33 +928,20 @@ Si 可以通过 interface 关键字定义接口，接口所有的方法、变量
 接口也可以用来明确的强制一个类去符合某种契约：
 
 	class MyClass : Base, MyInterface{	   // 当 MyClass	不符合 MyInterface 时会编译错误
-
+	
 	}
-
+	
 	MyInterface i=MyClass()		// i 被认为是 MyClass 的基类
 	
 	void bFunc(MyInterface v){  // 这里 bFunc 没带尖括号关键字，表示这并非模板函数，
 	                            // 必须从 MyInterface 继承的对象，才能传入
 	}
 
-模板推导函数
---------------
-由于函数的返回值可以通过 return 来推导，因此可以通过写一个完全静态的函数，来实现计算类型的模板函数。
-
-	func TplFunc( var? a, var? b ) = {
-		if( a is int && b is int)
-			return TRUE()		// 真类型，if( TRUE ) 永远真，并且在编译期就处理
-		else
-			return FALSE()
-	}
-
-	var a = 10, b=10
-	if( TplFunc(a,b) ){	// 静态语句，在编译期展开
-		int c = 10
-	}
+# 语言特性
 
 延迟优化
 ----
+
 si 的函数参数，允许使用延迟生成的技术以优化效率。它让参数仅在被首次使用的时候，才会被生成它。
 比如：
 
@@ -974,7 +978,7 @@ si 的函数参数，允许使用延迟生成的技术以优化效率。它让�
 
 创建线程由线程库支持，类似 Java
 
-	Thread thread(daemon=true, level=3)
+	Thread thread(daemon=true, level=3, loop=false) // loop = true 时线程函数会反复执行，直到线程结束
 	thread->{       // 运行线程
 		aFunc()
 	}
@@ -994,10 +998,18 @@ si 的函数参数，允许使用延迟生成的技术以优化效率。它让�
 	int v=a++           // 原子的 +1 并返回新值
 	int cur=a.compareAndSet( 11, newValue )
 
-协程
+另外，如果库是二进制实现（无引用计数），那么可以在函数参数上添加 $ 符号，强制引用，
+由库内来释放它(仅仅在库内处理有多线程等逃逸的情况下有必要），这样编译器在调用函数时，
+会额外增加一次引用计数。
+当然，未来二进制包的函数定义是由编译器来生成的，因此一般情况下用不到。
+
+	func myLibFunc( $MyObject obj ) // 这说明 obj 在函数内会逃逸
+
+
+异步协程
 ---------------
 
-同时，Si 包含一个小的语言库，支持协程，并且尽可能自动维护。
+同时，Si 包含一个小的语言库，支持协程，并且尽可能自动维护，这里的协程近似 Go 语言的协程，是异步执行的。
 在一个函数、区块调用前加上 go 关键字，这次调用就会在一个新的协程中并发执行。
 当被调用的函数返回时，这个协程也自动结束。
 
@@ -1006,37 +1018,35 @@ si 的函数参数，允许使用延迟生成的技术以优化效率。它让�
 		yield();  // 放弃 cpu
 		sleep(x); // 放弃 cpu 并等待 x 毫秒后继续
 	}
-
+	
 	go dosomthing()		// 并行执行函数
 
 另外 go 的返回值是一个协程对象，可以有限度的操纵协程。
 
 	func doSomthing() : int 
-
-	Coroutine<int> c=go doSomethine()
-	c->(int v){
-		// 这里的代码会在 协程 结束后被调用，v 为代码块的返回值
-	}
-	c.join(4000)	// 强制等待结束, 4000 毫秒后还未结束将抛异常
 	
-	if(c.done()){ // 如果已经结束
-		int v=c.get()
-	}
+	Coroutine<int> c1=go doSomethine()
+	Coroutine<int> c2=go doSomethine()
+	....
+	var v1= c1.await(4000)  // 等待协程执行完毕，4000 毫秒后还未结束将抛异常
+	var v2= c2.await()
 
-Si 通过通道来支持跨协程数据交换，一个特别的内置函数 await 来支持协程，可以把异步操作写得更像同步操作。
+Si 通过通道来支持跨协程数据交换，成员函数 await 可以把异步操作写得更像同步操作。
 
 	var chan=Chan<int>()	// 实例化一个通道
-
+	
 	go {				 // 并行执行语句块
-		int i = await(chan, 4000) // 这里会阻塞，直到 4000毫秒后超时抛出 TimeoutException 异常，或者 chan 被其他线程调用，参数会作为 await 的返回值返回。
-		catch(TimeoutException e){
-
+		int i = chan.await(4000) // 这里会阻塞，直到 4000毫秒后超时抛出 TimeoutException 异常，或者 chan 被其他线程调用，参数会作为 await 的返回值返回。
+			catch(TimeoutException e){
+	
 		}		 
-
+	
 		// 后续的代码
 		print(i)	// 输出 10
 	}
-	chan(10)	// 调用通道，把数据塞进去
+	chan(10)	// 调用通道，把数据塞进去，这里会阻塞，一直到数据被取走
+	
+	var cachedChan=Chan<int>(10) // 带缓存的通道，缓存满前不会阻塞
 
 特别的，如果一个协程被阻塞，它可能会被调度去干别的事，因此唤醒可能并非“及时”的。
 
@@ -1052,25 +1062,27 @@ import (	// 导入多个
 
 注意：import 只能写在文件头部，package 定义之下
 
+# 其他
+
 注解、反射
-==================
+------------------
 si 支持注解及反射。(抄 Java)
 
 	class MyClass{
 		@ReflectName( name="value", idx=12 )	// 使用注解对象来进行注解
 		int a 
-
+	
 		void doFun(){
 		}
 	}
-
+	
 	Package pkg=Reflect.packages["org.example"]		// 获取包
 	Type cls=typeof(MyClass)						      // Type 描述类型
-
+	
 	Type cls=Reflect.classes["org.example.MyClass"]	// 通过全名获取
-
+	
 	Type cls=pkg.classes["MyClass"]					           // 通过包获取对象
-
+	
 	for( String name, field v : cls.fields ){
 		var annotation=v.annotations				// 获取注解
 	}
@@ -1078,64 +1090,64 @@ si 支持注解及反射。(抄 Java)
 注：Reflect 其实是一个语言支持的单例，因此如果程序中没有使用到它，那么它并不会初始化。
 
 C 对象定义
-=============
+-------------
 
     @Clang("my_c_object")
     class MyCObject
     {
-		@Clang("my_obj_add" )
+    	@Clang("my_obj_add" )
         func at( int idx ) : int  // int my_obj_add( my_c_object* me, int idx )
-
+    
         func size() : int  // int my_c_object_size( my_c_object* me )
     }
 
 和其他语言协作
-=====================
+---------------------
 可以引入 c 或其他语言写的库会被编译成包，以便被 Si 调用。Si 语言可以输出标准 c 函数，以便被其他语言调用。
 lib 文件、需要对应的头文件及适配文件等需要的东西，会被某个处理软件打成一个包，并放在编译程序能找到的地方。
 而 Si 可以编译成 c lib, 函数会按**约定**转换成 c 的格式。
 
 操作符重载
-================
+----------------
 Si 支持有限的操作符重载。对于类内的操作符，可以通过一个函数重载
 
 	class MyClass{
 		operator + ( int right ){	// 二元操作符的函数重载（默认的返回 MyClass 类型）
 			return this
 		}
-
+	
 		operator ++{					// 自增在后
 			// return this 可省略
 		}
 	}
-
+	
 	operator + ( int left, MyClass cls ) : MyClass{	// MyClass 在操作符的右边
 	}
 
 
 备选（思考中，暂时吧实现）
---------------
+==============
 
 非托管对象
-==============
+--------------
 
 某些类可以用 class* 定义为非托管类，托管类在构造时不使用 GC 以提高性能，并且必须手工 free。
 
 	class *UnmanagedClass{
 	}
-
+	
 	var unmanaged=UnmanagedClass()
 	free(unmanaged)
 
 非托管类如果构造托管类，也将使用非托管的方式构造（注：这里可能有危险，谨慎使用）
 
 对象追踪
-=====
-	
+-----
+
 	class Connect
-
+	
 	class MyObject
-
+	
 	var conn = Connect()
 	var my = MyObject() link conn
 	var myRef = conn..MyObject 
@@ -1144,7 +1156,7 @@ my 对象的生存期将会跟随输入的对象 conn，成为 Connect 的子类
 
 
 编译器插件
-================
+----------------
 在代码中可以嵌入由插件程序解析的代码，插件程序会把代码翻译为 si 语言。
 
     var json = ```json```
@@ -1154,36 +1166,36 @@ my 对象的生存期将会跟随输入的对象 conn，成为 Connect 的子类
 这段代码会调用一个叫json的插件，把中间的代码解析为 si 语言的代码。
 
 接口代理
-=================
+-----------------
 接口代理是接口的另一种使用方法，会以名称的形式来调用接口内的函数
 
 	interface MyProxy{
 		func run(String data)
 	}
-
+	
 	class MyProxyImp{
 		func invoke(String methodName, Any[] args) : Any
 	}
-
+	
 	MyProxyImp obj()
-
+	
 	MyProxy imp = proxy<MyProxy>(obj)	// proxy 是内部函数
 	imp.run("Hello")	// 
 
 编译期反射
-===================
+-------------------
 
 	class A
 	A a
-
+	
 	for( def i : A ){
 		a[i] = xx // 赋值
 		if( i.name == "hi" ){ // 编译期比较
-
+	
 		}
 		i.annotations["CLang"] {
 			var n = it["name"]  
 		} 
 		def T = i
 	}
-	
+

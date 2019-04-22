@@ -13,7 +13,7 @@ public:
 
 	IntegerBinaryGen(int op, CodeGen*l, CodeGen* r);
 protected:
-	llvm::Value* generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>&);
+	llvm::Value* generateCode(const Generater& generater);
 private:
 	llvm::Value* genBooleanCode(llvm::IRBuilder<>& builder, llvm::Value* l, llvm::Value* r);
 };

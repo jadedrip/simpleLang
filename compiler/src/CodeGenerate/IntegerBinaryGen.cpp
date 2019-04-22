@@ -25,10 +25,11 @@ IntegerBinaryGen::IntegerBinaryGen(int op, CodeGen * l, CodeGen * r) {
 		type = l->type;
 }
 
-Value * IntegerBinaryGen::generateCode(Module *m, Function *function, IRBuilder<>&builder)
+Value * IntegerBinaryGen::generateCode(const Generater& generater)
 {
-	Value* l = left->generate(m, function, builder);
-	Value* r = right->generate(m, function, builder);
+	auto& builder = generater.builder();
+	Value* l = left->generate(generater);
+	Value* r = right->generate(generater);
 	l = load(builder, l);
 	r = load(builder, r);
 

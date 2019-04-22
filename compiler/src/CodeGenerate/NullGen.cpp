@@ -7,7 +7,7 @@ NullGen::NullGen(llvm::Type* ty) {
 	type = ty;
 }
 
-llvm::Value* NullGen::generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>&builder) {
+llvm::Value* NullGen::generateCode(const Generater& generater) {
 	auto *p=type;
 	auto *o=p->getPointerTo();
 	return llvm::ConstantPointerNull::get(o);

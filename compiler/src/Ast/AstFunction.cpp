@@ -200,7 +200,7 @@ CallGen * AstFunction::makeCall(
 	//	p->params.push_back(object);
 	auto& excapes = func->excapes;
 	// 如果函数是空的，所有参数被认为是会逃逸的
-	bool empty = func->block.empty();
+	bool empty = func->block.codes.empty();
 
 	for (auto &i : ordered->parameters) {
 		assert(!i.first.empty());
@@ -377,7 +377,7 @@ void AstFunction::fillFunctionBlock(AstContext * s, FunctionInstance *instance)
 			auto *p = new DefGen(i->name, i->type->llvmType(c), v);
 			p->escape = true; // 返回值必定是逃逸的
 			s->setSymbolValue(i->name, p);
-			instance->block.push_back(p);
+			instance->block.codes.push_back(p);
 			namedReturn.push_back(p);
 		}
 		// returnTypes.push_back(i.type);
@@ -385,7 +385,7 @@ void AstFunction::fillFunctionBlock(AstContext * s, FunctionInstance *instance)
 
 	for (auto i : block) {
 		auto a = i->makeGen(s);
-		instance->block.push_back(a);
+		instance->block.codes.push_back(a);
 
 		if (a->escape) {
 			auto *x=dynamic_cast<ParamenterGen*>(a);
@@ -430,7 +430,7 @@ void AstFunction::fillFunctionBlock(AstContext * s, FunctionInstance *instance)
 	instance->returnType = TupleType::create(c, returnTypes);
 
 	if (block.empty()) {
-		instance->block.push_back(new ReturnGen());
+		instance->block.codes.push_back(new ReturnGen());
 		return;
 	}
 
@@ -441,7 +441,7 @@ void AstFunction::fillFunctionBlock(AstContext * s, FunctionInstance *instance)
 	// 需要补全 Return (命名返回)
 	auto *o = new ReturnGen();
 	o->returnValues = std::move(namedReturn);
-	instance->block.push_back(o);
+	instance->block.codes.push_back(o);
 }
 
 FunctionInstance* AstFunction::getFunctionInstance(

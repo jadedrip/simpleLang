@@ -5,11 +5,11 @@ class BlockGen : public CodeGen {
 public:
 	std::string name;
 	std::vector< CodeGen*> codes;
-	llvm::BasicBlock* next = nullptr;
 	llvm::BasicBlock* block = nullptr;		// 生成的块
-	bool br = true;
+	// 块执行完后，跳转
+	llvm::BasicBlock* next = nullptr;
 public:
 	void add(CodeGen* gen) { codes.push_back(gen); }
 public:
-	virtual llvm::Value* generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>&);
+	virtual llvm::Value* generateCode(const Generater& generater);
 };

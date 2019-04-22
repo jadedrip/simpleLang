@@ -15,7 +15,7 @@ CodeGen * AstLoop::makeGen(AstContext * parent)
 
 	for (auto i : block) {
 		auto p = i->makeGen(context);
-		gen->block.push_back(p);
+		gen->block.codes.push_back(p);
 	}
 	return gen;
 }

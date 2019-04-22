@@ -10,13 +10,12 @@ IifGen::IifGen(CodeGen * cond_, CodeGen * thenValue_, CodeGen * elseValue_) : co
 }
 
 using namespace llvm;
-llvm::Value * IifGen::generateCode(llvm::Module * m, llvm::Function * func, llvm::IRBuilder<>&builder)
+llvm::Value * IifGen::generateCode(const Generater& generater)
 {
-	Type* ty = thenValue->type;
+	auto func = generater.func;
 
-	auto & block = func->getEntryBlock();
-	IRBuilder<> b(&block);
-	auto* v=b.CreateAlloca(ty, nullptr, "iif");
+	auto* v = generater.alloc(thenValue->type, "iif");
+	
 	auto* p = new IfGen();
 	p->condition = cond;
 	p->thenBlock = new BlockGen();
@@ -27,6 +26,6 @@ llvm::Value * IifGen::generateCode(llvm::Module * m, llvm::Function * func, llvm
 		p->elseBlock->codes.push_back(new LetGen(new ValueGen(v), elseValue));
 	}
 
-	p->generate(m, func, builder);
+	p->generate(generater);
 	return v;
 }

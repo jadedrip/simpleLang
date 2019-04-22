@@ -28,12 +28,12 @@ public:
 		if (dynamic_cast<ValueGen*>(p))
 			return p;
 		
-		std::string n = name + std::to_string((intptr_t)p);
-		globels[n] = p;
+		size_t index = globels.size();
+		globels.push_back(p);
 
-		auto x=new GlobelWrapValue(std::move(n), p->type);
+		auto x=new GoWrapValue(index, p->type);
 		_symbols[name] = x;
 		return x;
 	}
-	std::map<std::string, CodeGen*> globels;
+	std::vector<CodeGen*> globels;
 };

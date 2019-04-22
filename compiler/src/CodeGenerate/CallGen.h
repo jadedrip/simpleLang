@@ -17,7 +17,7 @@ public:
 	FunctionInstance* function = nullptr;
 	llvm::Value* llvmFunction = nullptr;
 	std::vector<CodeGen*> params;
-	virtual llvm::Value* generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>&);
+	virtual llvm::Value* generateCode(const Generater& generater);
 
 	template<typename T1, typename... T2> static void convertToValue(std::vector<llvm::Value*>& vec, T1 p, T2... arg)
 	{
@@ -32,6 +32,13 @@ public:
 		std::vector<llvm::Value*> values;
 		convertToValue(values, funcParams...);
 		return callFunc(builder, func, values);
+	}
+
+	template< class ... Params >
+	static llvm::CallInst* call(llvm::IRBuilder<>& builder, const std::string& name, Params ... funcParams) {
+		auto *f=CLangModule::getFunction(name);
+		assert(f);
+		return call(builder, f, funcParams...);
 	}
 
 	static llvm::CallInst* callFunc(llvm::IRBuilder<>& builder, llvm::Function* func, std::vector<llvm::Value*>& values);

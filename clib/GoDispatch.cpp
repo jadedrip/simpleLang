@@ -2,6 +2,7 @@
 #include "GoDispatch.h"
 #include "DispatchBind.h"
 #include "Coroutine.h"
+#include "core.h"
 #include <mutex>
 #include <thread>
 // #include <chrono>
@@ -13,12 +14,12 @@ volatile bool interrupt = false;
 
 void DispatchCreateCoroutine(Coroutine* co, SiGoFunction *func)
 {
-	co->chan = nullptr;
-	co->lpFiber = nullptr;
-	co->timeout = 0;
-	co->data = 0;
-	co->status = COROUTINE_READY;
 	Dispatch::createCoroutine(co, func);
+}
+
+int64_t DispatchGetCoroutineParam(size_t index)
+{
+	return Dispatch::getCoroutineParam(index);
 }
 
 void DispatchYield()
@@ -66,6 +67,15 @@ void __stdcall coroutineMain(LPVOID lpParameter)
 	void* p = (*co)();
 	current->data = p;
 	current->status = COROUTINE_DEAD;
+	// «Â¿Ì
+	std::clog << "Go finished." << std::endl;
+	int64_t* params = current->params;
+	for (auto i = 0; i < current->parameterCount; i++) {
+		intptr_t v = *params++;
+		intptr_t fun = *params++;
+		if (fun == -1L) continue;
+		freeObject((void*)v, (destructor)fun);
+	}
 	dispatch->give(current);
 }
 
@@ -132,8 +142,8 @@ void Dispatch::run()
 		while (!died.empty()) {
 			Coroutine* c = died.front();
 			died.pop();
-			DeleteFiber(c->lpFiber);
-			c->lpFiber = nullptr;
+			destroy(c);
+
 			// TODO: deleteObject
 		}
 
@@ -199,6 +209,23 @@ void Dispatch::create(Coroutine* co, SiGoFunction* func)
 	co->lpFiber = CreateFiberEx(INIT_STACK, 0, FIBER_FLAG_FLOAT_SWITCH, coroutineMain, func);
 	co->status = COROUTINE_READY;
 	co->timeout = 0;
+}
+
+void Dispatch::destroy(Coroutine* c)
+{
+	DeleteFiber(c->lpFiber);
+	c->lpFiber = nullptr;
+	if (c->params) {
+		free(c->params);
+	}
+}
+
+int64_t Dispatch::getCoroutineParam(size_t index)
+{
+	auto* c = getCurrent();
+	int64_t* p = c->params;
+	p += index * 2;
+	return *p;
 }
 
 Dispatch::~Dispatch()

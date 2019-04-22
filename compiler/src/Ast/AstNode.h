@@ -15,10 +15,11 @@ class CodeGen;
 /// 这个是 AST 语法树的一个节点基类
 class AstNode {
 public:
-	AstNode(const std::string& n = std::string()) : name(n) {}
+	AstNode(const std::string& n = std::string());
 	virtual ~AstNode() {}
 public:
 	std::string name;
+	int lineNo;
 
 	/// 用来进行模板推导及生成代码
 	virtual CodeGen* makeGen(AstContext* parent);

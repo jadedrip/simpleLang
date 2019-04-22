@@ -28,9 +28,11 @@ String* si_String_Splice(String* str, int64_t index, int64_t length);
 
 uint64_t si_String_GET_size(String*);
 wchar_t si_String_at(String* str, uint64_t index);
-char* si_String_Cast_i8_ptr(String*);
+// char* si_String_Cast_i8_ptr(String*);
 
-void si_print(String* str);
+void si_printHello();
+void si_printInt(int value);
+void si_print_si_String(String* str);
 void si_println(String* str);
 
 String* si_String_PLUS_si_String(String* str, String* right);

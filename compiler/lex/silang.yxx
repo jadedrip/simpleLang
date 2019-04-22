@@ -44,7 +44,7 @@ void yyerror( const char* error );
 %token CALL IF ELSE WHILE FOR RETURN CLASS INTERF PROTECTED 
 %token PACKAGE IMPORT NULLPTR STATIC CONST ENUM SWITCH CASE DEFAULT SINGLETON
 %token TRY_TOKEN CATCH FINALLY GET_TOKEN SET_TOKEN OPERATOR NEW_TOKEN DELETE_TOKEN
-%token INIT_TOKEN FINALIZE_TOKEN GO_TOKEN BBRACKETS
+%token INIT_TOKEN FINALIZE_TOKEN GO_TOKEN BBRACKETS 
 
 %defines
 
@@ -233,7 +233,7 @@ construct_block_lines
 
 cls_destory
 	:   FINALIZE_TOKEN block_or_none 
-		{ $<expr>$=createFunction(3, ":finalize", nullptr, nullptr, $2); }
+		{ $<expr>$=createFunction(3, "Finalize", nullptr, nullptr, $2); }
 	;
 
 cls_lines

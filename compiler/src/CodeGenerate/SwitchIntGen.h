@@ -8,5 +8,5 @@ public:
 	CodeGen* expression;
 	std::vector<CaseGen*> cases;
 public:
-	virtual llvm::Value* generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>&);
+	virtual llvm::Value* generateCode(const Generater& generater);
 };

@@ -3,10 +3,10 @@
 
 using namespace llvm;
 CodeGen::CodeGen(llvm::Type * t) : type(t) {}
-llvm::Value * CodeGen::generate(llvm::Module * m, llvm::Function * func, llvm::IRBuilder<>& builder)
+llvm::Value * CodeGen::generate(const Generater& generater)
 {
 	if (value) return value;
-	value = generateCode(m, func, builder);
+	value = generateCode(generater);
 	return value;
 }
 llvm::Value * CodeGen::load(llvm::IRBuilder<>& builder, llvm::Value * v)

@@ -64,13 +64,19 @@ void AstPackage::generateCode(Module *m)
 	_func = Function::Create(FT, Function::ExternalLinkage, "main", m);
 	auto alloc = BasicBlock::Create(llvmContext, name, _func);
 	auto basicBlock = BasicBlock::Create(llvmContext, name, _func);
+	auto deallocate = BasicBlock::Create(llvmContext, "dealloc", _func);
 
+	// 写进入模块
 	IRBuilder<> builder(basicBlock);
+	Generater generater = { m, _func,  &builder, deallocate };
 	for (auto i : _gens) {
-		i->generate(m, _func, builder);
+		i->generate(generater);
 	}
-	builder.CreateRetVoid();
+	// 写退出模块
+	builder.CreateBr(deallocate);
 
 	builder.SetInsertPoint(alloc);
 	builder.CreateBr(basicBlock);
+	builder.SetInsertPoint(deallocate);
+	builder.CreateRetVoid();
 }

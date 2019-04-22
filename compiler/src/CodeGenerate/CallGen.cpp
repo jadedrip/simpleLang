@@ -77,11 +77,15 @@ inline void putBack(llvm::IRBuilder<>&builder, std::vector< llvm::Value* >& a, l
 	}
 }
 
-Value * CallGen::generateCode(Module *m, Function *func, llvm::IRBuilder<>&builder)
+Value * CallGen::generateCode(const Generater& generater)
 {
+	auto* m = generater.module;
+	auto func = generater.func;
+	auto& builder = generater.builder();
+
 	if (!llvmFunction) {
 		if (pointerGen) { // 函数指针
-			Value* v = pointerGen->generate(m, func, builder);
+			Value* v = pointerGen->generate(generater);
 			auto *x=dyn_cast<PointerType>(v->getType());
 
 			if (x->getElementType()->isPointerTy()) {
@@ -106,9 +110,9 @@ Value * CallGen::generateCode(Module *m, Function *func, llvm::IRBuilder<>&build
 	auto end = funcType->param_end();
 	std::vector< llvm::Value* > a;
 	if (object)
-		putBack(builder, a, object->generate(m, func, builder), iter, end);
+		putBack(builder, a, object->generate(generater), iter, end);
 	for (auto *i : params) {
-		Value* v = i->generate(m, func, builder);
+		Value* v = i->generate(generater);
 		// 如果是基本类型
 		if (i->type->isIntegerTy() || i->type->isFloatingPointTy()) {
 			if (v->getType()->isPointerTy())
@@ -139,28 +143,29 @@ Value * CallGen::generateCode(Module *m, Function *func, llvm::IRBuilder<>&build
 
 llvm::CallInst * CallGen::callFunc(llvm::IRBuilder<>& builder, llvm::Function * func, std::vector<llvm::Value*>& params)
 {
-	llvm::raw_os_ostream os(std::cout);
+	
+//llvm::raw_os_ostream os(std::cout);
 	std::vector< llvm::Value* > a;
 	auto *argIterator = func->arg_begin();
-	std::clog << "Call " << func->getName().str() << ": ";
+	//std::clog << "Call " << func->getName().str() << ": ";
 	for (auto *i : params) {
 		if (argIterator != func->arg_end()) {
 			auto *tp = argIterator->getType();
 			auto *to = try_cast(builder, tp, i);
 			a.push_back(to);
 			argIterator++;
-			std::clog << toReadable(to->getType()) << ", ";
+			//std::clog << toReadable(to->getType()) << ", ";
 		} else if (func->isVarArg()) {
 			a.push_back(i);
-			std::clog << toReadable(i->getType()) << ", ";
+			//std::clog << toReadable(i->getType()) << ", ";
 		} else
 			throw std::runtime_error("To many paramter for " + func->getName().str());
 	}
 	auto call=builder.CreateCall(func, a);
-	call->print(os);
-	os.flush();
+	//call->print(os);
+	//os.flush();
 
-	std::clog << std::endl;
+	//std::clog << std::endl;
 
 	return call;
 }

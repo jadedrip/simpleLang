@@ -2,6 +2,15 @@
 #include "String.h"
 #include "Coroutine.h"
 
+int si()
+{
+	return
+		(int)(void*)& createObject +
+		(int)(void*)& freeObject +
+		(int)(void*)& referenceIncrease +
+		(int)(void*)& createArray;
+}
+
 /*
 int si()
 {
@@ -20,10 +29,7 @@ int si()
 		(int)(void*)& si_String_Init_si_String +
 		(int)(void*)& si_print +
 
-		(int)(void*)& createObject +
-		(int)(void*)& freeObject +
-		(int)(void*)& referenceIncrease +
-		(int)(void*)& createArray +
+
 
 		(int)(void*)& si_CoroutineCreate +
 		(int)(void*)& si_YieldCoroutine +

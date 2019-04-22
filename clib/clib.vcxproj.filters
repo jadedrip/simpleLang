@@ -50,30 +50,31 @@
     <ClCompile Include="GoDispatch.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="core.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="clib.def">
       <Filter>源文件</Filter>
     </None>
-    <None Include="si\String.si">
-      <Filter>si</Filter>
-    </None>
     <None Include="si\Coroutine.si">
       <Filter>si</Filter>
     </None>
+    <None Include="si.ll" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="si.c">
       <Filter>源文件</Filter>
     </CustomBuild>
-    <CustomBuild Include="core.c">
-      <Filter>ll</Filter>
-    </CustomBuild>
-    <CustomBuild Include="String.c">
-      <Filter>ll</Filter>
-    </CustomBuild>
     <CustomBuild Include="Coroutine.c">
       <Filter>ll</Filter>
+    </CustomBuild>
+    <CustomBuild Include="si\String.si">
+      <Filter>si</Filter>
+    </CustomBuild>
+    <CustomBuild Include="String.c">
+      <Filter>源文件</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

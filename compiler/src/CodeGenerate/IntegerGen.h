@@ -11,5 +11,5 @@ public:
 	IntegerGen(llvm::LLVMContext& c, int64_t v, int b = 64);
 	IntegerGen(llvm::LLVMContext& c, int v);
 protected:
-	llvm::Value* generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>&);
+	llvm::Value* generateCode(const Generater& generater);
 };

@@ -33,12 +33,13 @@ void si_String_Init(String * str, char * data, uint64_t length, uint16_t encode)
 	//}
 
 	// wsprintfW(data);
-	// wprintf(L"\r\nCall String(data, %lld, %d): %.*ls\r\n", length, encode, (int)length, str->data);
+	wprintf(L"\r\nCall String(data, %lld, %d): %.*ls\r\n", length, encode, (int)length, str->data);
 }
 
 void si_String_Finalize(struct si_String * str)
 {
-	if (str->alloc)
+	printf("si_String_Finalize\r\n");
+	if (str && str->alloc)
 		free(str->data);
 }
 
@@ -88,10 +89,10 @@ wchar_t si_String_at(struct si_String *str, uint64_t index)
 	return d[index];
 }
 
-char * si_String_Cast_i8_ptr(struct si_String *str)
-{
-	return (char*)str->data;
-}
+//char * si_String_Cast_i8_ptr(struct si_String *str)
+//{
+//	return (char*)str->data;
+//}
 
 void si_print(String * str)
 {
@@ -101,6 +102,15 @@ void si_print(String * str)
 
 	// wprintf(L"\r\nCall print : %ls, %lld\r\n", data, len);
 	wprintf(L"%.*ls", (int)len, data);
+}
+void si_printHello() 
+{
+	printf("Hello world!\r\n");
+}
+
+void si_printInt(int v)
+{
+	wprintf(L"%d", v);
 }
 
 void si_println(String* str)
@@ -172,3 +182,4 @@ void si_String_Init_si_String(String * str, String * v)
 	str->alloc = 0;
 	str->length = v->length;
 }
+

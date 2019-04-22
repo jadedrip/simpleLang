@@ -13,7 +13,10 @@ public:
 		parameter = true;
 	}
 
-	virtual llvm::Value* generateCode(llvm::Module *m, llvm::Function *func, llvm::IRBuilder<>&builder) {
+	virtual llvm::Value* generateCode(const Generater& generater) {
+		auto& builder = generater.builder();
+		auto func = generater.func;
+
 		if (!value) {
 			auto* s=func->getValueSymbolTable();
 			auto *v=s->lookup(name);
