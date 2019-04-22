@@ -16,7 +16,7 @@ llvm::Value * LambdaGen::generateCode(const Generater& generater)
 	auto* m = generater.module;
 	auto& builder = generater.builder();
 
-	_instance->generateBody(m, builder.getContext());
 	llvm::Value* fun = _instance->generateCode(m, builder.getContext());
+	_instance->generateBody(m, builder.getContext());
 	return fun;
 }

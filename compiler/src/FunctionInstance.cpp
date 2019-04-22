@@ -91,9 +91,12 @@ llvm::Function * FunctionInstance::generateCode(llvm::Module *m, llvm::LLVMConte
 
 	func = m->getFunction(n);
 	if (!func) {
-		func = CLangModule::getFunction(n);
-		//FunctionType *FT = FunctionType::get(retType, param, variable);
-		//func = Function::Create(FT, Function::ExternalLinkage, n, m);
+		if (n.empty()) {
+			FunctionType* FT = FunctionType::get(retType, param, variable);
+			func = Function::Create(FT, Function::ExternalLinkage, n, m);
+		}
+		else
+			func = CLangModule::getFunction(n);
 	}
 	return func;
 }
