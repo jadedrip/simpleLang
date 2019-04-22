@@ -85,10 +85,10 @@ void execute(char * const *envp){
 
 		EE->DisableLazyCompilation(false);
 
-		// Give MCJIT a chance to apply relocations and set page permissions.
-		// EE->finalizeObject();
-		// EE->runStaticConstructorsDestructors(false);
 		CLangModule::moveAll(EE);
+		// Give MCJIT a chance to apply relocations and set page permissions.
+		EE->finalizeObject();
+		// EE->runStaticConstructorsDestructors(false);
 
 		//auto *p=EE->FindFunctionNamed("si_printHello");
 		//auto v=EE->getFunctionAddress("si_printHello");
@@ -141,7 +141,7 @@ int main(int argc, char* argv[],  char * const *envp)
 
 	// make_c_functions(m);
 	CLangModule::loadPackage("si");
-	CLangModule::loadLLFile("lib/si/core.ll");
+	CLangModule::loadLLFile("clib/si.ll");
 
 	// void* p = sys::DynamicLibrary::SearchForAddressOfSymbol("si_printHello");
 	//if (p)
@@ -196,6 +196,7 @@ int main(int argc, char* argv[],  char * const *envp)
 		llvm::SMDiagnostic error;
 		execute(envp);
 		// system("lli -force-interpreter out.ll");
+		// clang -lx64\Debug\clib.lib -x ir -o out.exe -g out.ll lib\si\String.ll lib\si\core.ll lib\si\Coroutine.ll
 	} else {
 		CLangModule::shutdown();
 

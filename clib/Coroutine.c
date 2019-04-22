@@ -19,7 +19,7 @@ Coroutine* CreateCoroutine(uint32_t size)
 	return p;
 }
 
-void SetCoroutineParams(Coroutine* c, size_t index, int64_t v, void* func)
+void SetCoroutineParams(Coroutine* c, size_t index, int64_t v, int64_t func)
 {
 	printf("SetCoroutineParams(index=%zu, v=%llx, func=%llx\r\n", index, v, (intptr_t)func);
 

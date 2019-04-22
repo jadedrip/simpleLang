@@ -20,6 +20,7 @@ llvm::Value* GoGen::generateCode(const Generater& generater)
 {
 	auto* m = generater.module;
 	auto &builder = generater.builder();
+	auto &c = generater.context();
 
 	Value* go = CallGen::call(builder, "CreateCoroutine", globles.size());
 	 
@@ -31,6 +32,7 @@ llvm::Value* GoGen::generateCode(const Generater& generater)
 		Value* func = nullptr;
 		if (!i->type->isStructTy()) {
 			v = builder.CreateLoad(v, i);
+			func = ConstantInt::get(c, APInt(-1, 64));
 		}
 		else {
 			auto tp = i->type;

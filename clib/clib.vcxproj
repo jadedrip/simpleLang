@@ -171,7 +171,7 @@ copy /Y $(TargetPath) $(SolutionDir)lib\si</Command>
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="core.c">
+    <ClCompile Include="core.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <FileType>CppCode</FileType>
@@ -179,7 +179,7 @@ copy /Y $(TargetPath) $(SolutionDir)lib\si</Command>
 </Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)\lib\si\%(Filename).ll</Outputs>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-    </CustomBuild>
+    </ClCompile>
     <CustomBuild Include="Coroutine.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">clang -S -emit-llvm %(Identity) -o $(SolutionDir)\lib\si\%(Filename).ll  
@@ -212,6 +212,11 @@ move /Y %(Filename).ll  $(SolutionDir)\lib\si</Command>
   </ItemGroup>
   <ItemGroup>
     <None Include="clib.def" />
+    <None Include="si.ll">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">xcopy /Y /D $(SolutionDir)clib\si.ll $(SolutionDir)lib</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)\lib\si.ll</Outputs>
+    </None>
     <None Include="si\Coroutine.si" />
     <CustomBuild Include="si\String.si">
       <FileType>Document</FileType>

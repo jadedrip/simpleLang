@@ -38,7 +38,7 @@ extern "C" {
 
 	// 创建协程对象
 	Coroutine* CreateCoroutine(uint32_t size);
-	void SetCoroutineParams(Coroutine*, size_t index, int64_t v, void* func);
+	void SetCoroutineParams(Coroutine*, size_t index, int64_t v, int64_t func);
 
 	// 创建一个协程
 	void si_CoroutineCreate(Coroutine*, SiGoFunction*);

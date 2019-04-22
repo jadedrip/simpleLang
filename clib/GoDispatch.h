@@ -31,6 +31,7 @@ public:
 	std::queue<Coroutine*> died;
 
 	void create(Coroutine* co, SiGoFunction* func);
+	void destroy(Coroutine* co);
 	~Dispatch();
 private:
 	bool isRun(int status);
