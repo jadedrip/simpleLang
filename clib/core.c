@@ -28,9 +28,15 @@ inline uint32_t* referenceCount(byte* object)
 	// 判断是否有引用计数
 	if ((flag & MARK_FLAG_REF) == 0) return NULL;
 	if ((flag & MARK_FLAG_ARRAY) == MARK_FLAG_ARRAY) // 有数组长度
-		object -= 4;
+		object -= 8;
 	object -= 12;
 	return (uint32_t*)object;
+}
+
+inline void setArrayLength(byte* object, uint32_t size, uint32_t length) {
+	uint32_t* p=(uint32_t*)(object - 12);
+	*p++ = size;
+	*p = length;
 }
 
 inline void setReferenceCount(byte* object, uint32_t ref)
@@ -55,7 +61,7 @@ inline void setObjectType(byte* object, uint64_t type, byte flag) {
 
 	返回时指针指向对象数据，可以直接操作。
 */
-void* createObject(uint64_t size, uint64_t typeId) {
+void* createObject(uint32_t size, uint64_t typeId) {
 	//assert(sizeof(LONG) == 4);
 	//return malloc(size);
 	byte flag = MARK_FLAG_REF;
@@ -86,13 +92,37 @@ void freeObject(void* object, destructor func)
 }
 
 const uint32_t arrayMark = 1 << 31;
-void * createArray(uint32_t objectSize, uint32_t typeId, uint32_t length) {
-	return createObject((objectSize + OBJECT_HEAD_SIZE) * length, arrayMark | typeId);
+void * createArray(uint32_t size, uint64_t typeId, uint32_t length) {
+	byte flag = MARK_FLAG_REF | MARK_FLAG_ARRAY;
+	printf("createArray %lld, %llx\r\n", size, typeId);
+	byte* p = (byte*)malloc(length * (size + OBJECT_HEAD_SIZE) + ARRAY_HEAD_SIZE);
+	if (!p) return NULL;
+	p = p + ARRAY_HEAD_SIZE;
+	setObjectType(p, typeId, flag);
+	setArrayLength(p, size, length);
+	setReferenceCount(p, 1);
+	return p;
 }
 
 long referenceIncrease(void * object) {
 	assert(sizeof(LONG) == 4);
 	uint32_t* p = referenceCount(object);
 	return InterlockedIncrement((LONG*)p);	// TODO: 跨平台
+}
+
+void* arrayIndex(byte* ptr, uint32_t index)
+{
+	uint32_t* p=(uint32_t*)(ptr - 12);
+#ifdef _DEBUG
+	byte flag=getObjectFlag(ptr);
+	assert(flag & MARK_FLAG_ARRAY);
+#endif
+	uint32_t size = *p++;
+	uint32_t length = *p;
+	if (index >= length) {
+		assert(0);
+	}
+	ptr += index * size;
+	return ptr;
 }
 
