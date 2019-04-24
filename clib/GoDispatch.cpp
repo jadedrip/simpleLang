@@ -9,8 +9,8 @@
 #include <iostream>
 #include <boost/lockfree/queue.hpp>
 
-using namespace std;
 volatile bool interrupt = false;
+using namespace std;
 
 void DispatchCreateCoroutine(Coroutine* co, SiGoFunction *func)
 {
@@ -68,13 +68,13 @@ void __stdcall coroutineMain(LPVOID lpParameter)
 	current->data = p;
 	current->status = COROUTINE_DEAD;
 	// «Â¿Ì
-	std::clog << "Go finished." << std::endl;
+	// std::clog << "Go finished." << std::endl;
 	int64_t* params = current->params;
 	for (auto i = 0; i < current->parameterCount; i++) {
 		intptr_t v = *params++;
 		intptr_t fun = *params++;
 		if (fun == -1L) continue;
-		freeObject((void*)v, (destructor)fun);
+		freeObject((uint8_t*)v, (destructor)fun);
 	}
 	dispatch->give(current);
 }

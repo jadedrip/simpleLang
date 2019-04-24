@@ -138,5 +138,5 @@ void comment(void)
 }
 
 void yyerror( const char* error ){
-	printf("Line %d:  %s  at  '%s'  \n",yylineno,error,yytext);
+	printf("Line %d:  %s  at  '%s'  \n",yylineno+1,error,yytext);
 }

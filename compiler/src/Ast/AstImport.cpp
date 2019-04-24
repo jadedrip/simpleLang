@@ -15,9 +15,8 @@ extern AstPackage* currentPackage;
 
 using namespace std;
 using namespace llvm;
-namespace stdfs = std::experimental::filesystem;
 
-
+namespace stdfs = std::filesystem;
 
 inline void replaceToSlash(std::string& x)
 {
@@ -62,7 +61,6 @@ CodeGen * AstImport::makeGen(AstContext * parent)
 			return nullptr;
 		}
 	}
-
 	return nullptr;
 }
 

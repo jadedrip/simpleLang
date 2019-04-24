@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "CodeGen.h"
 #include "../utility.h"
+#include "../modules.h"
 
 class FunctionInstance;
 class CallGen : public CodeGen

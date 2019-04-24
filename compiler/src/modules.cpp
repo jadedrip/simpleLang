@@ -1,5 +1,6 @@
-﻿ #include "stdafx.h"
+﻿#include "stdafx.h"
 #include "modules.h"
+#include "cparser.h"
 #include "Ast/AstPackage.h"
 
 #include <map>
@@ -11,12 +12,15 @@
 
 using namespace std;
 using namespace llvm;
-namespace stdfs = std::experimental::filesystem;
+namespace stdfs = std::filesystem;
 
 std::map<std::string, std::unique_ptr<Module> > _modules;
 std::map<std::string, std::string> funcs;	// 被使用的函数
 std::map<string, StructType* > _structs;
 std::map<string, AstContext* > _packages;
+std::map<string, Function*> _functions;
+// 包中的函数
+std::multimap<string, Function*> _packageFuncs;
 
 extern std::unique_ptr<Module> module;
 extern llvm::LLVMContext llvmContext;
@@ -38,22 +42,18 @@ llvm::Function * CLangModule::getFunction(const std::string & name) {
 	for (auto& iter : _modules) {
 		auto f = iter.second->getFunction(name);
 		if (f) {
-			//return f;
+			// 不同的模块之间是不能直接调用的，因此在本模块创建一个声明
 			return Function::Create(f->getFunctionType(), Function::ExternalLinkage, f->getName(), module.get());
 		}
 	}
-
-	return nullptr;
+	auto iter = _functions.find(name);
+	return iter==_functions.end() ? nullptr : iter->second;
 }
 
 llvm::Function * CLangModule::getFunction(const std::string& package, const std::string & name) {
 	auto iter=_modules.find(package);
 	if (iter !=_modules.end()) {
-		auto f = iter->second->getFunction(name);
-		if (f) {
-			return f;
-			//return Function::Create(f->getFunctionType(), Function::ExternalLinkage, name, module.get() );
-		}
+		return iter->second->getFunction(name);
 	}
 	return nullptr;
 }
@@ -202,6 +202,11 @@ map<string, AstFunction*> functions;
 			}
 			continue;
 		}
+		if (ex == ".h" || ex == ".hpp") {
+			auto *m=loadCHeader(name, fp.string());
+			auto x = std::unique_ptr<llvm::Module>(m);
+			_modules.insert(make_pair(name, std::move(x)));
+		}
 
 		if (ex == ".si") {
 			auto osi = base / si;
@@ -248,4 +253,20 @@ map<string, AstFunction*> functions;
 		 return i->second;
 	 }
 	 return nullptr;
+ }
+
+ std::vector<llvm::StructType*> CLangModule::allClass(const std::string& fullName)
+ {
+	 static std::vector<llvm::StructType*> empty;
+	 auto iter=_modules.find(fullName);
+	 if (iter == _modules.end()) return empty;
+	 return iter->second->getIdentifiedStructTypes();
+ }
+
+ SymbolTableList<Function>& CLangModule::allFunction(const std::string& fullName)
+ {
+	 static SymbolTableList<Function> empty;
+	 auto iter = _modules.find(fullName);
+	 if (iter == _modules.end()) return empty;
+	 return iter->second->getFunctionList();
  }

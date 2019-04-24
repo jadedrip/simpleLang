@@ -26,7 +26,7 @@ inline void initCore()
 	if (!createObject) {
 		auto m = module.get();
 		// createObject=CLangModule::getFunction("si", "createObject");
-		Module* clib = CLangModule::loadLLFile("lib/si/core.ll");
+		Module* clib = CLangModule::loadLLFile("clib/si.ll");
 		assert(clib);
 		createObject = makeLink(clib, m, "createObject");
 		createArray = makeLink(clib, m, "createArray");
@@ -66,20 +66,25 @@ Value * NewGen::generateCode(const Generater& generater)
 	//	}
 	//}
 	auto &c=builder.getContext();
-	Constant* allocSize = ConstantExpr::getSizeOf(type);
 	auto ITy = Type::getInt32Ty(c);
+	// 数组保存指针
+	if (length)
+		type = PointerType::get(type, 0);
 	// 类型 ID
 	Value* typeId=ConstantInt::get(ITy, (uintptr_t) type);
-
+	Constant* allocSize = ConstantExpr::getSizeOf(type);
 	auto* pType = PointerType::get(type, 0);
-	if (this->escape) {
+
+	if (length) {	  
+		// 是数组, 总是用 createArray 创建
+		auto* v = length->generate(generater);
+		value = CallGen::call(builder, createArray, typeId, v);
+		
+		IRBuilder<> bd(generater.deallocate);
+		CallGen::call(bd, freeObject, value, nullptr);
+	}else if (this->escape) {
 		// 如果是逃逸变量，那么通过 create 创建
-		if (length) {	  // 是数组
-			auto* v = length->generate(generater);
-			value = CallGen::call(builder, createArray, allocSize, typeId, v);
-		} else {
-			value = CallGen::call(builder, createObject, allocSize, typeId);
-		}
+		value = CallGen::call(builder, createObject, allocSize, typeId);
 		value = builder.CreateBitCast(value, pType);
 		//raw_os_ostream os(std::clog);
 		//generater.deallocate->print(os);
@@ -116,7 +121,7 @@ Value * NewGen::generateCode(const Generater& generater)
 	Value* zero = ConstantInt::get(c, APInt(32, 0));
 
 	// 通过默认构造函数来设置默认值，避免 This 指针找不到
-	if(!defaultValues.empty()){
+	if(!length && !defaultValues.empty()){
 		auto type = FunctionType::get(Type::getVoidTy(c), pType, false);
 		auto fu = Function::Create(type, Function::InternalLinkage, "", generater.module);
 		auto* basicBlock = BasicBlock::Create(c, "", fu);
@@ -157,11 +162,11 @@ Value * NewGen::generateCode(const Generater& generater)
 	//	c->generateCall(builder, a);
 	//}
 
-	std::string n = type->getStructName();
-	n[0] = tolower(n[0]);
-	value->setName(n);
-	value->print(os);
-	os.flush();
-	std::clog << std::endl;
+	//std::string n = type->getStructName();
+	//n[0] = tolower(n[0]);
+	//value->setName(n);
+	//value->print(os);
+	//os.flush();
+	//std::clog << std::endl;
 	return value;
 }

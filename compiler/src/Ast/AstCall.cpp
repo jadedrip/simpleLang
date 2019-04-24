@@ -11,6 +11,7 @@
 #include "CodeGenerate/CallGen.h"
 #include "CodeGenerate/LambdaGen.h"
 #include "CodeGenerate/ParamenterGen.h"
+#include "CodeGenerate/CLangCallGen.h"
 #include "../Type/LLVMType.h"
 #include "../Type/ClassInstanceType.h"
 #include "ClassContext.h"
@@ -123,7 +124,13 @@ CodeGen * AstCall::makeGen(AstContext * parent)
 			}
 		}
 	}
-
+	if (p) {
+		std::vector<CodeGen*> params;
+		for (auto i : gens) {
+			params.push_back(i.second);
+		}
+		return new CLangCallGen(p, std::move(params));
+	}
 	throw std::runtime_error("找不到匹配的函数：" + name);
 
 	// 尝试查找纯 C 函数

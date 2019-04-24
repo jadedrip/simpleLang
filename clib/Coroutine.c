@@ -15,13 +15,13 @@ Coroutine* CreateCoroutine(uint32_t size)
 		p->params = (int64_t*)malloc(2 * size * sizeof(int64_t));
 	}
 	p->status = COROUTINE_READY;
-	printf("CreateCoroutine with size %d\r\n", size);
+	// printf("CreateCoroutine with size %d\r\n", size);
 	return p;
 }
 
 void SetCoroutineParams(Coroutine* c, size_t index, int64_t v, int64_t func)
 {
-	printf("SetCoroutineParams(index=%zu, v=%llx, func=%llx\r\n", index, v, (intptr_t)func);
+	// printf("SetCoroutineParams(index=%zu, v=%llx, func=%llx\r\n", index, v, (intptr_t)func);
 
 	assert(index <= c->parameterCount);
 	int64_t* p = c->params;
@@ -33,7 +33,7 @@ void SetCoroutineParams(Coroutine* c, size_t index, int64_t v, int64_t func)
 int64_t GetCoroutineParams(uint32_t index)
 {
 	int64_t v = DispatchGetCoroutineParam(index);
-	printf("Load coroutine param by index %d: %llx\r\n", index, v);
+	// printf("Load coroutine param by index %d: %llx\r\n", index, v);
 	return v;
 }
 

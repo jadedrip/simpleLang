@@ -7,3 +7,9 @@ DispatchCreateCoroutine @2
 DispatchGetCurrent @3
 DispatchSetSuspend @4
 DispatchGetCoroutineParam @5
+
+createObject @6
+freeObject @7
+referenceIncrease @8
+createArray @9
+arrayLet @10

@@ -10,7 +10,9 @@ CodeGen * AstIndex::makeGen(AstContext * parent)
 	p->index = index->makeGen(parent);
 
 	auto x = p->expr->type;
-	assert(x->isPointerTy());
-	p->type = x->getPointerElementType();
+	if (x->isPointerTy())
+		p->type = x->getPointerElementType();
+	else
+		p->type = x;
 	return p;
 }

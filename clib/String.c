@@ -33,12 +33,12 @@ void si_String_Init(String * str, char * data, uint64_t length, uint16_t encode)
 	//}
 
 	// wsprintfW(data);
-	wprintf(L"\r\nCall String(data, %lld, %d): %.*ls\r\n", length, encode, (int)length, str->data);
+	// wprintf(L"\r\nCall String(data, %lld, %d): %.*ls\r\n", length, encode, (int)length, str->data);
 }
 
 void si_String_Finalize(struct si_String * str)
 {
-	printf("si_String_Finalize\r\n");
+	// printf("si_String_Finalize\r\n");
 	if (str && str->alloc)
 		free(str->data);
 }
@@ -46,7 +46,7 @@ void si_String_Finalize(struct si_String * str)
 String* si_String_Splice(String * str, int64_t index, int64_t length)
 {
 	if (!str) {
-		printf("Spilce failed: String is null");
+		// printf("Spilce failed: String is null");
 		return NULL;
 	}
 

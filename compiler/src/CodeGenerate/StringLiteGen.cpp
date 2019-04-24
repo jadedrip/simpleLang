@@ -46,6 +46,12 @@ llvm::Value * StringLiteGen::generateCode(const Generater& generater)
 {
 	auto& builder = generater.builder();
 	auto &c = generater.context();
+
+	if (hope == IntegerType::getInt8PtrTy(c)) {
+		auto* v = builder.CreateGlobalStringPtr(_str);
+		return v;
+	}
+
 	int ulen = (int)_data.size() * sizeof(wchar_t);
 	auto *v=builder.CreateGlobalStringPtr(StringRef(
 		(const char*)_data.c_str(), ulen

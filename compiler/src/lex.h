@@ -111,3 +111,5 @@ AstNode* makeIIF(AstNode* cond, AstNode* thenValue, AstNode* elseValue=nullptr);
 AstNode* createGo(AstNode* node);
 AstNode* createNode(char* name);
 AstNode* makeArrayCall(AstNode* expr, AstNode* func);
+
+AstNode* createNewArray(AstType* type, AstNode* expr);

@@ -17,7 +17,7 @@ void make_printf(llvm::Module *module) {
 	FunctionType *fType = FunctionType::get(
 		Type::getInt32Ty(module->getContext()), params, true);
 
-	 Constant *temp = module->getOrInsertFunction("printf", fType);
+	auto temp = module->getOrInsertFunction("printf", fType);
 	if (!temp) {
 		std::cerr << "printf function not in symbol table\n";
 		exit(1);

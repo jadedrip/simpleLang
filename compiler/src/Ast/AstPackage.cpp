@@ -23,7 +23,7 @@ AstContext* AstPackage::preprocessor(llvm::Module *m)
 {
 	if (!names.empty()) {
 		for (auto i : names) {
-			name += i + ".";
+			name  += i + ".";
 		}
 		name.erase(name.size() - 1);
 	}
@@ -32,14 +32,7 @@ AstContext* AstPackage::preprocessor(llvm::Module *m)
 	if (name != "si") { // 默认读入 String
 		AstClass* p=AstImport::loadClass("si", "String");
 		block->setCompiledClass("struct.si_String", p->generated);
-
-		//auto *mm=CLangModule::loadLLFile("lib\\si\\String.ll");
-
-		//auto *si = CLangModule::loadSiFile("lib\\si\\String.si", "si", mm);
-		//auto *s = si->findClass("String");
-		//if(s) block->setClass("String", s);
-		//auto *x = si->findCompiledClass("struct.si_String");
-		//if(x) block->setCompiledClass("struct.si_String", x);
+		block->setClass("String", p);
 	}
 	
 	block->module = m;

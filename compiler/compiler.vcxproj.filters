@@ -143,6 +143,10 @@
     <ClCompile Include="src\Ast\AstGo.cpp" />
     <ClCompile Include="src\CodeGenerate\GoGen.cpp" />
     <ClCompile Include="src\Ast\AstArrayCall.cpp" />
+    <ClCompile Include="src\Ast\AstNewArray.cpp" />
+    <ClCompile Include="src\cparser.cpp" />
+    <ClCompile Include="src\CodeGenerate\CLangCallGen.cpp" />
+    <ClCompile Include="TypeManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\CodeGenerate\BinaryGen.h">
@@ -311,6 +315,10 @@
     <ClInclude Include="src\CodeGenerate\GlobelWrapValue.h" />
     <ClInclude Include="src\Ast\AstArrayCall.h" />
     <ClInclude Include="src\Type\AstFuncType.h" />
+    <ClInclude Include="src\Ast\AstNewArray.h" />
+    <ClInclude Include="src\cparser.h" />
+    <ClInclude Include="src\CodeGenerate\CLangCallGen.h" />
+    <ClInclude Include="TypeManager.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="lex\silang.l">

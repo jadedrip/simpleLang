@@ -31,6 +31,9 @@ public:
 	llvm::Value* load(llvm::IRBuilder<>& builder, llvm::Value* v);
 	bool parameter = false;	// 是否函数参数，或函数参数衍生（成员）变量	
 	bool escape = false;	// 是否逃逸变量
+
+	// 期望的类型
+	llvm::Type* hope = nullptr;
 protected:
 	virtual llvm::Value* generateCode(const Generater& generater) = 0;
 };

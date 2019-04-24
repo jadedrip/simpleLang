@@ -3,6 +3,7 @@
 #include <typeinfo>
 #include <vector>
 #include <map>
+#include <sstream>
 #include <llvm/IR/IRBuilder.h>
 
 template< typename T, typename K >
@@ -170,4 +171,20 @@ inline llvm::Value* getDefaultValue(llvm::Type* type)
 		return llvm::ConstantFP::get(type, 0.0);
 	} 
 	return nullptr;
+}
+
+inline std::string toString(llvm::Type* type) {
+	std::string ss;
+	llvm::raw_string_ostream os(ss);
+	type->print(os);
+	os.flush();
+	return ss;
+}
+
+inline std::string toString(llvm::Value* type) {
+	std::string ss;
+	llvm::raw_string_ostream os(ss);
+	type->print(os);
+	os.flush(); 
+	return ss;
 }

@@ -75,6 +75,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>D:\SDK\llvm-9.0.0\build\include;D:\SDK\llvm-9.0.0\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\SDK\llvm-9.0.0\build\Debug\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -106,6 +108,7 @@
       <PreprocessorDefinitions>_DEBUG;CLIB_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <SupportJustMyCode>false</SupportJustMyCode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -199,7 +202,7 @@ copy /Y $(TargetPath) $(SolutionDir)lib\si</Command>
       <FileType>CppCode</FileType>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)\lib\si\%(Filename).ll</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">clang -S -emit-llvm %(Identity)
-move /Y %(Filename).ll  $(SolutionDir)\lib\si</Command>
+</Command>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </CustomBuild>
     <ClCompile Include="GoDispatch.cpp" />
@@ -212,11 +215,7 @@ move /Y %(Filename).ll  $(SolutionDir)\lib\si</Command>
   </ItemGroup>
   <ItemGroup>
     <None Include="clib.def" />
-    <None Include="si.ll">
-      <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">xcopy /Y /D $(SolutionDir)clib\si.ll $(SolutionDir)lib</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)\lib\si.ll</Outputs>
-    </None>
+    <None Include="si.ll" />
     <None Include="si\Coroutine.si" />
     <CustomBuild Include="si\String.si">
       <FileType>Document</FileType>

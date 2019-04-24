@@ -8,7 +8,8 @@ int si()
 		(int)(void*)& createObject +
 		(int)(void*)& freeObject +
 		(int)(void*)& referenceIncrease +
-		(int)(void*)& createArray;
+		(int)(void*)& createArray +
+		(int)(void*)& arrayLet;
 }
 
 /*
