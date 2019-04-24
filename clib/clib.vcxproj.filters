@@ -61,7 +61,9 @@
     <None Include="si\Coroutine.si">
       <Filter>si</Filter>
     </None>
-    <None Include="si.ll" />
+    <None Include="si.ll">
+      <Filter>源文件</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="si.c">

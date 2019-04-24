@@ -26,7 +26,7 @@ inline void initCore()
 	if (!createObject) {
 		auto m = module.get();
 		// createObject=CLangModule::getFunction("si", "createObject");
-		Module* clib = CLangModule::loadLLFile("lib/si/core.ll");
+		Module* clib = CLangModule::loadLLFile("clib/si.ll");
 		assert(clib);
 		createObject = makeLink(clib, m, "createObject");
 		createArray = makeLink(clib, m, "createArray");
