@@ -8,7 +8,6 @@
 // core.cpp : 定义 DLL 应用程序的导出函数。
 //
 const int OBJECT_HEAD_SIZE = 12;
-const int ARRAY_HEAD_SIZE = 16;
 typedef unsigned char byte;
 
 #define MARK_FLAG_ARRAY 0x01
@@ -65,8 +64,8 @@ void* createObject(uint32_t size, uint64_t typeId) {
 	//assert(sizeof(LONG) == 4);
 	//return malloc(size);
 	byte flag = MARK_FLAG_REF;
-	printf("createObject %lld, %llx\r\n", size, typeId);
-	byte* p = (byte*)malloc(size + OBJECT_HEAD_SIZE);
+	printf("createObject %ld, %llx\r\n", size, typeId);
+	byte* p = (byte*)malloc((size_t)size + OBJECT_HEAD_SIZE);
 	if (!p) return NULL;
 	p = p + OBJECT_HEAD_SIZE;
 	setObjectType(p, typeId, flag);
@@ -94,12 +93,11 @@ void freeObject(void* object, destructor func)
 const uint32_t arrayMark = 1 << 31;
 void * createArray(uint32_t size, uint64_t typeId, uint32_t length) {
 	byte flag = MARK_FLAG_REF | MARK_FLAG_ARRAY;
-	printf("createArray %lld, %llx\r\n", size, typeId);
-	byte* p = (byte*)malloc(length * (size + OBJECT_HEAD_SIZE) + ARRAY_HEAD_SIZE);
+	printf("createArray %ld, %llx\r\n", size, typeId);
+	byte* p = (byte*)malloc((size_t)length * size + OBJECT_HEAD_SIZE);
 	if (!p) return NULL;
-	p = p + ARRAY_HEAD_SIZE;
+	p = p + OBJECT_HEAD_SIZE;
 	setObjectType(p, typeId, flag);
-	setArrayLength(p, size, length);
 	setReferenceCount(p, 1);
 	return p;
 }
