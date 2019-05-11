@@ -5,7 +5,7 @@ import si.printHello
 import si.printInt
 import si.println
 import si.hello
-
+/*
 func world(){
 	//var h = "hello"
 	//println(h)
@@ -22,7 +22,12 @@ var c="Ni hao"
 go {
 	println("Hello world:" + c)
 }
+*/
 
+var strs=String[10]
+strs[0] = "Nice"
+
+//println(strs[0])
 
 /*
 class Base {

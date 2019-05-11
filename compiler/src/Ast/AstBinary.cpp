@@ -2,6 +2,7 @@
 #include "AstBinary.h"
 #include "AstContext.h"
 #include "AstStringLiteral.h"
+#include "CodeGenerate/LetGen.h"
 #include "CodeGenerate/BinaryGen.h"
 #include "CodeGenerate/IntegerBinaryGen.h"
 #include "CodeGenerate/ClassBinaryGen.h"
@@ -37,14 +38,14 @@ CodeGen* AstBinary::makeGen(AstContext * parent)
 	
 	auto l = left->makeGen(parent);
 	auto r = right->makeGen(parent);
+
+	if (op == '=') {
+		return new LetGen(l, r);
+	}
+
 	auto lt = l->type;
-	//if (lt->isPointerTy() && lt->getPointerElementType()->isStructTy()) {
-	//	lt = lt->getPointerElementType();
-	//}
 	auto rt = r->type;
-	//if (rt->isPointerTy() && rt->getPointerElementType()->isStructTy()) {
-	//	rt = rt->getPointerElementType();
-	//}
+
 	if (lt->isStructTy() || rt->isStructTy()) {
 		std::string word = operator_to_word(op);
 		std::string n = lt->getStructName();
@@ -56,7 +57,6 @@ CodeGen* AstBinary::makeGen(AstContext * parent)
 		auto *p=cs->makeCall(parent->context(), word, args, l);
 		if (!p) throw std::runtime_error("Can't find function " + word);
 		return p;
-		//return new ClassBinaryGen(op, l, r);
 	}
 
 	if (lt->isIntegerTy() && rt->isIntegerTy()) {

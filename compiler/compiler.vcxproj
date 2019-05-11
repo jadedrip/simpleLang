@@ -25,6 +25,7 @@
     <ClCompile Include="src\Ast\AstGo.cpp" />
     <ClCompile Include="src\Ast\AstIif.cpp" />
     <ClCompile Include="src\Ast\AstIsNull.cpp" />
+    <ClCompile Include="src\Ast\AstNewArray.cpp" />
     <ClCompile Include="src\caster.cpp" />
     <ClCompile Include="intermediate\silang.tab.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -140,6 +141,7 @@
     <ClInclude Include="src\Ast\AstGo.h" />
     <ClInclude Include="src\Ast\AstIif.h" />
     <ClInclude Include="src\Ast\AstIsNull.h" />
+    <ClInclude Include="src\Ast\AstNewArray.h" />
     <ClInclude Include="src\caster.h" />
     <ClInclude Include="intermediate\silang.tab.hpp" />
     <ClInclude Include="limbo\silang.tab.hpp" />

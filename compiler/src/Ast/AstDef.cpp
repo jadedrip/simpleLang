@@ -59,6 +59,7 @@ CodeGen * AstDef::makeDefGen(AstContext * parent, AstType * type, const std::str
 
 	auto *a = dynamic_cast<AstGetClass*>(type);
 	if (a) {
+		a->context = parent;
 		// 创建新对象
 		auto *x = parent->findClass(a->name);
 		if (x) {

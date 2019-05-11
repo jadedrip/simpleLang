@@ -77,6 +77,9 @@ ClassInstanceType * AstContext::findCompiledClass(const std::string & name)
 	if (i != _compiledClass.end()) return i->second;
 
 	if (name.substr(0, 7) != "struct.") {
+		i= _compiledClass.find("struct." + name);
+		if (i != _compiledClass.end()) return i->second;
+
 		std::string n = pathName + "_" + name;
 		std::for_each(n.begin(), n.end(), [](char &c) {if (c == '.') c = '_'; });
 		i = _compiledClass.find(n);

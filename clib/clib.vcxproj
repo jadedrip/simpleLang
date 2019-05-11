@@ -199,7 +199,7 @@ copy /Y $(TargetPath) $(SolutionDir)lib\si</Command>
       <FileType>CppCode</FileType>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)\lib\si\%(Filename).ll</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">clang -S -emit-llvm %(Identity)
-move /Y %(Filename).ll  $(SolutionDir)\lib\si</Command>
+</Command>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </CustomBuild>
     <ClCompile Include="GoDispatch.cpp" />

@@ -44,6 +44,7 @@
 #include "Ast/AstGetConstValue.h"
 #include "Ast/AstGo.h"
 #include "Ast/AstArrayCall.h"
+#include "Ast/AstNewArray.h"
 #include "token.h"
 #include "utility.h"
 #include "Type/AutoType.h"
@@ -734,5 +735,12 @@ AstNode* makeArrayCall(AstNode* expr, AstNode* func)
 	auto v = new AstArrayCall();
 	v->expr = expr;
 	v->func = (AstFunction*)func;
+	return v;
+}
+
+AstNode* createNewArray(AstType* type, AstNode* expr) {
+	auto v = new AstNewArray();
+	v->type = type;
+	v->expr = expr;
 	return v;
 }
