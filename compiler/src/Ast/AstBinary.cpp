@@ -2,6 +2,7 @@
 #include "AstBinary.h"
 #include "AstContext.h"
 #include "AstStringLiteral.h"
+#include "AstIndex.h"
 #include "CodeGenerate/LetGen.h"
 #include "CodeGenerate/BinaryGen.h"
 #include "CodeGenerate/IntegerBinaryGen.h"
@@ -39,8 +40,11 @@ CodeGen* AstBinary::makeGen(AstContext * parent)
 	auto l = left->makeGen(parent);
 	auto r = right->makeGen(parent);
 
-	if (op == '=') {
-		return new LetGen(l, r);
+	if (op == '=') { 
+		auto x=dynamic_cast<AstIndex*>(left);
+		auto p = new LetGen(l, r);
+		p->toArray = x;
+		return p;
 	}
 
 	auto lt = l->type;

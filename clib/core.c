@@ -104,6 +104,12 @@ void * createArray(uint32_t size, uint64_t typeId, uint32_t length) {
 	return p;
 }
 
+void arrayLet(void** arrays, uint64_t index, void* object)
+{
+	referenceIncrease(object);
+	arrays[index] = object;
+}
+
 long referenceIncrease(void * object) {
 	assert(sizeof(LONG) == 4);
 	uint32_t* p = referenceCount(object);

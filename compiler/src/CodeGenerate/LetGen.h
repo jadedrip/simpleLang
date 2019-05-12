@@ -7,5 +7,6 @@ public:
 	LetGen(CodeGen* left_, CodeGen* right_) : left(left_), right(right_) {}
 	CodeGen* left = nullptr;
 	CodeGen* right = nullptr;
+	bool toArray = false;
 	virtual llvm::Value* generateCode(const Generater& generater);
 };

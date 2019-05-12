@@ -9,5 +9,8 @@ llvm::Value* IndexGen::generateCode(const Generater& generater)
 	auto* b = index->generate(generater);
 	auto* p = builder.CreateGEP(a, b);
 	assert(p->getType()->isPointerTy());
+	if (type->isStructTy())
+		return p;
+
 	return builder.CreateLoad(p);
 }
