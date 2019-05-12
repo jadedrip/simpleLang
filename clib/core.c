@@ -15,7 +15,7 @@ typedef unsigned char byte;
 
 inline byte getObjectFlag(byte* object)
 {
-	uint64_t* ptr = (uint64_t*)(object - 8);
+	intptr_t* ptr = (intptr_t*)(object - 8);
 	return (*ptr & 0xFF);
 }
 
@@ -113,6 +113,7 @@ void arrayLet(void** arrays, uint64_t index, void* object)
 long referenceIncrease(void * object) {
 	assert(sizeof(LONG) == 4);
 	uint32_t* p = referenceCount(object);
+	assert(p);
 	return InterlockedIncrement((LONG*)p);	// TODO: 跨平台
 }
 

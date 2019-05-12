@@ -44,6 +44,7 @@ CodeGen* AstBinary::makeGen(AstContext * parent)
 		auto x=dynamic_cast<AstIndex*>(left);
 		auto p = new LetGen(l, r);
 		p->toArray = x;
+		r->escape = true;
 		return p;
 	}
 

@@ -12,3 +12,4 @@ createObject @6
 freeObject @7
 referenceIncrease @8
 createArray @9
+arrayLet @10
