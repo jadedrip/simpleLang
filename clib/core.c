@@ -94,8 +94,10 @@ const uint32_t arrayMark = 1 << 31;
 void * createArray(uint32_t size, uint64_t typeId, uint32_t length) {
 	byte flag = MARK_FLAG_REF | MARK_FLAG_ARRAY;
 	printf("createArray %ld, %llx\r\n", size, typeId);
-	byte* p = (byte*)malloc((size_t)length * size + OBJECT_HEAD_SIZE);
+	size_t sz = (size_t)length * size + OBJECT_HEAD_SIZE;
+	byte* p = (byte*)malloc((size_t)sz);
 	if (!p) return NULL;
+	memset(p, 0, sz);
 	p = p + OBJECT_HEAD_SIZE;
 	setObjectType(p, typeId, flag);
 	setReferenceCount(p, 1);

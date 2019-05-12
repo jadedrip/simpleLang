@@ -58,3 +58,4 @@ x64
 /compiler/intermediate/silang.tab.cpp
 /compiler/intermediate/silang.yy.cpp
 
+*.pdb
