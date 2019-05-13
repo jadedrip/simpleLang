@@ -135,17 +135,15 @@ long referenceIncrease(void * object) {
 
 void* arrayIndex(byte* ptr, uint32_t index)
 {
-	uint32_t* p=(uint32_t*)(ptr - 12);
 #ifdef _DEBUG
 	byte flag=getObjectFlag(ptr);
 	assert(flag & MARK_FLAG_ARRAY);
 #endif
-	uint32_t size = *p++;
-	uint32_t length = *p;
-	if (index >= length) {
+	long* sz = arraySize((byte*)ptr);
+	if (index >= sz) {
 		assert(0);
 	}
-	ptr += index * size;
+	ptr += index * POINTER_SIZE;
 	return ptr;
 }
 
