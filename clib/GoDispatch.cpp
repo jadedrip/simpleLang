@@ -74,7 +74,7 @@ void __stdcall coroutineMain(LPVOID lpParameter)
 		intptr_t v = *params++;
 		intptr_t fun = *params++;
 		if (fun == -1L) continue;
-		freeObject((void*)v, (destructor)fun);
+		freeObject((byte*)v, (destructor)fun);
 	}
 	dispatch->give(current);
 }
