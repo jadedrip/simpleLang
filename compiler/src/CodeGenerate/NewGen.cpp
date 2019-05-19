@@ -74,14 +74,14 @@ Value * NewGen::generateCode(const Generater& generater)
 	Value* typeId=ConstantInt::get(ITy, (uintptr_t) type);
 	Constant* allocSize = ConstantExpr::getSizeOf(type);
 	auto* pType = PointerType::get(type, 0);
-	if (this->escape) {
+
+	if (length) {	  
+		// 是数组, 总是用 createArray 创建
+		auto* v = length->generate(generater);
+		value = CallGen::call(builder, createArray, typeId, v);
+	}else if (this->escape) {
 		// 如果是逃逸变量，那么通过 create 创建
-		if (length) {	  // 是数组, 保存指针
-			auto* v = length->generate(generater);
-			value = CallGen::call(builder, createArray, allocSize, typeId, v);
-		} else {
-			value = CallGen::call(builder, createObject, allocSize, typeId);
-		}
+		value = CallGen::call(builder, createObject, allocSize, typeId);
 		value = builder.CreateBitCast(value, pType);
 		//raw_os_ostream os(std::clog);
 		//generater.deallocate->print(os);

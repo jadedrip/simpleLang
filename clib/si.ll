@@ -5,7 +5,7 @@ target triple = "x86_64-pc-windows-msvc19.20.27508"
 
 ; Function Attrs: noinline nounwind optnone uwtable
 define dso_local i32 @si() #0 {
-  ret i32 add nsw (i32 add nsw (i32 add nsw (i32 add nsw (i32 ptrtoint (i8* (i32, i64)* @createObject to i32), i32 ptrtoint (void (i8*, void (i8*)*)* @freeObject to i32)), i32 ptrtoint (i32 (i8*)* @referenceIncrease to i32)), i32 ptrtoint (i8* (i32, i64, i32)* @createArray to i32)), i32 ptrtoint (void (i8**, i64, i8*)* @arrayLet to i32))
+  ret i32 add nsw (i32 add nsw (i32 add nsw (i32 add nsw (i32 ptrtoint (i8* (i32, i64)* @createObject to i32), i32 ptrtoint (void (i8*, void (i8*)*)* @freeObject to i32)), i32 ptrtoint (i32 (i8*)* @referenceIncrease to i32)), i32 ptrtoint (i8* (i64, i32)* @createArray to i32)), i32 ptrtoint (void (i8**, i64, i8*)* @arrayLet to i32))
 }
 
 declare dso_local i8* @createObject(i32, i64) #1
@@ -14,7 +14,7 @@ declare dso_local void @freeObject(i8*, void (i8*)*) #1
 
 declare dso_local i32 @referenceIncrease(i8*) #1
 
-declare dso_local i8* @createArray(i32, i64, i32) #1
+declare dso_local i8* @createArray(i64, i32) #1
 
 declare dso_local void @arrayLet(i8**, i64, i8*) #1
 

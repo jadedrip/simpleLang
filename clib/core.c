@@ -46,7 +46,7 @@ inline void setObjectType(byte* object, uint64_t type, byte flag) {
 	*ptr = d;
 }
 
-inline long* arraySize(byte* object) 
+inline uint32_t* arraySize(byte* object) 
 {
 	byte flag = getObjectFlag(object);
 	object -= POINTER_SIZE;
@@ -54,7 +54,7 @@ inline long* arraySize(byte* object)
 		object -= REF_SIZE;
 	if (flag & MARK_FLAG_ARRAY) {
 		object -= REF_SIZE;
-		return (long*)object;
+		return (uint32_t*)object;
 	}
 	return NULL;
 }
@@ -104,10 +104,10 @@ void freeObject(byte* object, destructor func)
 }
 
 const uint32_t arrayMark = 1 << 31;
-void * createArray(uint32_t size, uint64_t typeId, uint32_t length) {
+void * createArray(uint64_t typeId, uint32_t length) {
 	byte flag = MARK_FLAG_REF | MARK_FLAG_ARRAY;
-	printf("createArray %ld, %llx\r\n", size, typeId);
-	size_t sz = (size_t)length * size + POINTER_SIZE + REF_SIZE;
+	printf("createArray %ld, %llx\r\n", length, typeId);
+	size_t sz = (size_t)length * sizeof(intptr_t) + POINTER_SIZE + REF_SIZE;
 	byte* p = (byte*)malloc((size_t)sz);
 	if (!p) return NULL;
 	memset(p, 0, sz);
@@ -140,7 +140,7 @@ void* arrayIndex(byte* ptr, uint32_t index)
 	assert(flag & MARK_FLAG_ARRAY);
 #endif
 	long* sz = arraySize((byte*)ptr);
-	if (index >= sz) {
+	if (index >= *sz) {
 		assert(0);
 	}
 	ptr += index * POINTER_SIZE;
