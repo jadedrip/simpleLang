@@ -79,6 +79,9 @@ Value * NewGen::generateCode(const Generater& generater)
 		// 是数组, 总是用 createArray 创建
 		auto* v = length->generate(generater);
 		value = CallGen::call(builder, createArray, typeId, v);
+		
+		IRBuilder<> bd(generater.deallocate);
+		CallGen::call(bd, freeObject, value, nullptr);
 	}else if (this->escape) {
 		// 如果是逃逸变量，那么通过 create 创建
 		value = CallGen::call(builder, createObject, allocSize, typeId);

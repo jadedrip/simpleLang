@@ -99,6 +99,7 @@ void freeObject(byte* object, destructor func)
 			object -= REF_SIZE;
 		if (flag & MARK_FLAG_ARRAY);
 			object -= REF_SIZE;
+
 		free(object);
 	}
 }
@@ -107,13 +108,15 @@ const uint32_t arrayMark = 1 << 31;
 void * createArray(uint64_t typeId, uint32_t length) {
 	byte flag = MARK_FLAG_REF | MARK_FLAG_ARRAY;
 	printf("createArray %ld, %llx\r\n", length, typeId);
-	size_t sz = (size_t)length * sizeof(intptr_t) + POINTER_SIZE + REF_SIZE;
+	size_t sz = (size_t)length * sizeof(intptr_t) + POINTER_SIZE + REF_SIZE + REF_SIZE;
 	byte* p = (byte*)malloc((size_t)sz);
 	if (!p) return NULL;
 	memset(p, 0, sz);
-	p = p + POINTER_SIZE + REF_SIZE;
+	p = p + POINTER_SIZE + REF_SIZE + REF_SIZE;
 	setObjectType(p, typeId, flag);
 	setReferenceCount(p, 1);
+	uint32_t* xsz = arraySize(p);
+	*xsz = length;
 	return p;
 }
 
