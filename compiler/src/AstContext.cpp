@@ -73,19 +73,20 @@ AstClass * AstContext::findClass(const std::string & name) {
 
 ClassInstanceType * AstContext::findCompiledClass(const std::string & name)
 {
-	auto i = _compiledClass.find(name);
-	if (i != _compiledClass.end()) return i->second;
+	if (auto i = _compiledClass.find(name); i != _compiledClass.end())
+		return i->second;
 
 	if (name.substr(0, 7) != "struct.") {
-		i= _compiledClass.find("struct." + name);
-		if (i != _compiledClass.end()) return i->second;
+		if (auto i = _compiledClass.find("struct." + name); i != _compiledClass.end()) 
+			return i->second;
 
 		std::string n = pathName + "_" + name;
 		std::for_each(n.begin(), n.end(), [](char &c) {if (c == '.') c = '_'; });
-		i = _compiledClass.find(n);
-		if (i != _compiledClass.end()) return i->second;
-		i = _compiledClass.find("struct." + n);
-		if (i != _compiledClass.end()) return i->second;
+		
+		if (auto i = _compiledClass.find(n); i != _compiledClass.end()) 
+			return i->second;
+		if (auto i = _compiledClass.find("struct." + n); i != _compiledClass.end()) 
+			return i->second;
 	}
 	return parent ? parent->findCompiledClass(name) : nullptr;
 }
@@ -100,9 +101,9 @@ map<std::string, AstClass*> loadClassCache;
 AstClass * AstContext::loadClass(const std::string & path, const std::string & name)
 {
 	string n = path + "." + name;
-	auto iter = loadClassCache.find(n);
-	if (iter != loadClassCache.end()) return iter->second;
-
+	
+	if (auto iter = loadClassCache.find(n); iter != loadClassCache.end())
+		return iter->second;
 
 	return nullptr;
 }
@@ -113,8 +114,7 @@ CodeGen * AstContext::makeCall(
 	std::vector<std::pair<std::string, CodeGen*>>& arguments, 
 	CodeGen* object)
 {
-	auto it = _functions.equal_range(name);
-	if (it.first != it.second) {
+	if (auto it = _functions.equal_range(name); it.first != it.second) {
 		// 优先非模板
 		for (auto i = it.first; i != it.second; i++) {
 			auto *f = i->second;
@@ -122,6 +122,8 @@ CodeGen * AstContext::makeCall(
 			auto *p = f->makeCall(this, arguments);
 			if (p) return p;
 		}
+
+		// for (auto &i : std::range(it)) {
 		for (auto i = it.first; i != it.second; i++) {
 			auto *f = i->second;
 			if (!f->isTemplate()) continue;
@@ -129,8 +131,7 @@ CodeGen * AstContext::makeCall(
 			if (p) return p;
 		}
 	}
-	if (parent) return parent->makeCall(c, name, arguments, object);
-	return nullptr;
+	return parent ? parent->makeCall(c, name, arguments, object) : nullptr;
 }
 
 AstType * AstContext::findType(const std::string & name)

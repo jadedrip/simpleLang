@@ -10,12 +10,11 @@
 const int POINTER_SIZE = sizeof(intptr_t);
 const int REF_SIZE = sizeof(uint32_t);
 
+const uint8_t MARK_FLAG_ARRAY = 0x01;	// 是数组
+const uint8_t MARK_FLAG_REF = 0x02;	// 引用计数
+const uint8_t MARK_FLAG_BASE = 0x80;	// 是否默认类型
 
-const byte MARK_FLAG_ARRAY = 0x01;	// 是数组
-const byte MARK_FLAG_REF = 0x02;	// 引用计数
-const byte MARK_FLAG_BASE = 0x80;	// 是否默认类型
-
-inline byte getObjectFlag(byte* object)
+inline uint8_t getObjectFlag(uint8_t* object)
 {
 	intptr_t* ptr = (intptr_t*)(object);
 	ptr--;
@@ -23,32 +22,32 @@ inline byte getObjectFlag(byte* object)
 }
 
 /// 获取引用计数地址
-inline uint32_t* referenceCount(byte* object)
+inline uint32_t* referenceCount(uint8_t* object)
 {
 	// TODO: 大小字节序
-	byte flag = getObjectFlag(object);
+	uint8_t flag = getObjectFlag(object);
 	// 判断是否有引用计数
 	if ((flag & MARK_FLAG_REF) == 0) return NULL;
 	object -= POINTER_SIZE + REF_SIZE;
 	return (uint32_t*)object;
 }
 
-inline void setReferenceCount(byte* object, uint32_t ref)
+inline void setReferenceCount(uint8_t* object, uint32_t ref)
 {
 	uint32_t* p = referenceCount(object);
 	*p = ref;
 }
 
-inline void setObjectType(byte* object, uint64_t type, byte flag) {
+inline void setObjectType(uint8_t* object, uint64_t type, uint8_t flag) {
 	intptr_t* ptr = (intptr_t*)(object - 8);
 	intptr_t d = type << 8 | flag;
 	printf("setObject: %llx", d);
 	*ptr = d;
 }
 
-inline uint32_t* arraySize(byte* object) 
+inline uint32_t* arraySize(uint8_t* object) 
 {
-	byte flag = getObjectFlag(object);
+	uint8_t flag = getObjectFlag(object);
 	object -= POINTER_SIZE;
 	if (flag & MARK_FLAG_REF)
 		object -= REF_SIZE;
@@ -70,9 +69,9 @@ inline uint32_t* arraySize(byte* object)
 void* createObject(uint32_t size, uint64_t typeId) {
 	//assert(sizeof(LONG) == 4);
 	//return malloc(size);
-	byte flag = MARK_FLAG_REF;
+	uint8_t flag = MARK_FLAG_REF;
 	printf("createObject %ld, %llx\r\n", size, typeId);
-	byte* p = (byte*)malloc((size_t)size + POINTER_SIZE + REF_SIZE);
+	uint8_t* p = (uint8_t*)malloc((size_t)size + POINTER_SIZE + REF_SIZE);
 	if (!p) return NULL;
 	p = p + POINTER_SIZE + REF_SIZE;
 	setObjectType(p, typeId, flag);
@@ -80,19 +79,19 @@ void* createObject(uint32_t size, uint64_t typeId) {
 	return p;
 }
 
-void freeObject(byte* object, destructor func)
+void freeObject(uint8_t* object, destructor func)
 {
 	assert(sizeof(LONG) == 4);
 	if (!object) return;
 
-	uint32_t *ref=referenceCount((byte*)object);
+	uint32_t *ref=referenceCount((uint8_t*)object);
 	LONG v = InterlockedDecrement(ref);	// TODO: 跨平台
 
 	printf("freeObject with: %ld %llx\r\n", v, (uint64_t)func);
 	if (v == 0) {
 		if(func) (*func)(object);
 		printf("freeObject: desotroy.\r\n");
-		byte flag = getObjectFlag(object);
+		uint8_t flag = getObjectFlag(object);
 
 		object -= POINTER_SIZE;
 		if (flag & MARK_FLAG_REF)
@@ -106,10 +105,10 @@ void freeObject(byte* object, destructor func)
 
 const uint32_t arrayMark = 1 << 31;
 void * createArray(uint64_t typeId, uint32_t length) {
-	byte flag = MARK_FLAG_REF | MARK_FLAG_ARRAY;
+	uint8_t flag = MARK_FLAG_REF | MARK_FLAG_ARRAY;
 	printf("createArray %ld, %llx\r\n", length, typeId);
 	size_t sz = (size_t)length * sizeof(intptr_t) + POINTER_SIZE + REF_SIZE + REF_SIZE;
-	byte* p = (byte*)malloc((size_t)sz);
+	uint8_t* p = (uint8_t*)malloc((size_t)sz);
 	if (!p) return NULL;
 	memset(p, 0, sz);
 	p = p + POINTER_SIZE + REF_SIZE + REF_SIZE;
@@ -123,7 +122,7 @@ void * createArray(uint64_t typeId, uint32_t length) {
 void arrayLet(void** arrays, uint64_t index, void* object)
 {
 	referenceIncrease(object);
-	long* sz=arraySize((byte*)arrays);
+	long* sz=arraySize((uint8_t*)arrays);
 	if (index >= *sz) {
 		assert(0);
 	}
@@ -136,13 +135,13 @@ long referenceIncrease(void * object) {
 	return InterlockedIncrement((LONG*)p);	// TODO: 跨平台
 }
 
-void* arrayIndex(byte* ptr, uint32_t index)
+void* arrayIndex(uint8_t* ptr, uint32_t index)
 {
 #ifdef _DEBUG
-	byte flag=getObjectFlag(ptr);
+	uint8_t flag=getObjectFlag(ptr);
 	assert(flag & MARK_FLAG_ARRAY);
 #endif
-	long* sz = arraySize((byte*)ptr);
+	long* sz = arraySize((uint8_t*)ptr);
 	if (index >= *sz) {
 		assert(0);
 	}

@@ -74,28 +74,28 @@ inline void canCastTo(AstNode* node, L func)
 template< typename T = AstLet, typename L >
 inline bool foreach(AstNode* node, L func, bool autoDelete = false)
 {
-	if (node) {
-		auto* p = dynamic_cast<AstList*>(node);
-		if (p) {
-			for (auto *i : p->lines) {
-				auto x = dynamic_cast<T *>(i);
-				if (x) {
-					func(x);
-					if (autoDelete) delete x;
-				}
-			}
-			delete p;
-			return true;
-		} else {
-			auto x=dynamic_cast<T *>(node);
-			if (x) {
+	if (!node) return false;
+	auto* p = dynamic_cast<AstList*>(node);
+	if (p) {
+		for (auto* i : p->lines) {
+			
+			if (auto x = dynamic_cast<T*>(i); x) {
 				func(x);
 				if (autoDelete) delete x;
 			}
-			return false;
 		}
+		delete p;
+		return true;
 	}
-	return false;
+	else {
+		auto x = dynamic_cast<T*>(node);
+		if (x) {
+			func(x);
+			if (autoDelete) delete x;
+		}
+		return false;
+	}
+		return false;
 }
 
 template<typename T>

@@ -9,8 +9,8 @@
 #include <iostream>
 #include <boost/lockfree/queue.hpp>
 
-using namespace std;
 volatile bool interrupt = false;
+using namespace std;
 
 void DispatchCreateCoroutine(Coroutine* co, SiGoFunction *func)
 {
@@ -74,7 +74,7 @@ void __stdcall coroutineMain(LPVOID lpParameter)
 		intptr_t v = *params++;
 		intptr_t fun = *params++;
 		if (fun == -1L) continue;
-		freeObject((byte*)v, (destructor)fun);
+		freeObject((uint8_t*)v, (destructor)fun);
 	}
 	dispatch->give(current);
 }

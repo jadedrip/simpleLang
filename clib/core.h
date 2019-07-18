@@ -4,13 +4,11 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-	typedef unsigned char byte;
-
 	// 定义析构函数
 	typedef void (*destructor)(void* object);
 
 	void* createObject(uint32_t objectSize, uint64_t typeId);
-	void freeObject(byte* object, destructor func);
+	void freeObject(uint8_t* object, destructor func);
 	long referenceIncrease(void* object);
 	void* createArray(uint64_t typeId, uint32_t length);
 	void arrayLet(void** arrays, uint64_t index, void* object);
