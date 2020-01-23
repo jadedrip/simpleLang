@@ -11,7 +11,7 @@
 
 using namespace std;
 using namespace llvm;
-namespace stdfs = std::experimental::filesystem;
+namespace stdfs = std::filesystem;
 
 std::map<std::string, std::unique_ptr<Module> > _modules;
 std::map<std::string, std::string> funcs;	// 被使用的函数

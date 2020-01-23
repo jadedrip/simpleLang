@@ -75,7 +75,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\SDK\llvm-9.0.0\build\include;D:\SDK\llvm-9.0.0\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\SDK\llvm-9.0.0\build\include;D:\SDK\llvm-9.0.0\include;D:\SDK\llvm-9.0.0\tools\clang\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\SDK\llvm-9.0.0\build\Debug\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

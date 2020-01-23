@@ -329,7 +329,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\SDK\llvm-9.0.0\build\include;D:\SDK\llvm-9.0.0\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\SDK\llvm-9.0.0\build\tools\clang\include;D:\SDK\llvm-9.0.0\tools\clang\include;D:\SDK\llvm-9.0.0\build\include;D:\SDK\llvm-9.0.0\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\SDK\llvm-9.0.0\build\Debug\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -368,12 +368,12 @@
       <AdditionalIncludeDirectories>./src;.</AdditionalIncludeDirectories>
       <SDLCheck>false</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
-      <AdditionalDependencies>chkstk.obj;LLVMInstrumentation.lib;LLVMCodeGen.lib;LLVMCore.lib;LLVMExecutionEngine.lib;LLVMGlobalISel.lib;LLVMIRReader.lib;LLVMInterpreter.lib;LLVMMC.lib;LLVMMCJIT.lib;LLVMOrcJIT.lib;LLVMObject.lib;LLVMRuntimeDyld.lib;LLVMSelectionDAG.lib;LLVMSupport.lib;LLVMX86CodeGen.lib;LLVMX86AsmPrinter.lib;LLVMX86AsmParser.lib;LLVMX86Desc.lib;LLVMX86Info.lib;LLVMX86Disassembler.lib;LLVMAsmParser.lib;LLVMAsmPrinter.lib;LLVMScalarOpts.lib;LLVMInstCombine.lib;LLVMProfileData.lib;LLVMTransformUtils.lib;LLVMAnalysis.lib;LLVMTarget.lib;LLVMBitReader.lib;LLVMX86Utils.lib;LLVMMCParser.lib;LLVMMCDisassembler.lib;LLVMDebugInfoCodeView.lib;LLVMDebugInfoMSF.lib;LLVMBinaryFormat.lib;LLVMDemangle.lib</AdditionalDependencies>
+      <AdditionalDependencies>chkstk.obj;Version.lib;LLVMOption.lib;LLVMRemarks.lib;LLVMAsmPrinter.lib;LLVMInstrumentation.lib;LLVMDebugInfoDWARF.lib;LLVMCodeGen.lib;LLVMCore.lib;LLVMExecutionEngine.lib;LLVMGlobalISel.lib;LLVMIRReader.lib;LLVMInterpreter.lib;LLVMMC.lib;LLVMMCJIT.lib;LLVMOrcJIT.lib;LLVMObject.lib;LLVMRuntimeDyld.lib;LLVMSelectionDAG.lib;LLVMSupport.lib;LLVMX86CodeGen.lib;LLVMX86AsmParser.lib;LLVMX86Desc.lib;LLVMX86Info.lib;LLVMX86Disassembler.lib;LLVMAsmParser.lib;LLVMScalarOpts.lib;LLVMInstCombine.lib;LLVMProfileData.lib;LLVMTransformUtils.lib;LLVMAnalysis.lib;LLVMTarget.lib;LLVMBitReader.lib;LLVMX86Utils.lib;LLVMMCParser.lib;LLVMMCDisassembler.lib;LLVMDebugInfoCodeView.lib;LLVMDebugInfoMSF.lib;LLVMBinaryFormat.lib;LLVMDemangle.lib;LLVMBitstreamReader.lib;clangAST.lib;clangLex.lib;clangEdit.lib;clangSema.lib;clangAnalysis.lib;clangBasic.lib;clangParse.lib;clangDriver.lib;clangFrontend.lib;clangSerialization.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

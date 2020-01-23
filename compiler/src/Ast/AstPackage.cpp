@@ -29,6 +29,22 @@ AstContext* AstPackage::preprocessor(llvm::Module *m)
 	}
 
 	AstContext* block = new AstContext(m);
+
+
+	std::unique_ptr<clang::CompilerInstance> Compiler(new clang::CompilerInstance());
+	Compiler->createDiagnostics(); 
+	std::shared_ptr<clang::TargetOptions> TargetOptionsInstance(new clang::TargetOptions()); 
+	TargetOptionsInstance->Triple = sys::getProcessTriple();
+	 Compiler->setTarget(clang::TargetInfo::CreateTargetInfo(Compiler->getDiagnostics(), TargetOptionsInstance)); 
+	 Compiler->createFileManager(); Compiler->createSourceManager(Compiler->getFileManager()); 
+	 Compiler->createPreprocessor(clang::TU_Complete); Compiler->createASTContext();
+	 clang::ASTContext& ASTContextInstance = Compiler->getASTContext(); 
+	 clang::IdentifierTable& Identifiers = Compiler->getPreprocessor().getIdentifierTable(); 
+	 // AST building 
+	 // TranslationUnitDecl 
+	 clang::TranslationUnitDecl *TranslationUnitDeclInstance = ASTContextInstance.getTranslationUnitDecl(); 
+
+
 	if (name != "si") { // 默认读入 String
 		AstClass* p=AstImport::loadClass("si", "String");
 		block->setCompiledClass("struct.si_String", p->generated);
