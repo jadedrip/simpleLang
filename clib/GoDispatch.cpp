@@ -68,7 +68,7 @@ void __stdcall coroutineMain(LPVOID lpParameter)
 	current->data = p;
 	current->status = COROUTINE_DEAD;
 	// «Â¿Ì
-	std::clog << "Go finished." << std::endl;
+	// std::clog << "Go finished." << std::endl;
 	int64_t* params = current->params;
 	for (auto i = 0; i < current->parameterCount; i++) {
 		intptr_t v = *params++;

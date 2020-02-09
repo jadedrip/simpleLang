@@ -41,7 +41,7 @@ inline void setReferenceCount(uint8_t* object, uint32_t ref)
 inline void setObjectType(uint8_t* object, uint64_t type, uint8_t flag) {
 	intptr_t* ptr = (intptr_t*)(object - 8);
 	intptr_t d = type << 8 | flag;
-	printf("setObject: %llx", d);
+	// printf("setObject: %llx", d);
 	*ptr = d;
 }
 
@@ -70,7 +70,7 @@ void* createObject(uint32_t size, uint64_t typeId) {
 	//assert(sizeof(LONG) == 4);
 	//return malloc(size);
 	uint8_t flag = MARK_FLAG_REF;
-	printf("createObject %ld, %llx\r\n", size, typeId);
+	// printf("createObject %ld, %llx\r\n", size, typeId);
 	uint8_t* p = (uint8_t*)malloc((size_t)size + POINTER_SIZE + REF_SIZE);
 	if (!p) return NULL;
 	p = p + POINTER_SIZE + REF_SIZE;
@@ -87,10 +87,10 @@ void freeObject(uint8_t* object, destructor func)
 	uint32_t *ref=referenceCount((uint8_t*)object);
 	LONG v = InterlockedDecrement(ref);	// TODO: 跨平台
 
-	printf("freeObject with: %ld %llx\r\n", v, (uint64_t)func);
+	// printf("freeObject with: %ld %llx\r\n", v, (uint64_t)func);
 	if (v == 0) {
 		if(func) (*func)(object);
-		printf("freeObject: desotroy.\r\n");
+		// printf("freeObject: desotroy.\r\n");
 		uint8_t flag = getObjectFlag(object);
 
 		object -= POINTER_SIZE;
@@ -106,7 +106,7 @@ void freeObject(uint8_t* object, destructor func)
 const uint32_t arrayMark = 1 << 31;
 void * createArray(uint64_t typeId, uint32_t length) {
 	uint8_t flag = MARK_FLAG_REF | MARK_FLAG_ARRAY;
-	printf("createArray %ld, %llx\r\n", length, typeId);
+	// printf("createArray %ld, %llx\r\n", length, typeId);
 	size_t sz = (size_t)length * sizeof(intptr_t) + POINTER_SIZE + REF_SIZE + REF_SIZE;
 	uint8_t* p = (uint8_t*)malloc((size_t)sz);
 	if (!p) return NULL;
