@@ -37,10 +37,10 @@ void yyerror( const char* error );
 %type<expr>		typeLet function_variable equal block_or_none
 %type<expr>		typeLets function_parameters class_new go types
 %type<type>		cls_type cls_construct operator operator_binary operator_unary
-%type<expr>		expr expr_value lambda call exprs for_loop cls function_def def sequence array_new
+%type<expr>		expr expr_value lambda call exprs for_loop cls function_def def sequence array_new annotations annotation
 %type<expr>		tuple tupleResolve assignment splice index  while_loop type_expr if_expr function_ret
 %type<expr>		line const enum function rtn if_cond switch object_block lines tupleResolveParams block_or_line
-%type<expr>		interface if_else try object_delete operator_overload annotation block return_tuple_elem return_tuple_elems
+%type<expr>		interface if_else try object_delete operator_overload block return_tuple_elem return_tuple_elems
 %token CALL IF ELSE WHILE FOR RETURN CLASS INTERF PROTECTED 
 %token PACKAGE IMPORT NULLPTR STATIC CONST ENUM SWITCH CASE DEFAULT SINGLETON
 %token TRY_TOKEN CATCH FINALLY GET_TOKEN SET_TOKEN OPERATOR NEW_TOKEN DELETE_TOKEN
@@ -194,7 +194,7 @@ types
 cls	
 	:	cls_type U_IDENTIFIER cls_template_list cls_inherit cls_block	
 		{ $$=makeClass($1,$2, $<expr>3, $4, $<expr>5 ); }
-	|	annotation cls { $$=annotationdClass($1,$2); }	// ×¢½â
+	|	annotation cls { $$=setAnnotations($1,$2); }	// ×¢½â
 	;
 
 cls_type
@@ -263,8 +263,10 @@ interface_lines
 	;
 
 function_def
-	: FUNC L_IDENTIFIER '(' function_parameters ')' function_ret 
-		 { $<expr>$=createFunction(0, $2, $4, $6, nullptr); }
+	: annotations FUNC L_IDENTIFIER '(' function_parameters ')' function_ret 
+		 { $<expr>$=setAnnotations($<expr>1, createFunction(0, $3, $5, $7, nullptr)); }
+		| FUNC L_IDENTIFIER '(' function_parameters ')' function_ret 
+		 { $<expr>$= createFunction(0, $2, $4, $6, nullptr); }
 	;
 
 /**********************************************
@@ -690,6 +692,11 @@ annotation
 annotation_list
 	: L_IDENTIFIER '=' expr							{ $<expr>$=let($1,$3); }
 	| annotation_list ',' L_IDENTIFIER '=' expr		{ $<expr>$=link($<expr>1, let($3,$5)); }
+	;
+
+annotations
+	: annotation
+	| annotations annotation { $<expr>$=link($<expr>1, $<expr>2); }
 	;
 
 %%

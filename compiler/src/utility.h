@@ -188,3 +188,10 @@ inline std::string toString(llvm::Value* type) {
 	os.flush(); 
 	return ss;
 }
+
+/*
+*/
+void enumDirectory(
+	const std::string& base,
+	const std::function<void(const std::string&/*relativePath*/,std::filesystem::path&)>& callback
+);

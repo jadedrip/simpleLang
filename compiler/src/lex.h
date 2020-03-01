@@ -103,7 +103,6 @@ AstNode* appendDef(AstNode* def, char* name, AstNode* value = nullptr);
 
 AstType * nullAble(AstType * type);
 
-AstNode* annotationdClass(AstNode* annotation, AstNode* cls);
 AstNode* makeAnnotation(char* name, AstNode* attrs);
 
 AstNode* makeIsNull(AstNode* value);
@@ -113,3 +112,4 @@ AstNode* createNode(char* name);
 AstNode* makeArrayCall(AstNode* expr, AstNode* func);
 
 AstNode* createNewArray(AstType* type, AstNode* expr);
+AstNode* setAnnotations(AstNode* expr, AstNode* func);

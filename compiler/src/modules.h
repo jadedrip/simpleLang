@@ -8,6 +8,7 @@ class AstClass;
 class AstFunction;
 class CLangModule {
 public:
+	static void initialize();
 	static llvm::Function* getFunction(const std::string& full_name);
 	static llvm::Function* getFunction(const std::string& package, const std::string & name);
 	static void moveAll(llvm::ExecutionEngine* engine);

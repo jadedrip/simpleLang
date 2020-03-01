@@ -21,6 +21,7 @@ class String {
 	}
 	init(String value)
 
+	@CLang("stringAt")
 	func at(long index) : char
 	func size() : long
 	// operator == (String str): bool

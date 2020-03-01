@@ -6,7 +6,6 @@
 #include "DispatchBind.h"
 #include "core.h"
 
-
 Coroutine* CreateCoroutine(uint32_t size)
 {
 	Coroutine* p = (Coroutine*)createObject(sizeof(Coroutine), 14);

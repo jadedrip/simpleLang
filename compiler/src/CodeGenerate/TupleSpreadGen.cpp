@@ -2,11 +2,16 @@
 #include "TupleSpreadGen.h"
 
 using namespace llvm;
+
+TupleSpreadGen::TupleSpreadGen(CodeGen* tuple) : _tuple(tuple) {
+	tuple->valueType = rvalue;
+}
+
 Value * TupleSpreadGen::generateCode(const Generater& generater)
 {
 	auto& builder = generater.builder();
 
-	auto *t = tuple->generate(generater);
+	auto *t = _tuple->generate(generater);
 	assert(t->getType()->isStructTy());
 
 	auto* ptr=builder.CreateAlloca(t->getType());

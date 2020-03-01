@@ -8,27 +8,8 @@
 // 这个文件定义一些 llvm 内部函数
 
 using namespace llvm;
-
-void make_printf(llvm::Module *module) {
-	using namespace llvm;
-	std::vector<Type *> params;
-	params.push_back(Type::getInt8PtrTy(module->getContext(), 0));
-
-	FunctionType *fType = FunctionType::get(
-		Type::getInt32Ty(module->getContext()), params, true);
-
-	auto temp = module->getOrInsertFunction("printf", fType);
-	if (!temp) {
-		std::cerr << "printf function not in symbol table\n";
-		exit(1);
-	}
-
-	// CLangModule::add("c", module);
-}
-
 using namespace std::experimental;
 
 void make_c_functions(llvm::Module *module) {
-	make_printf(module);
 	CLangModule::loadLLFile("lib/core.ll");
 }

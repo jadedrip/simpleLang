@@ -2,12 +2,20 @@
 #include "UnaryIntGen.h"
 
 using namespace llvm;
+
+UnaryIntGen::UnaryIntGen(int op, CodeGen* expr)
+	: _op(op), _expr(expr)
+{
+	// 一元操作的必须是右值
+	_expr->valueType = rvalue;
+}
+
 llvm::Value * UnaryIntGen::generateCode(const Generater& generater)
 {
 	IRBuilder<> builder = generater.builder();
 
-	Value *p = expr->generate(generater);
-	switch (op) {
+	Value *p = _expr->generate(generater);
+	switch (_op) {
 	case '-':
 	{
 		Value* zero = ConstantInt::getSigned(p->getType(), 0);

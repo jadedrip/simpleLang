@@ -685,14 +685,6 @@ AstType* nullAble(AstType* type) {
 	return type;
 }
 
-AstNode * annotationdClass(AstNode * annotation, AstNode * cls)
-{
-	auto *p = dynamic_cast<AstClass*>(cls);
-	auto *a = dynamic_cast<AstAnnotation*>(annotation);
-	p->annotations[a->name] = a;
-	return p;
-}
-
 AstNode * makeAnnotation(char * name, AstNode * attrs)
 {
 	auto *p = new AstAnnotation();
@@ -743,4 +735,23 @@ AstNode* createNewArray(AstType* type, AstNode* expr) {
 	v->type = type;
 	v->expr = expr;
 	return v;
+}
+
+AstNode* setAnnotations(AstNode* expr, AstNode* func)
+{
+	if (!expr) return func;
+	auto x=dynamic_cast<AstFunction*>(func);
+	if (x) {
+		foreach<AstNode>(expr, [x](AstNode* ann) {
+			x->annotations[ann->name] = dynamic_cast<AstAnnotation*>(ann);
+			});
+		return func;
+	}
+	auto c = dynamic_cast<AstClass*>(func);
+	if (c) {
+		foreach<AstNode>(expr, [c](AstNode* ann) {
+			c->annotations[ann->name] = dynamic_cast<AstAnnotation*>(ann);
+			});
+	}
+	return func;
 }

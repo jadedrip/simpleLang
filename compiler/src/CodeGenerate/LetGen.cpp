@@ -10,15 +10,15 @@ llvm::Value * LetGen::generateCode(const Generater& generater)
 {
 	auto& builder = generater.builder();
 	// 如果有 set 函数
-	auto *x=dynamic_cast<ClassMemberGen*>(left);
+	auto *x=dynamic_cast<ClassMemberGen*>(_left);
 	if (x && x->setFunction) {
 		auto* o=x->object->generate(generater);
-		auto* v = right->generate(generater);
+		auto* v = _right->generate(generater);
 		return CallGen::call(builder, x->setFunction, o, v);
 	}
 	// 如果是复制到数组
-	if (toArray) {
-		auto *p=dynamic_cast<IndexGen*>(left);
+	if (_toArray) {
+		auto *p=dynamic_cast<IndexGen*>(_left);
 		//CallGen::call(builder, "referenceIncrease", r);
 		//std::clog << "Let right is " << toString(r->getType())
 		//	<< " and left is " << toString(l->getType())
@@ -26,13 +26,13 @@ llvm::Value * LetGen::generateCode(const Generater& generater)
 		//return builder.CreateStore(r, l);
 		auto *expr=p->expr->generate(generater);
 		auto *index=p->index->generate(generater);
-		auto* r = right->generate(generater);
+		auto* r = _right->generate(generater);
 		return CallGen::call(builder, "arrayLet", expr, index, r);
 	}
 
-	llvm::Value* l = left->generate(generater);
+	llvm::Value* l = _left->generate(generater);
 	assert(l->getType()->isPointerTy());
-	auto* r = right->generate(generater);
+	auto* r = _right->generate(generater);
 
 	auto valueType = l->getType()->getPointerElementType();
 	r = load(builder, r);

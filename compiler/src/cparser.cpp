@@ -36,17 +36,14 @@ extern llvm::LLVMContext llvmContext;
 class FunctionASTVisitor : public RecursiveASTVisitor<FunctionASTVisitor>
 {
 public:
-	FunctionASTVisitor(const std::string& packageName, llvm::Module* module)
-		: _package(packageName), _module(module){
-		for (char& c : _package) {
-			if (c == '.') c = '_';
-		};
+	FunctionASTVisitor(llvm::Module* module)
+		: _module(module){
 	}
 	bool VisitFunctionDecl(FunctionDecl* f) {
 		auto& c = f->getASTContext();
 		// Only function definitions (with bodies), not declarations.
 		auto returnType = f->getReturnType();
-		auto name = f->getName().str();
+
 		auto& cgm = codeGenerator->CGM();
 		auto& codeGenTypes = cgm.getTypes();
 
@@ -54,7 +51,7 @@ public:
 		if (f->isTemplated()) return true;
 		if (codeGenTypes.isFuncTypeConvertible(f->getFunctionType())) {
 			llvm::Type* ft = codeGenTypes.ConvertType(f->getType());
-			std::clog << "  Find c function: " << name << std::endl;
+			// std::clog << "  Find c function: " << name << std::endl;
 			assert(ft);
 			auto* x = dyn_cast<llvm::FunctionType>(ft);
 			assert(x);
@@ -64,7 +61,6 @@ public:
 		return true;
 	}
 private:
-	string _package;
 	llvm::Module* _module;
 };
 
@@ -83,8 +79,8 @@ public:
 		return true;
 	}
 
-	CHeaderASTConsumer(const std::string& packageName, llvm::Module* module) 
-		: Visitor(FunctionASTVisitor(packageName, module)) {}
+	CHeaderASTConsumer(llvm::Module* module) 
+		: Visitor(FunctionASTVisitor(module)) {}
 private:
 	FunctionASTVisitor Visitor;
 };
@@ -174,7 +170,7 @@ llvm::Module* loadCHeader(const string& packageName, const string& filename)
 
 	// Create an AST consumer instance which is going to get called by
 		// ParseAST.
-	CHeaderASTConsumer TheConsumer(packageName, module);
+	CHeaderASTConsumer TheConsumer(module);
 	codeGenerator = clang::CreateLLVMCodeGen(TheCompInst.getDiagnostics(), "common", TheCompInst.getHeaderSearchOpts(),
 		TheCompInst.getPreprocessorOpts(),
 		TheCompInst.getCodeGenOpts(), llvmContext);

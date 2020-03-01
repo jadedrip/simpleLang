@@ -26,12 +26,16 @@ public:
 	llvm::Type* type = nullptr;
 	llvm::Value* value = nullptr;
 	virtual llvm::Value* generate(const Generater& generater);
-	// enum ValueType { ivalue = 0, lvalue, rvalue }; // 无所谓，左值，右值
-	// ValueType valueType = ivalue;
+		
 	llvm::Value* load(llvm::IRBuilder<>& builder, llvm::Value* v);
 	bool parameter = false;	// 是否函数参数，或函数参数衍生（成员）变量	
 	bool escape = false;	// 是否逃逸变量
+
+	enum ValueType { ivalue, lvalue, rvalue }; // 无所谓，左值，右值
+	ValueType valueType = ivalue;
+
+	// 期望的类型
+	llvm::Type* hope = nullptr;
 protected:
 	virtual llvm::Value* generateCode(const Generater& generater) = 0;
 };
-

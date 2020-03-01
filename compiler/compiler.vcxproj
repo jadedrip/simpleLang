@@ -42,6 +42,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\CodeGenerate\CLangCallGen.cpp" />
+    <ClCompile Include="src\CodeGenerate\GlobelWrapValue.cpp" />
     <ClCompile Include="src\CodeGenerate\GoGen.cpp" />
     <ClCompile Include="src\CodeGenerate\IifGen.cpp" />
     <ClCompile Include="src\CodeGenerate\IsNullGen.cpp" />
@@ -87,6 +89,7 @@
     <ClCompile Include="src\CodeGenerate\ClassBinaryGen.cpp" />
     <ClCompile Include="src\CodeGenerate\IntegerBinaryGen.cpp" />
     <ClCompile Include="src\CodeGenerate\StringLiteGen.cpp" />
+    <ClCompile Include="src\cparser.cpp" />
     <ClCompile Include="src\lli.cpp" />
     <ClCompile Include="src\Type\AstType.cpp" />
     <ClCompile Include="src\Ast\AstUnary.cpp" />
@@ -134,6 +137,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TypeManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Ast\AstArrayCall.h" />
@@ -146,6 +150,7 @@
     <ClInclude Include="intermediate\silang.tab.hpp" />
     <ClInclude Include="limbo\silang.tab.hpp" />
     <ClInclude Include="src\Ast\AstAnnotation.h" />
+    <ClInclude Include="src\CodeGenerate\CLangCallGen.h" />
     <ClInclude Include="src\CodeGenerate\GlobelWrapValue.h" />
     <ClInclude Include="src\CodeGenerate\GoGen.h" />
     <ClInclude Include="src\CodeGenerate\IifGen.h" />
@@ -198,6 +203,7 @@
     <ClInclude Include="src\CodeGenerate\StaticGen.h" />
     <ClInclude Include="src\CodeGenerate\StaticTypeGen.h" />
     <ClInclude Include="src\CodeGenerate\ThisGen.h" />
+    <ClInclude Include="src\cparser.h" />
     <ClInclude Include="src\GoContext.h" />
     <ClInclude Include="src\Type\AstFuncType.h" />
     <ClInclude Include="src\Type\AstType.h" />
@@ -251,6 +257,7 @@
     <ClInclude Include="src\utility.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="TypeManager.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="lex\silang.l">
@@ -329,7 +336,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\SDK\llvm-9.0.0\build\include;D:\SDK\llvm-9.0.0\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\SDK\llvm-9.0.0\build\include;D:\SDK\llvm-9.0.0\include;D:\SDK\llvm-9.0.0\build\tools\clang\include;D:\SDK\llvm-9.0.0\tools\clang\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\SDK\llvm-9.0.0\build\Debug\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -373,7 +380,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
-      <AdditionalDependencies>chkstk.obj;LLVMInstrumentation.lib;LLVMCodeGen.lib;LLVMCore.lib;LLVMExecutionEngine.lib;LLVMGlobalISel.lib;LLVMIRReader.lib;LLVMInterpreter.lib;LLVMMC.lib;LLVMMCJIT.lib;LLVMOrcJIT.lib;LLVMObject.lib;LLVMRuntimeDyld.lib;LLVMSelectionDAG.lib;LLVMSupport.lib;LLVMX86CodeGen.lib;LLVMX86AsmParser.lib;LLVMX86Desc.lib;LLVMX86Info.lib;LLVMX86Disassembler.lib;LLVMAsmParser.lib;LLVMAsmPrinter.lib;LLVMScalarOpts.lib;LLVMInstCombine.lib;LLVMProfileData.lib;LLVMTransformUtils.lib;LLVMAnalysis.lib;LLVMTarget.lib;LLVMBitReader.lib;LLVMX86Utils.lib;LLVMMCParser.lib;LLVMMCDisassembler.lib;LLVMDebugInfoCodeView.lib;LLVMDebugInfoMSF.lib;LLVMBinaryFormat.lib;LLVMDemangle.lib</AdditionalDependencies>
+      <AdditionalDependencies>chkstk.obj;version.lib;clangAnalysis.lib;clangAST.lib;clangASTMatchers.lib;clangBasic.lib;clangCodeGen.lib;clangDriver.lib;clangEdit.lib;clangFrontend.lib;clangLex.lib;clangParse.lib;clangRewrite.lib;clangSema.lib;clangSerialization.lib;LLVMAnalysis.lib;LLVMAsmParser.lib;LLVMAsmPrinter.lib;LLVMBinaryFormat.lib;LLVMBitReader.lib;LLVMBitstreamReader.lib;LLVMCodeGen.lib;LLVMCore.lib;LLVMCoverage.lib;LLVMDebugInfoCodeView.lib;LLVMDebugInfoDWARF.lib;LLVMDebugInfoMSF.lib;LLVMDemangle.lib;LLVMExecutionEngine.lib;LLVMGlobalISel.lib;LLVMInstCombine.lib;LLVMInstrumentation.lib;LLVMInterpreter.lib;LLVMIRReader.lib;LLVMMC.lib;LLVMMCDisassembler.lib;LLVMMCJIT.lib;LLVMMCParser.lib;LLVMObject.lib;LLVMObjectYAML.lib;LLVMOption.lib;LLVMOrcJIT.lib;LLVMProfileData.lib;LLVMRemarks.lib;LLVMRuntimeDyld.lib;LLVMScalarOpts.lib;LLVMSelectionDAG.lib;LLVMSupport.lib;LLVMTarget.lib;LLVMTransformUtils.lib;LLVMX86AsmParser.lib;LLVMX86CodeGen.lib;LLVMX86Desc.lib;LLVMX86Disassembler.lib;LLVMX86Info.lib;LLVMX86Utils.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

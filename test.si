@@ -5,6 +5,9 @@ import si.printHello
 import si.printInt
 import si.println
 import si.hello
+
+printf("Hello world!")
+
 /*
 func world(){
 	//var h = "hello"
@@ -24,8 +27,8 @@ go {
 }
 */
 
-var strs=String[10]
-strs[0] = "Nice"
+// var strs=String[10]
+// strs[0] = "Nice"
 
 //println(strs[0])
 

@@ -176,3 +176,25 @@ std::string toReadable(llvm::Type * type)
 	}
 	return std::to_string(type->getTypeID());
 }
+
+namespace stdfs = std::filesystem;
+void doEnumDirectory(const std::filesystem::path& base, const std::string& relative, const std::function<void(const std::string&, std::filesystem::path&)>& callback)
+{
+
+	for (auto& fe : stdfs::directory_iterator(base)) {
+		auto fp = fe.path();
+		auto si = fp.filename();
+
+		if (fe.is_directory()) {
+			std::string rel = relative.empty() ? si.string() : relative + "/" + si.string();
+			doEnumDirectory(fp, rel, callback);
+		}
+
+		callback(relative, fp);
+	}
+}
+
+void enumDirectory(const std::string& base, const std::function<void(const std::string&/*relativePath*/, std::filesystem::path&)>& callback)
+{
+	doEnumDirectory(base, "", callback);
+}

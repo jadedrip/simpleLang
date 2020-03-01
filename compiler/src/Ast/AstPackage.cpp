@@ -23,7 +23,7 @@ AstContext* AstPackage::preprocessor(llvm::Module *m)
 {
 	if (!names.empty()) {
 		for (auto i : names) {
-			name += i + ".";
+			name  += i + ".";
 		}
 		name.erase(name.size() - 1);
 	}
