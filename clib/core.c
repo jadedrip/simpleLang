@@ -28,7 +28,7 @@ inline uint32_t* referenceCount(uint8_t* object)
 	uint8_t flag = getObjectFlag(object);
 	// 判断是否有引用计数
 	if ((flag & MARK_FLAG_REF) == 0) return NULL;
-	object -= POINTER_SIZE + REF_SIZE;
+	object -= (intptr_t)POINTER_SIZE + REF_SIZE;
 	return (uint32_t*)object;
 }
 
@@ -96,7 +96,7 @@ void freeObject(uint8_t* object, destructor func)
 		object -= POINTER_SIZE;
 		if (flag & MARK_FLAG_REF)
 			object -= REF_SIZE;
-		if (flag & MARK_FLAG_ARRAY);
+		if (flag & MARK_FLAG_ARRAY)
 			object -= REF_SIZE;
 
 		free(object);
@@ -141,11 +141,11 @@ void* arrayIndex(uint8_t* ptr, uint32_t index)
 	uint8_t flag=getObjectFlag(ptr);
 	assert(flag & MARK_FLAG_ARRAY);
 #endif
-	long* sz = arraySize((uint8_t*)ptr);
+	uint32_t* sz = arraySize((uint8_t*)ptr);
 	if (index >= *sz) {
 		assert(0);
 	}
-	ptr += index * POINTER_SIZE;
+	ptr += (intptr_t)index * POINTER_SIZE;
 	return ptr;
 }
 

@@ -8,6 +8,9 @@ import si.hello
 
 printf("Hello world!")
 
+var c="Ni hao"
+ println(c)
+
 /*
 func world(){
 	//var h = "hello"
@@ -20,17 +23,16 @@ printHello()
 // world()
 
 
-var c="Ni hao"
-// println(out)
 go {
 	println("Hello world:" + c)
 }
 */
 
-// var strs=String[10]
-// strs[0] = "Nice"
 
-//println(strs[0])
+var strs=String[10]
+strs[0] = "Nice"
+
+println(strs[0])
 
 /*
 class Base {

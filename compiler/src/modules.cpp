@@ -86,7 +86,8 @@ llvm::Function* CLangModule::getFunction(const string& name) {
 llvm::Function* CLangModule::getFunction(const string& package, const string& name) {
 	auto iter = _modules.find(package);
 	if (iter != _modules.end()) {
-		return iter->second->getFunction(name);
+		auto func=iter->second->getFunction(name);
+		return Function::Create(func->getFunctionType(), Function::ExternalLinkage, name, module.get());
 	}
 	return nullptr;
 }
