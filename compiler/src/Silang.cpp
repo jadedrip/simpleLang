@@ -113,6 +113,7 @@ void execute(char * const *envp){
 }
 
 using namespace llvm;
+namespace stdfs = std::filesystem;
 
 int main(int argc, char* argv[],  char * const *envp)
 {
@@ -138,13 +139,7 @@ int main(int argc, char* argv[],  char * const *envp)
 	auto *m = new Module("TOP", llvmContext);
 	module.reset(m);
 
-	// make_c_functions(m);
-	CLangModule::loadPackage("si");
-	CLangModule::loadLLFile("clib/si.ll");
-
-	// void* p = sys::DynamicLibrary::SearchForAddressOfSymbol("si_printHello");
-	//if (p)
-	// 	EE->addGlobalMapping("printf", (uint64_t)p);
+	CLangModule::initialize();
 
 	bool b;
 	if (argc > 1) {

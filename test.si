@@ -1,7 +1,16 @@
 ﻿package org.my
 
 // import si.String
-import si.*
+import si.printHello
+import si.printInt
+import si.println
+import si.hello
+
+printf("Hello world!")
+
+var c="Ni hao"
+ println(c)
+
 /*
 func world(){
 	//var h = "hello"
@@ -14,17 +23,16 @@ printHello()
 // world()
 
 
-var c="Ni hao"
-// println(out)
 go {
 	println("Hello world:" + c)
 }
 */
-printf("Hello world")
+
+
 var strs=String[10]
 strs[0] = "Nice"
 
-//println(strs[0])
+println(strs[0])
 
 /*
 class Base {

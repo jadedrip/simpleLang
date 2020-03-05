@@ -9,28 +9,32 @@
 
 using namespace llvm;
 
-BinaryGen::BinaryGen(int op, CodeGen * l, CodeGen * r) {
-	this->op = op;
-	left = l;
-	right = r;
+BinaryGen::BinaryGen(int op, CodeGen * left, CodeGen * right)
+	: _op(op), _left(left), _right(right)
+{
+	// 二元操作符的操作数都是右值
+	_left->valueType = rvalue;
+	_right->valueType = rvalue;
 
-	Type* leftType = l->type;
-	Type* rightType = r->type;
+	Type* leftType = _left->type;
+	Type* rightType = _right->type;
 
 	if (leftType->isDoubleTy())
-		type = l->type;
+		type = _left->type;
 	else if (rightType->isDoubleTy())
-		type = r->type;
+		type = _right->type;
+	else if (leftType->isFloatTy())
+		type = _left->type;
 	else
-		type = l->type;
+		type = _right->type;
 }
 
 llvm::Value* BinaryGen::generateCode(const Generater& generater)
 {
 	auto& builder = generater.builder();
-	Value* l = left->generate(generater);
+	Value* l = _left->generate(generater);
 	l = load(builder, l);
-	Value* r = right->generate(generater);
+	Value* r = _right->generate(generater);
 	r = load(builder, r);
 
 	// 二元操作符左右有空值
@@ -48,7 +52,7 @@ llvm::Value* BinaryGen::generateCode(const Generater& generater)
 	l = try_cast(builder, type, l);
 	r = try_cast(builder, type, r);
 
-	switch (op) {
+	switch (_op) {
 	case '+':
 		return builder.CreateFAdd(l, r);
 	case '-':
@@ -71,6 +75,6 @@ llvm::Value* BinaryGen::generateCode(const Generater& generater)
 		return builder.CreateFCmpOLE(l, r);
 	default:
 		// 不支持的浮点运算符
-		throw std::runtime_error("Unknown operator: " + operator_to_str(op));
+		throw std::runtime_error("Unknown operator: " + operator_to_str(_op));
 	}
 }

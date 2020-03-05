@@ -23,7 +23,18 @@ inline void putBack(llvm::IRBuilder<>& builder, std::vector< llvm::Value* >& a, 
 	}
 }
 
+
 llvm::Value* CLangCallGen::generateCode(const Generater& generater)
+{
+	return call(generater, llvmFunction, params, type);
+}
+
+llvm::Value* CLangCallGen::call(
+	const Generater& generater, 
+	llvm::Function* llvmFunction, 
+	std::vector<CodeGen*>& params,
+	llvm::Type* returnType
+)
 {
 	auto &c=generater.context();
 	auto funcType = llvmFunction->getFunctionType();
@@ -57,8 +68,8 @@ llvm::Value* CLangCallGen::generateCode(const Generater& generater)
 
 	Value* v = builder.CreateCall(funcType, llvmFunction, a);
 	// 添加一个强制转换，避免某些 c 函数返回的类型不一致
-	if (type && type->isStructTy()) {
-		Type* ty = llvm::PointerType::get(type, 0);
+	if (returnType && returnType->isStructTy()) {
+		Type* ty = llvm::PointerType::get(returnType, 0);
 		return builder.CreateBitOrPointerCast(v, ty);
 	}
 	return v;

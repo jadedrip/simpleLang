@@ -8,6 +8,13 @@ public:
 
 	llvm::Function* llvmFunction;
 	std::vector<CodeGen*> params;
+
+	static llvm::Value* call(
+		const Generater& generater, 
+		llvm::Function* llvmFunction,
+		std::vector<CodeGen*>& params,
+		llvm::Type* returnType
+	);
 protected:
 	virtual llvm::Value* generateCode(const Generater& generater);
 };

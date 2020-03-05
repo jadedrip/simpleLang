@@ -43,6 +43,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\CodeGenerate\CLangCallGen.cpp" />
+    <ClCompile Include="src\CodeGenerate\GlobelWrapValue.cpp" />
     <ClCompile Include="src\CodeGenerate\GoGen.cpp" />
     <ClCompile Include="src\CodeGenerate\IifGen.cpp" />
     <ClCompile Include="src\CodeGenerate\IsNullGen.cpp" />

@@ -4,9 +4,15 @@
 class LetGen : public CodeGen
 {
 public:
-	LetGen(CodeGen* left_, CodeGen* right_) : left(left_), right(right_) {}
-	CodeGen* left = nullptr;
-	CodeGen* right = nullptr;
-	bool toArray = false;
+	LetGen(CodeGen* left_, CodeGen* right_, bool toArray=false) 
+		: _left(left_), _right(right_),_toArray(toArray) {
+		_left->valueType = lvalue;
+		_right->valueType = rvalue;
+	}
+protected:
 	virtual llvm::Value* generateCode(const Generater& generater);
+private:
+	CodeGen* _left = nullptr;
+	CodeGen* _right = nullptr;
+	bool _toArray = false;
 };

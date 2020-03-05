@@ -1,14 +1,17 @@
 ﻿#pragma once
 #include "CodeGen.h"
 
+/*
+	浮点数的二元操作符生成器
+*/
 class BinaryGen : public CodeGen							  
 {
 public:
 	BinaryGen(int op, CodeGen*l, CodeGen* r);
 private:
-	int op;
-	CodeGen	*left;
-	CodeGen *right;
+	int _op;
+	CodeGen	*_left;
+	CodeGen *_right;
 protected:
 	llvm::Value* generateCode(const Generater& generater);
 private:

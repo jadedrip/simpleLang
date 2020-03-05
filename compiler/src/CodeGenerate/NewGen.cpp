@@ -8,12 +8,6 @@
 #include "llvm/Support/raw_os_ostream.h"
 
 using namespace llvm;
-inline Function* makeLink(Module*from, Module* to, StringRef name)
-{
-	auto * f=from->getFunction(name);
-	assert(f);
-	return Function::Create(f->getFunctionType(), GlobalValue::ExternalLinkage, name, to);
-}
 
 Function *createObject = nullptr;
 Function *createArray = nullptr;
@@ -24,14 +18,10 @@ extern std::unique_ptr<Module> module;
 inline void initCore()
 {
 	if (!createObject) {
-		auto m = module.get();
-		// createObject=CLangModule::getFunction("si", "createObject");
-		Module* clib = CLangModule::loadLLFile("clib/si.ll");
-		assert(clib);
-		createObject = makeLink(clib, m, "createObject");
-		createArray = makeLink(clib, m, "createArray");
-		referenceIncrease = makeLink(clib, m, "referenceIncrease");
-		freeObject = makeLink(clib, m, "freeObject");
+		createObject = CLangModule::getFunction("createObject");
+		createArray = CLangModule::getFunction("createArray");
+		referenceIncrease = CLangModule::getFunction("referenceIncrease");
+		freeObject = CLangModule::getFunction("freeObject");
 	}
 }
 

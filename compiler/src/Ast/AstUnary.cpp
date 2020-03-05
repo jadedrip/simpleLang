@@ -13,11 +13,11 @@ AstUnary::AstUnary(int o, AstNode * left) : op(o) {
 	name = operator_to_str(op);
 }
 
-CodeGen * AstUnary::makeGen(AstContext * parent)
+CodeGen* AstUnary::makeGen(AstContext* parent)
 {
-	auto *p = expr->makeGen(parent);
+	auto* p = expr->makeGen(parent);
 
-	auto *c = dyn_cast_or_null<StructType>(p->type);
+	auto* c = dyn_cast_or_null<StructType>(p->type);
 	if (c) {	// 值是类，那么转换成一个成员函数调用
 		//operatorCall = new AstCall();
 		//operatorCall->name = "unary " + operator_to_str(op);
@@ -25,13 +25,9 @@ CodeGen * AstUnary::makeGen(AstContext * parent)
 		//return type = operatorCall->generateType(parent);
 	}
 
-	if (!p->type || !p->type->isIntegerTy())
-		throw new std::exception("对象不支持一员操作符");
-
-	auto* gem = new UnaryIntGen();
-	gem->op = op;
-	gem->expr = p;
-	return gem;
+	if (p->type && p->type->isIntegerTy())
+		return new UnaryIntGen(op, p);
+	throw new std::exception("对象不支持一员操作符");
 }
 
 void AstUnary::draw(std::ostream & os) {

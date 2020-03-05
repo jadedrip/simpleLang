@@ -5,6 +5,7 @@
 using namespace llvm;
 NullGen::NullGen(llvm::Type* ty) {
 	type = ty;
+	valueType = rvalue;
 }
 
 llvm::Value* NullGen::generateCode(const Generater& generater) {

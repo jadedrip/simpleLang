@@ -2,7 +2,7 @@
 #include <llvm/IR/LLVMContext.h>
 #include "CodeGen.h"
 
-/// 有符号整数
+/// 有符号浮点数
 class FloatPointerGen : public CodeGen
 {
 public:

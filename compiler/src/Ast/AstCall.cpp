@@ -95,7 +95,15 @@ CodeGen * AstCall::makeGen(AstContext * parent)
 	CodeGen* g = parent->makeCall(c, name, gens);
 	if (g) return  g;
 
+	// 尝试调用纯 c 函数
 	auto* p = CLangModule::getFunction(name);
+	if (p) {
+		std::vector<CodeGen*> params;
+		for (auto i : gens) {
+			params.push_back(i.second);
+		}
+		return new CLangCallGen(p, std::move(params));
+	}
 
 	// 查找变量
 	if (!p) {
@@ -116,6 +124,7 @@ CodeGen * AstCall::makeGen(AstContext * parent)
 				return new CallGen(x, ft, std::move(params));
 			}
 
+			// 如果是 Lambda 函数
 			auto *ins=dynamic_cast<LambdaGen*>(v);
 			if (ins) {
 				return ins->makeCall(parent, gens);
@@ -132,21 +141,4 @@ CodeGen * AstCall::makeGen(AstContext * parent)
 		return new CLangCallGen(p, std::move(params));
 	}
 	throw std::runtime_error("找不到匹配的函数：" + name);
-
-	// 尝试查找纯 C 函数
-	/*
-	if (!p) {
-		auto m = module.get();
-		p = m->getFunction(name);
-	}
-	if (!p) throw std::runtime_error("找不到匹配的函数：" + name);
-
-	auto * ins=new FunctionInstance(p);
-	ins->name = name;
-
-	auto *call = new CallGen(ins);
-	for (auto &i : gens) {
-		call->params.push_back(i.second);
-	}
-	return call;*/
 }

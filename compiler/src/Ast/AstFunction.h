@@ -36,7 +36,7 @@ public:
 	);
 
 	virtual CodeGen* makeGen(AstContext* parent);
-
+	std::map<std::string, AstAnnotation*> annotations;
 	enum FunctionType { Func = 0, Method = 1, Constructor = 2, Destructor = 3, Set = 4, Get = 5, Lambda = 6, Operator = 7 };
 public:
 	// 对于成员函数，如果类是模板的，那么函数需要复制给固化类

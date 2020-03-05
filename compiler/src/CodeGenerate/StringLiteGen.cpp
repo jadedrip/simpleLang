@@ -49,6 +49,7 @@ llvm::Value * StringLiteGen::generateCode(const Generater& generater)
 
 	if (hope == IntegerType::getInt8PtrTy(c)) {
 		auto* v = builder.CreateGlobalStringPtr(_str);
+		type = v->getType();
 		return v;
 	}
 

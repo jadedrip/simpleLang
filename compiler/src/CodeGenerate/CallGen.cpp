@@ -1,9 +1,11 @@
 ﻿#include "stdafx.h"
+#include <llvm/IR/Type.h>
+
 #include "CallGen.h"
 #include "StringLiteGen.h"
 #include "FunctionInstance.h"
 #include "caster.h"
-#include <llvm/IR/Type.h>
+#include "CLangCallGen.h"
 
 using namespace llvm;
 CallGen::CallGen(FunctionInstance * func) : function(func)
@@ -66,17 +68,6 @@ inline bool checkIsClass(Type* type)
 	return p->isStructTy();
 }
 
-template< typename T >
-inline void putBack(llvm::IRBuilder<>&builder, std::vector< llvm::Value* >& a, llvm::Value* v, T& iter, T& end)
-{
-	if (iter == end)
-		a.push_back(v);
-	else {
-		a.push_back(try_cast(builder, *iter, v));
-		iter++;
-	}
-}
-
 Value * CallGen::generateCode(const Generater& generater)
 {
 	auto* m = generater.module;
@@ -106,39 +97,9 @@ Value * CallGen::generateCode(const Generater& generater)
 	if(function)
 		function->generateBody(m, builder.getContext());
 
-	auto iter = funcType->param_begin();
-	auto end = funcType->param_end();
-	std::vector< llvm::Value* > a;
-	if (object)
-		putBack(builder, a, object->generate(generater), iter, end);
-	for (auto *i : params) {
-		Value* v = i->generate(generater);
-		// 如果是基本类型
-		if (i->type->isIntegerTy() || i->type->isFloatingPointTy()) {
-			if (v->getType()->isPointerTy())
-				v = builder.CreateLoad(v);
-			putBack(builder, a, v, iter, end);
-		} else if (i->type->isArrayTy()) {
-			putBack(builder, a, v, iter, end);
-			// 写入大小
-			auto sz = i->type->getArrayNumElements();
-			auto* s = ConstantInt::get(func->getContext(), APInt(32, sz));
-			putBack(builder, a, s, iter, end);
-		} else {
-			putBack(builder, a, v, iter, end);
-		}
-	}
-
-	std::clog << "Call func " << llvmFunction->getName().str() << std::endl;
-	
-	Value* v= builder.CreateCall(funcType, llvmFunction, a);
-
-	// 添加一个强制转换，避免某些 c 函数返回的类型不一致
-	if (type->isStructTy()) {
-		Type* ty = llvm::PointerType::get(type, 0);
-		return builder.CreateBitOrPointerCast(v, ty);
-	}
-	return v;
+	auto* x=dyn_cast<llvm::Function>(llvmFunction);
+	assert(x);
+	return CLangCallGen::call(generater, x, params, type);
 }
 
 llvm::CallInst * CallGen::callFunc(llvm::IRBuilder<>& builder, llvm::Function * func, std::vector<llvm::Value*>& params)
