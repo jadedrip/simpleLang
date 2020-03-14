@@ -20,4 +20,6 @@ public:
 	static void loadPackage(const std::string& name);
 	static AstClass* findClass(const std::string& fullName);
 	static AstFunction* findFunction(const std::string& fullName);
+	static std::vector<llvm::StructType*> allClass(const std::string& fullName);
+	static llvm::SymbolTableList<llvm::Function>& allFunction(const std::string& fullName);
 };

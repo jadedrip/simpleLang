@@ -133,6 +133,12 @@ CodeGen * AstCall::makeGen(AstContext * parent)
 			}
 		}
 	}
-
+	if (p) {
+		std::vector<CodeGen*> params;
+		for (auto i : gens) {
+			params.push_back(i.second);
+		}
+		return new CLangCallGen(p, std::move(params));
+	}
 	throw std::runtime_error("找不到匹配的函数：" + name);
 }
