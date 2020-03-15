@@ -4,8 +4,6 @@ A compiler for SimpleLang which is a modern language.
 
 Compiler = Flex + Bison + llvm
 
-特别鸣谢： [![996.icu](https://img.shields.io/badge/link-996.icu-red.svg)](https://996.icu)
-
 目标 & 简介
 ==============
 
@@ -37,6 +35,9 @@ SimpleLang 是拍脑袋的产物，试验性的产品，现在仅仅处于最初
 
 基础语法
 =============
+包
+------------
+文件头部不需要写包名，通过目录结构来确定类的包名
 
 命名
 ------------
@@ -501,8 +502,6 @@ SimpleLang 支持的异常。
 代码开始
 
 	/* File MyCls.sc 开始 *
-	package org.jadedrip	// 定义包
-	
 	class MyCls {	// 定义类
 		// 语法糖在变量前加个点，会自动赋值到内部变量
 		init(int .privateValue = 20 ){}	// 等同 this.privateValue = privateValue
@@ -621,9 +620,7 @@ SimpleLang 支持的异常。
 ----------------
 通过在类外部定义额外方法，可以增强类
 
-	package org.other
-	
-	fun MyCls.other(){	// 本函数定义在外部，通过 import org.other 引入
+	fun MyCls.other(){	// 本函数定义在外部，通过 import org.other:org.pak.MyCls.other 引入
 		this.val++
 	}
 	
@@ -716,7 +713,6 @@ SimpleLang 支持的异常。
 单例受到语言级别的支持。它的声明类似 class, 仅仅是把关键字 class 改为 singleton。
 
 	////// 文件开始 ////////
-	package org.SimpleLang
 	singleton MySingleton{	// 单例的公开定义部分
 		func astCallit(){}
 	}
@@ -1041,13 +1037,14 @@ import
 ============
 SimpleLang 通过 import 导入包
 
-import org.SimpleLang.net
+import sin, print in org.simplelang
 import (	// 导入多个
 	org.SimpleLang.math.sin
 	org.SimpleLang.io.print
 )
+import org.slang
 
-注意：import 只能写在文件头部，package 定义之下
+注意：import 只能写在文件头部
 
 # 其他
 
