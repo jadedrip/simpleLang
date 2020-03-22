@@ -203,6 +203,7 @@ switch 语法如下，支持多种数据以及多种比较，只要是测试相�
 
 元组
 --------------
+
 SimpleLang 语言中支持元组，替代 C++ 中的 pair, tuple。Si 里的元组用圆括号括起来，必须从明确的值创建，并且创建后 **不可修改**
 元组必须在创建时赋值，并且值不可更改。可以通过 := 来解构，或者使用[]取值，元组可以参与编译期运算。
 
@@ -261,7 +262,7 @@ remove 的返回值赋值给 i, 重新开始循环体 (continue)
 
 	String eng="Hello world!"			
 	String str="中文"					
-	ushort aChar=str[0]					// a='中', 取出某个字符，为 UCS-4 编码
+	char aChar=str[0]					// a='中', 取出某个字符，为 UCS-4 编码
 	String str( bytes, Charsets.utf8) )	// 通过 bytes 指定编码来创建
 	str.bytes()				    		// 获取 byte，不指定编码，会默认返回 utf-8
 
@@ -273,27 +274,28 @@ remove 的返回值赋值给 i, 重新开始循环体 (continue)
 
 	String s = "Hello " "World"
 
-字符串允许进行 + 操作，并且可以和整数、浮点数加，结果是字符串。
+字符串通过操作符重载允许进行 + 操作，并且可以和整数、浮点数加，结果是字符串。
 
 	String s="" + 16		// 结果是字符串 "16"
 	s=R("Hello", "zhCN")	// 从资源文件获取字符串
 
-支持字符串模板
+双引号支持字符串模板，单引号不解析模板
 
-	String s="Value=$val and key=${cls.key}"
+	String s="Value=$val and key=${cls.key}"  // 字符串模板
+	var x = 'No $Template'
 
 **注意：字符串内容不能更改。**
 如果需要可变字符串，使用另一个兼容类 StringBuffer。
 
 操作符
 -------------
-支持大部分 C++ 操作符，但是不支持前置 --, ++。
+支持大部分 C++ 操作符，但是**不支持前置 --, ++**。
 支持 >>> 运算符（无符号右移）
 
 函数定义
 -------------
 
-函数（方法）名必须使用使用小写字母开头，并且不能使用下划线。 
+函数（方法）名必须使用使用小写字母开头，并且**不能使用下划线**。 
 函数这样定义
 
 	func first( int a ) : int {
@@ -316,6 +318,7 @@ remove 的返回值赋值给 i, 重新开始循环体 (continue)
 			val = args[0]
 		retval = a + b		// 直接操作返回值
 		return	   // 可以省略
+		int x = 12 // 编译错误，return 必须在块的最后 
 	}
 
 注意，返回值如果命名，那么在函数开始，就会调用无参数构造函数构造返回值，如果没有无参数构造函数，编译会失败。
@@ -371,7 +374,7 @@ SimpleLang 语言中，传入的参数（不包括 int 等内部参数）都被�
 	String old="Hello"
 	cut2(old)
 	print(old)	// 输出 "Hell"
-
+	
 	func third( int a ) : int {
 		return a+1
 	}
@@ -442,19 +445,19 @@ SimpleLang 在语言级别支持函数对象、匿名函数，匿名函数**不�
 SimpleLang 支持的异常。
 
 	/// 语言内部异常，所有异常的基类
-	class Exception(
-		String resource	// 字符串资源 ID，默认会直接使用类名
+	class Exception{
+		String message	// 异常信息字符串
 	}
 	
 	// 定义一个异常
-	class IOException : Exception("IOException")		// 定义一个新异常
-	class HttpException : IOException{		// resource="HttpException"
+	class IOException : Exception		// 定义一个新异常
+	class HttpException : IOException{		
 		int code
 	}
 	
 	try{
 		var a=func( 10 )
-	}catch( HttpException | IOException e ){	// catch 允许多个异常类型
+	}catch( HttpException IOException e ){	// catch 允许多个异常类型
 		print( e.message )
 	}finally{
 		// 最后会执行的代码
@@ -467,7 +470,7 @@ SimpleLang 支持的异常。
 	
 	func(10) catch {}	//明确忽略异常
 
-如果一个异常未被捕获，会转去 **公共异常处理函数**，对于线程/协程 将打印日志，然后结束线程/协程, 如果主线程被关闭，那么程序将推出。
+如果一个异常未被捕获，会转去 **公共异常处理函数**，对于线程/协程 将打印日志，然后结束线程/协程, 如果主线程被关闭，那么程序将退出。
 
 一个函数也可以使用 nothrow 关键字明确声明自身不抛出异常
 
@@ -488,6 +491,8 @@ SimpleLang 支持的异常。
 
 某个默认打开的编译参数可以在运行时让空指针抛出 NullPointerException 异常，当然，这会略微的降低执行效率。
 ?: 操作符可以在指针值为空时提供默认值
+
+​	`var val = getValue() ?: defaultValue`
 
 类
 -----------
@@ -573,8 +578,6 @@ SimpleLang 支持的异常。
 		canOverload = func(int v){
 			Base.canOverload(v)		// 这可以视为调用基类函数
 		}
-	
-		func third(int name) = Third.third		// 从第三方类偷（引用）一个实现
 	}
 	
 	Interface0 obj = Second()	// TODO: 这个如何实现需要思考
@@ -583,17 +586,18 @@ SimpleLang 支持的异常。
 =================
 对象构造使用构造函数的形式，括号不可省略。
 
-    MyCls my()              // 括号不可省略
+    MyCls my              	// 括号可省略
     var a=MyCls(10, 20)		// 通过构造函数构造，参数表使用逗号分割，当然可以 var 推断
-    MyCls c(){     			// 在构造时，后面直接接大括号，将在构造后，直接执行语句块
+    List<String> arr= （"Hello", "World"）	// 通过元组初始化列表
+    
+    MyCls c(10){     		// 小技巧，在构造时，后面直接接大括号，在构造后，直接执行语句块
     	key=0				// 在构造函数执行后执行
     	val=20
     }
 
-对象不构造时，如果是非空变量，将仅仅作为占位符，不能使用：
+对象不构造时，必须赋null值：
 
-	MyCls a         // 这时 a 可以认为是占位符（占a这个名字）
-	a.var = 10      // 编译错误，构造前赋值
+	MyCls a = null
 
 对象的传递，都是浅copy，除非明确指明复制
 
@@ -606,11 +610,11 @@ SimpleLang 支持的异常。
 		x=Cs()          	// 这里会改变 x 指向的对象
 	}
 	
-	Cs a()
+	Cs a
 	Cs b = a    // b 指向 a
 	b.val = 1   // 这里同时会改变 a 指向的对象值
 
-另一个指针专用操作符是 ?:，在指针为空时返回对象
+另一个指针专用操作符是 ?:，在指针为空时返回对象（语法糖）
 
 	int a = nullable() ?: defaultValue		// 为空时 a 赋值为默认值
 
@@ -697,7 +701,7 @@ SimpleLang 支持的异常。
 
 显式类型转换
 --------------------
-除了默认类型转换，还可以使用下面的显式转换，如果后面接操作符，显示转换优先进行.
+除了默认类型转换，还可以使用下面的显式转换，如果后面接操作符，显式转换优先进行.
 
 	var a=(MyClass)b			// 尝试将 b 转换为 MyClass 类型
 	(MyClass)b.funcInMyClass()	// 先转换在调用
@@ -717,7 +721,7 @@ SimpleLang 支持的异常。
 		func astCallit(){}
 	}
 
-当编译器发现单例在代码中被引用时，会在启动时被**线程安全**的初始化，并且到程序关闭时才被析构。
+当编译器发现包被引用，就会在程序启动时**线程安全**的初始化所有包内的单例，并且到程序关闭时才被析构。
 
 	import org.MySingleton	// 引用就初始化
 
@@ -767,8 +771,24 @@ SimpleLang 支持的异常。
 	
 	var my = MyMap<String,int>("Hello")		// 构造时必须可以推导类中所有类型
 
+由于返回值可以命名，因此命名的返回值也可以用来推导，但优先级比较低，优先使用传入参数来推导。
+
+```
+class MyClass{
+	func get() : var v{
+		if(v is int) 
+			return 10 // 返回 int
+		else if(v is double) 
+			return 2.0 // 返回 double
+	}
+}
+
+double v = myClass.get()	// 通过返回值推导
+```
+
 类型定义 def
 ------------------
+
 可以使用 def 来为复杂类型，取一个别名
 
 	def AFun = func(int, int):int
@@ -781,9 +801,9 @@ SimpleLang 支持的异常。
 
 常量推导
 ------------------
-如果常量传入模板函数，那么函数在编译器，就会被计算
+如果常量传入模板函数，那么函数在编译期，就会被计算并展开
 
-	func myTemp( var a ) : var c{
+	func myTemp( const a ) : var c{ // 通过 const 关键字保证只有常量可以传入
 		if( a == 1 ){
 			return a+10
 		}else if(a=="Hello"){	// 传入 常量整数时，这分支都不会被编译
@@ -794,10 +814,10 @@ SimpleLang 支持的异常。
 	myTemp( 10 )	// 在编译时不会生成函数，直接替换为 a+10
 	
 	var x = 10
-	myTemp( x )		// 编译错误，传入的是变量，参数固定为 int 后，模板函数无法编译
+	myTemp( x )		// 编译错误，禁止传入变量
 	
 	const y = "Hello"
-	myTems( y )		// 传入的是常量，按模板编译
+	myTems( y )			// 传入的是常量，按模板编译
 
 类型操作符
 -------------------
@@ -828,8 +848,8 @@ A 可以是变量或者模板变量，B 必须为类型或接口，和 is 相近
 当 if 后的括号内是一个类型，那么它就成为一个编译期的类型操作符，仅当类型为 FALSE 时，编译 else 语句块，
 其他任何类型都编译 then 语句块。
 
-	if(a is int){	// 当 a 类型为 int 时被编译
-		int b = a+10
+	if(a is int){		// 当 a 类型为 int 时被编译
+		int b = a+10	// 这里 a 会自动改为 int 类型，不需要强制转换代码
 	}else{
 		a = "Hello"	// 虽然类型错误，但这里没编译，因此不会报错
 	}
@@ -880,13 +900,34 @@ if( TplFunc(a,b) ){	// 静态语句，在编译期展开
 }
 ```
 
+## 概念（*concept*）
+
+通过 concept 来约束模板函数，*concept* 的定义类似 class，只要类实现了概念里的所有方法和变量，并且他们是可访问的，那么就视为他实现了该接口，可以传送给接受该接口的方法。
+
+```
+
+concept MyConcept {
+	var a	// 表示传入必须有 a 变量
+	int b	// 必须有 b 变量
+	func doIt(int, double) // 必须有个类似的 doIt 函数
+} 
+
+func aTemplateFunc( MyConcept come ){  // 其实是个模板函数
+
+}
+
+```
+
+另外，有且只有一个条件的简单的概念，可以通过尖括号在参数中直接定义（匿名模板接口）
+
+	void aFunc( <int a> inc ){ // 传入对象必须有个int型成员变量a
+		inc.a++
+	}
+
 # 接口
 
-SimpleLang 可以通过 interface 关键字定义接口，接口所有的方法、变量都是公开的。
+SimpleLang 可以通过 interface 关键字定义接口，是一个抽象类型，是抽象方法的集合，接口所有的方法、变量都是公开的。
 接口可以带默认方法、变量默认值，但需要注意的是，接口的方法会被认为是函数对象。
-
-接口附带尖括号，用在函数、方法的参数上，它可以用来约束函数、方法的参数（），
-它实现了部分需要模板的功能，只要类实现了接口里的所有方法和变量，并且他们是可访问的，那么就视为他实现了该接口，可以传送给接受该接口的方法。
 
 比如
 
@@ -896,28 +937,19 @@ SimpleLang 可以通过 interface 关键字定义接口，接口所有的方法�
 		func getSome():int	// 这是个函数定义
 	}
 	
-	void aFunc( MyInterface inc ){	// aFunc 实际上是一个模板函数。
-		// 这样，任何对象，只要包含名字为 a, b 的成员变量，以及 getSome 这样一个方法，
-		// 就可以被传入这个函数
+	func notTemplateFunc( MyInterface inc ){ // 这不是一个模板函数 	
 	}
 
-这是编译期的动作，在这里，接口被视为有约束的模板参数。
-另外，有且只有一个条件的简单的接口，可以通过尖括号在参数中直接定义（匿名模板接口）
 
-	void aFunc( <int a> inc ){
-		inc.a++
-	}
+接口无法被实例化，但是可以被实现。一个实现接口的类，应该实现接口内所描述的所有方法：
 
-接口也可以用来明确的强制一个类去符合某种契约：
-
-	class MyClass : Base, MyInterface{	   // 当 MyClass	不符合 MyInterface 时会编译错误
-	
+	class MyClass : Base, MyInterface{	   
 	}
 	
 	MyInterface i=MyClass()		// i 被认为是 MyClass 的基类
 	
-	void bFunc(MyInterface v){  // 这里 bFunc 没带尖括号关键字，表示这并非模板函数，
-	                            // 必须从 MyInterface 继承的对象，才能传入
+	void bFunc(MyInterface v){  // 必须从 MyInterface 继承的对象，才能传入
+	                            
 	}
 
 # 语言特性
@@ -1037,12 +1069,12 @@ import
 ============
 SimpleLang 通过 import 导入包
 
+// 导入指定函数、类
 import sin, print in org.simplelang
-import (	// 导入多个
-	org.SimpleLang.math.sin
-	org.SimpleLang.io.print
-)
-import org.slang
+// 导入整个包内函数及类
+import org.slang.*
+// 导入org.expz 包内，对org.slang.String 的注入
+import org.expz::org.slang.String	
 
 注意：import 只能写在文件头部
 
@@ -1093,7 +1125,7 @@ lib 文件、需要对应的头文件及适配文件等需要的东西，会被�
 
 操作符重载
 ----------------
-SimpleLang 支持有限的操作符重载。对于类内的操作符，可以通过一个函数重载
+SimpleLang 支持有限的操作符重载，可以对类重载一元或二元操作符，但不支持二元操作符在前方的重载
 
 	class MyClass{
 		operator + ( int right ){	// 二元操作符的函数重载（默认的返回 MyClass 类型）
@@ -1104,9 +1136,7 @@ SimpleLang 支持有限的操作符重载。对于类内的操作符，可以通
 			// return this 可省略
 		}
 	}
-	
-	operator + ( int left, MyClass cls ) : MyClass{	// MyClass 在操作符的右边
-	}
+
 
 
 备选（思考中，暂时吧实现）
@@ -1183,3 +1213,16 @@ my 对象的生存期将会跟随输入的对象 conn，成为 Connect 的子类
 		def T = i
 	}
 
+国际化
+---------------------
+通过翻译表来实现国际化
+
+print( "Hello %t World" )
+
+翻译文件：
+	lang.zhCN.ini
+
+[zhCN]
+"Hello %t World"="你好 %t 世界"
+
+通过 Lang.set("zhCN") 切换文本
