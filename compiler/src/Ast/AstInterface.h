@@ -9,4 +9,5 @@
 class AstInterface : public AstType {
 public:
 	std::vector<AstNode*> block;
+	bool isConcept = false;
 };

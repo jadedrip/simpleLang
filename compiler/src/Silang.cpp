@@ -58,7 +58,6 @@ void execute(char * const *envp){
 	llvm::StringRef MCPU = llvm::sys::getHostCPUName();
 
 	std::cout << "MCPU: " << MCPU.str() << std::endl;
-	std::cout << "Triple: " << ::sys::getDefaultTargetTriple() << std::endl;
 
 	// module->setTargetTriple("x86_64-pc-windows-msvc");
 	Function *mainFunction = currentPackage->getFunc();
@@ -135,6 +134,11 @@ int main(int argc, char* argv[],  char * const *envp)
 	//	errs() << "Error loading: "<< err<< "\n";
 	//	// return -1;
 	//}
+	std::cout << "Triple: " << ::sys::getProcessTriple() << std::endl;
+	std::cout << "HostCpu: " << ::sys::getHostCPUName().str() << std::endl;
+
+	llvm::Triple triple;
+	std::cout << "OsName: " << triple.getOSName().str() << std::endl;
 
 	auto *m = new Module("TOP", llvmContext);
 	module.reset(m);

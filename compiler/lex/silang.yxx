@@ -44,7 +44,7 @@ void yyerror( const char* error );
 %token CALL IF ELSE WHILE FOR RETURN CLASS INTERF PROTECTED 
 %token PACKAGE IMPORT NULLPTR STATIC CONST ENUM SWITCH CASE DEFAULT SINGLETON
 %token TRY_TOKEN CATCH FINALLY GET_TOKEN SET_TOKEN OPERATOR NEW_TOKEN DELETE_TOKEN
-%token INIT_TOKEN FINALIZE_TOKEN GO_TOKEN BBRACKETS 
+%token INIT_TOKEN FINALIZE_TOKEN GO_TOKEN BBRACKETS CONCEPT
 
 %defines
 
@@ -246,10 +246,11 @@ cls_block
 	;
 
 /**********************************************
-*	接口
+*	接口 / 约束
 /**********************************************/
 interface
-	:	INTERF L_IDENTIFIER '{' interface_lines '}' { $<tp>$=createInterface($2, $<expr>4); }
+	:  INTERF U_IDENTIFIER '{' interface_lines '}' { $<tp>$=createInterface($2, $<expr>4); }
+	|  CONCEPT U_IDENTIFIER '{' interface_lines '}' { $<tp>$=createInterface($2, $<expr>4, true); }
 	;
 	
 interface_line

@@ -60,7 +60,7 @@ AstNode* makeFor(AstNode* let, AstNode* cond, AstNode* inc, AstNode* block );
 AstNode* createFunction(int funcType, const std::string& name, AstNode*parameters,  AstNode* ret, AstNode* block );
 AstNode* addFunctionBlock(AstNode*, AstNode* block, AstNode* annotation = nullptr);
 AstNode* createOperator(int oper, AstNode*variables, AstNode* ret, AstNode* block);
-AstType* createInterface( char* name, AstNode* block );
+AstType* createInterface(char* name, AstNode* block, bool isConcept = false);
 
 // 返回命令
 AstNode* callReturn(AstNode* val=nullptr);

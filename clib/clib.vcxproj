@@ -116,8 +116,11 @@
       <ModuleDefinitionFile>clib.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y $(ProjectDir)si\*.si $(SolutionDir)lib\si
-copy /Y $(TargetPath) $(SolutionDir)lib\si</Command>
+      <Command>mkdir $(SolutionDir)lib\si\src
+mkdir $(SolutionDir)lib\si\platform\win64
+copy /Y $(ProjectDir)si\*.si $(SolutionDir)lib\si\src
+copy /Y $(TargetPath) $(SolutionDir)lib\si\platform\win64
+copy /Y $(ProjectDir)export.h $(SolutionDir)lib\si</Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>

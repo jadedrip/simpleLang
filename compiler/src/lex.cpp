@@ -329,10 +329,11 @@ AstNode * createOperator(int oper, AstNode * variables, AstNode * ret, AstNode *
 	return p;
 }
 
-AstType * createInterface(char * name, AstNode * block)
+AstType * createInterface(char * name, AstNode * block, bool isConcept)
 {
 	auto *p = new AstInterface();
 	p->name = name;
+	p->isConcept = isConcept;
 	moveLines(p->block, block);
 	return p;
 }

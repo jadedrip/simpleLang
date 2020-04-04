@@ -902,7 +902,7 @@ if( TplFunc(a,b) ){	// 静态语句，在编译期展开
 
 ## 概念（*concept*）
 
-通过 concept 来约束模板函数，*concept* 的定义类似 class，只要类实现了概念里的所有方法和变量，并且他们是可访问的，那么就视为他实现了该接口，可以传送给接受该接口的方法。
+通过 concept 来约束模板函数，*concept* 的定义类似 interface，只要类实现了概念里的所有方法和变量，并且他们是可访问的，那么就视为他实现了该接口，可以传送给接受该接口的方法。
 
 ```
 
@@ -1071,11 +1071,12 @@ SimpleLang 通过 import 导入包
 
 // 导入指定函数、类
 import sin, print in org.simplelang
-// 导入整个包内函数及类
-import org.slang.*
-// 导入org.expz 包内，对org.slang.String 的注入
-import org.expz::org.slang.String	
 
+// 导入org.expz 包内，对org.slang.String 的注入
+import {org.slang.String} in org.expz	
+
+// 导入整个包内函数及类，以及注入
+import * in org.slang
 注意：import 只能写在文件头部
 
 # 其他
@@ -1136,8 +1137,6 @@ SimpleLang 支持有限的操作符重载，可以对类重载一元或二元操
 			// return this 可省略
 		}
 	}
-
-
 
 备选（思考中，暂时吧实现）
 ==============

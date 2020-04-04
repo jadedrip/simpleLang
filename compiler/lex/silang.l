@@ -69,6 +69,7 @@ H		[a-fA-F0-9]
 "while"					return WHILE;
 "for"					return FOR;
 "interface"				return INTERF;
+"concept"					return CONCEPT;
 "protected"				return PROTECTED;
 "static"				return STATIC;
 "const"					return CONST;

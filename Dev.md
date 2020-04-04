@@ -198,25 +198,24 @@ interface 一个关键字，但在不同的地方有不同的实现
 
 注意：除了首层目录，可以用 . 来把几层目录缩减到一层，以简化目录
 
-	[package name]-0.0.1 ->  包目录(包含版本号)，或者 zip 文件名(zip 改为 spz 后缀名, 7z 改为 sp7 后缀)
+	[package name]-0.0.1 ->  包目录(包含版本号)，或者 zip 文件名(zip 改为 spz 后缀名, 7z 改为 sp7 后缀)，最新版本可以无版本号
 	  └ src							->  源码目录，sl 文件放在这里，所有的文件都会被导入
-		   └ img					-> src 内部仍然通过目录结构来存放源文件，并且包名会作为前缀
+		   └ [*.si]					-> src 内部仍然通过目录结构来存放源文件，并且包名会作为前缀
 	   └ overload				-> 重载目录
 	           └ -> [other package(org.si)]  -> 可以注入其他包
 		└ resources				-> 资源目录
 		└ platform				-> 各平台的库
-			└ linux64				-> 64位 linux
-				└ release			-> lib, 或者 so 文件
+			└ x86_64-pc-windows-msvc				-> 参见 llvm Triple 
+					└	share										-> 动态库（dll 或者 so 文件) 及其对应的 lib 文件
+					└ static											-> 静态库 (lib 文件)
 		└ include					-> .h 头文件(如果有的话)
-		└ export.h				-> 导出头文件，编译器会解析这个文件来导入其他文件
-	    └ export-linux64.h  -> 特定平台的导入文件，如果存在，会忽略 export.h 
+		└ export.h				-> 导出头文件，编译器会解析这个文件来导入其他文件，如果没有，说明是纯源码库
 		└ meta.txt				-> 包描述文件      
 
 meta.txt 文件
 
-	version: 1.0.1-release								-> 4层数字版本号 + 字符，前两位表示接口稳定，有接口删除、参数改变的情况必须升级第一位
+	version: 1.0.1-release								-> 3层数字版本号 + 字符，前两位表示接口稳定，有接口删除、参数改变的情况必须升级第一位
 																	-> 第二位允许接口有增加，但其他接口必须稳定
 																	-> 第三位表示 bug 修正，接口稳定，如果是 release, 最后的字符串可以省略
-	platform:	all												-> 支持的平台，允许 [win32, win64]
-	dependency: org.other.package-1.^3.*	-> 引用包名，每个引用一行，^表示超过，*表示任意，尾部 .* 可以省略
+	dependency: org.other.package-1.^3.*	-> 引用包名，每个引用一行，^表示超过，*表示任意
 
