@@ -147,6 +147,7 @@
     <ClCompile Include="src\cparser.cpp" />
     <ClCompile Include="src\CodeGenerate\CLangCallGen.cpp" />
     <ClCompile Include="TypeManager.cpp" />
+    <ClCompile Include="src\CodeGenerate\GlobelWrapValue.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\CodeGenerate\BinaryGen.h">

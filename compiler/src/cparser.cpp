@@ -161,8 +161,11 @@ llvm::Module* loadCHeader(const string& packageName, const string& filename)
 	TheCompInst.createASTContext();
 
 	// Set the main file handled by the source manager to the input file.
-	const FileEntry* FileIn = FileMgr.getFile(filename);
-	SourceMgr.setMainFileID(SourceMgr.createFileID(FileIn, SourceLocation(), SrcMgr::C_User));
+	auto errOrFileIn = FileMgr.getFile(filename);
+	if (errOrFileIn)
+		SourceMgr.setMainFileID(SourceMgr.createFileID(errOrFileIn.get(), SourceLocation(), SrcMgr::C_User));
+	else
+		throw errOrFileIn.getError();
 
 	TheCompInst.getDiagnosticClient().BeginSourceFile(
 		TheCompInst.getLangOpts(),
