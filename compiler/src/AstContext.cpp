@@ -1,7 +1,7 @@
 ﻿#include "stdafx.h"
 #include "Ast/AstFunction.h"
 #include "Ast/AstClass.h"
-#include "Ast/AstPackage.h"
+#include "Ast/AstModule.h"
 #include "AstContext.h"
 #include "Type/AutoType.h"
 #include "FunctionInstance.h"

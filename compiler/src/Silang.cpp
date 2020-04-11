@@ -21,9 +21,10 @@
 #include <llvm/IRReader/IRReader.h>
 #include <llvm/Support/SourceMgr.h>
 #include "si_c.h"
-#include "Ast/AstPackage.h"
+#include "Ast/AstModule.h"
 #include "modules.h"
 #include "utility.h"
+#include "CompilerOptions.h"
 
 extern int yyparse(void);
 extern FILE *yyin, *yyout;
@@ -44,7 +45,7 @@ using namespace llvm;
 LLVMContext llvmContext;
 std::unique_ptr<Module> module;
 
-AstPackage* currentPackage = new AstPackage();
+AstModule* currentPackage = new AstModule();
 ExecutionEngine* buildEngine(std::unique_ptr<Module> Owner);
 
 // 源文件是否 utf8 的
@@ -134,8 +135,12 @@ int main(int argc, char* argv[],  char * const *envp)
 	//	errs() << "Error loading: "<< err<< "\n";
 	//	// return -1;
 	//}
+
+
 	std::cout << "Triple: " << ::sys::getProcessTriple() << std::endl;
 	std::cout << "HostCpu: " << ::sys::getHostCPUName().str() << std::endl;
+
+	CompilerOptions::instance().triple = ::sys::getProcessTriple();
 
 	llvm::Triple triple;
 	std::cout << "OsName: " << triple.getOSName().str() << std::endl;
@@ -143,7 +148,7 @@ int main(int argc, char* argv[],  char * const *envp)
 	auto *m = new Module("TOP", llvmContext);
 	module.reset(m);
 
-	CLangModule::initialize();
+	CLangModule::initialize(::sys::getProcessTriple());
 
 	bool b;
 	if (argc > 1) {

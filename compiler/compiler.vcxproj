@@ -19,6 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\FileSystem\DiskDirectory.cpp" />
+    <ClCompile Include="src\FileSystem\DiskFile.cpp" />
+    <ClCompile Include="src\CompilerOptions.cpp" />
+    <ClCompile Include="src\SLangPackage.cpp" />
     <ClCompile Include="src\Ast\AstArrayCall.cpp" />
     <ClCompile Include="src\Ast\AstGetClass.cpp" />
     <ClCompile Include="src\Ast\AstGetConstValue.cpp" />
@@ -74,7 +78,7 @@
     <ClCompile Include="src\Ast\AstLoop.cpp" />
     <ClCompile Include="src\Ast\AstNew.cpp" />
     <ClCompile Include="src\Ast\AstNode.cpp" />
-    <ClCompile Include="src\Ast\AstPackage.cpp" />
+    <ClCompile Include="src\Ast\AstModule.cpp" />
     <ClCompile Include="src\Ast\AstReturn.cpp" />
     <ClCompile Include="src\Ast\AstSequence.cpp" />
     <ClCompile Include="src\Ast\AstSet.cpp" />
@@ -137,9 +141,15 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="TypeManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\FileSystem\DiskDirectory.h" />
+    <ClInclude Include="src\FileSystem\DiskFile.h" />
+    <ClInclude Include="src\CompilerOptions.h" />
+    <ClInclude Include="src\Exception\LoadFileException.h" />
+    <ClInclude Include="src\FileSystem\IDirectory.h" />
+    <ClInclude Include="src\FileSystem\IFile.h" />
+    <ClInclude Include="src\SLangPackage.h" />
     <ClInclude Include="src\Ast\AstArrayCall.h" />
     <ClInclude Include="src\Ast\AstGetConstValue.h" />
     <ClInclude Include="src\Ast\AstGo.h" />
@@ -185,7 +195,7 @@
     <ClInclude Include="src\Ast\AstLoop.h" />
     <ClInclude Include="src\Ast\AstNew.h" />
     <ClInclude Include="src\Ast\AstNode.h" />
-    <ClInclude Include="src\Ast\AstPackage.h" />
+    <ClInclude Include="src\Ast\AstModule.h" />
     <ClInclude Include="src\Ast\AstProtected.h" />
     <ClInclude Include="src\Ast\AstReturn.h" />
     <ClInclude Include="src\Ast\AstSequence.h" />
@@ -257,7 +267,6 @@
     <ClInclude Include="src\utility.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="TypeManager.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="lex\silang.l">

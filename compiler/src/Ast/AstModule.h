@@ -6,8 +6,8 @@ class AstImport;
 class AstNode;
 class AstContext;
 
-/// 定义一个包
-class AstPackage 
+/// 定义一个 si 文件
+class AstModule 
 {
 public:
 	std::vector<std::string> names;

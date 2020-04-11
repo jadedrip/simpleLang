@@ -1,5 +1,5 @@
 ﻿#include "stdafx.h"
-#include "AstPackage.h"
+#include "AstModule.h"
 #include "AstContext.h"
 #include "CodeGenerate/CodeGen.h"
 #include "AstImport.h"
@@ -9,7 +9,7 @@
 using namespace llvm;
 extern LLVMContext llvmContext;
 
-void AstPackage::draw(std::ostream & os) {
+void AstModule::draw(std::ostream & os) {
 	os << "package[label=\"package " << name << "\"]" << std::endl;
 
 	for (auto i : lines) {
@@ -19,7 +19,7 @@ void AstPackage::draw(std::ostream & os) {
 }
 
 ClassInstanceType* stringCls = nullptr;
-AstContext* AstPackage::preprocessor(llvm::Module *m)
+AstContext* AstModule::preprocessor(llvm::Module *m)
 {
 	if (!names.empty()) {
 		for (auto i : names) {
@@ -31,6 +31,7 @@ AstContext* AstPackage::preprocessor(llvm::Module *m)
 	AstContext* block = new AstContext(m);
 	if (name != "si") { // 默认读入 String
 		AstClass* p=AstImport::loadClass("si", "String");
+		assert(p);
 		block->setCompiledClass("struct.si_String", p->generated);
 		block->setClass("String", p);
 	}
@@ -48,7 +49,7 @@ AstContext* AstPackage::preprocessor(llvm::Module *m)
 	return block;
 }
 
-void AstPackage::generateCode(Module *m)
+void AstModule::generateCode(Module *m)
 {
 	Type *type = Type::getVoidTy(llvmContext);
 

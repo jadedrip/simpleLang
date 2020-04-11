@@ -1,7 +1,7 @@
 ﻿#include "stdafx.h"
 #include "modules.h"
 #include "cparser.h"
-#include "Ast/AstPackage.h"
+#include "Ast/AstModule.h"
 
 #include <map>
 #include <vector>
@@ -26,7 +26,7 @@ Module* _clib;
 extern unique_ptr<Module> module;
 extern llvm::LLVMContext llvmContext;
 
-void CLangModule::initialize()
+void CLangModule::initialize(const std::string& triple)
 {
 	// 读取核心库
 	//enumDirectory("lib", [](const string& relativePath, stdfs::path& file) {
@@ -40,15 +40,16 @@ void CLangModule::initialize()
 	//	}
 	//	});
 	string err;
-	if (sys::DynamicLibrary::LoadLibraryPermanently("lib/si/clib.dll", &err)) {
+	string clib = "lib/si/platform/" + triple + "/share/clib.dll";
+	if (sys::DynamicLibrary::LoadLibraryPermanently(clib.c_str(), &err)) {
 		cerr << "读取 clib.dll 失败：" << err << endl;
 	}
-	_clib = loadCHeader("clib", "clib/export.h");
+	_clib = loadCHeader("si", "lib/si/export.h");
 	for (auto i : _clib->getIdentifiedStructTypes()) {
 		_structs[i->getStructName()] = i;
 	}
 
-	CLangModule::loadPackage("si");
+	// CLangModule::loadPackage("si");
 	// CLangModule::loadLLFile("clib/si.ll");
 }
 
@@ -148,7 +149,7 @@ Module* CLangModule::loadLLFile(const string& filename) {
 
 extern int yyparse(void);
 extern FILE* yyin;
-extern AstPackage* currentPackage;
+extern AstModule* currentPackage;
 extern int yylineno;
 AstContext* CLangModule::loadSiFile(const stdfs::path& file, const string& packageName, llvm::Module* m) {
 	string fname = file.string();
@@ -158,7 +159,7 @@ AstContext* CLangModule::loadSiFile(const stdfs::path& file, const string& packa
 
 	auto* old = currentPackage;
 
-	currentPackage = new AstPackage();
+	currentPackage = new AstModule();
 	currentPackage->name = packageName;
 	int ono = yylineno;
 	yylineno = 0;
@@ -197,6 +198,7 @@ llvm::StructType* CLangModule::getStruct(const string& name)
 set<string> packages;
 map<string, AstClass*> classes;
 map<string, AstFunction*> functions;
+
 void CLangModule::loadPackage(const string& packageName)
 {
 	// 避免重复读入

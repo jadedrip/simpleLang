@@ -3,7 +3,7 @@
 #include "utility.h"
 #include "AstClass.h"
 #include "AstLet.h"
-#include "AstPackage.h"
+#include "AstModule.h"
 #include "AstGetClass.h"
 #include "FunctionInstance.h"
 #include "../AstContext.h"

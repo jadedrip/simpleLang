@@ -1,6 +1,6 @@
 ﻿#include "stdafx.h"
 #include "AstStringLiteral.h"
-#include "AstPackage.h"
+#include "AstModule.h"
 #include "../CodeGenerate/StringLiteGen.h"
 
 AstStringLiteral::AstStringLiteral(const char * v) {

@@ -1,7 +1,7 @@
 ﻿#include "stdafx.h"
 #include <filesystem>
 #include "AstImport.h"
-#include "AstPackage.h"
+#include "AstModule.h"
 #include "AstContext.h"
 #include "AstClass.h"
 #include "AstDef.h"
@@ -11,7 +11,7 @@
 #include "../FunctionInstance.h"
 #include <llvm/Support/DynamicLibrary.h>
 
-extern AstPackage* currentPackage;
+extern AstModule* currentPackage;
 
 using namespace std;
 using namespace llvm;

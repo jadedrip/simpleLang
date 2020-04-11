@@ -11,7 +11,7 @@
 class AstType;
 class ClassInstanceType;
 class FunctionInstance;
-class AstPackage;
+class AstModule;
 class AstFunction;
 class CodeGen;
 class EnumType;

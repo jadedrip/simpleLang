@@ -26,7 +26,7 @@
 #include "Ast/AstInterface.h"
 #include "Ast/AstInc.h"
 #include "Ast/AstBased.h"
-#include "Ast/AstPackage.h"
+#include "Ast/AstModule.h"
 #include "Ast/AstImport.h"
 #include "Ast/AstStringList.h"
 #include "Ast/AstStringLiteral.h"
@@ -58,7 +58,7 @@ using namespace std;
 using namespace llvm;
 vector< status_t > status;
 status_t current = prog;
-extern AstPackage* currentPackage;
+extern AstModule* currentPackage;
 
 template<typename T = AstLet, typename L>
 inline void canCastTo(AstNode* node, L func)

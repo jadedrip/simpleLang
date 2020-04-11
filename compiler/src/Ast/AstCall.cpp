@@ -7,7 +7,7 @@
 #include "FunctionInstance.h"
 #include "AstFunction.h"
 #include "utility.h"
-#include "AstPackage.h"
+#include "AstModule.h"
 #include "CodeGenerate/CallGen.h"
 #include "CodeGenerate/LambdaGen.h"
 #include "CodeGenerate/ParamenterGen.h"

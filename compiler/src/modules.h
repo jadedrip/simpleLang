@@ -2,13 +2,13 @@
 #include <filesystem>
 #include <llvm/IR/Module.h>
 
-class AstPackage;
+class AstModule;
 class AstContext;
 class AstClass;
 class AstFunction;
 class CLangModule {
 public:
-	static void initialize();
+	static void initialize(const std::string& triple);
 	static llvm::Function* getFunction(const std::string& full_name);
 	static llvm::Function* getFunction(const std::string& package, const std::string & name);
 	static void moveAll(llvm::ExecutionEngine* engine);
