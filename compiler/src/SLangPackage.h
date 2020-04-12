@@ -5,12 +5,14 @@
 class SLangPackage
 {
 public:
-	std::string packageName;
 	std::map<std::string, AstModule*> modules;	
 	llvm::Module* llvmModule;
 public:
-	void load(const std::string& name);
+	SLangPackage(const std::string& packageName);
+	AstClass* importClass(const std::string& name);
 private:
 	void loadDynamicLibrary(const string& dllPath);
+private:
+	std::string _packageName;
 };
 

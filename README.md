@@ -1068,17 +1068,19 @@ SimpleLang 通过通道来支持跨协程数据交换，成员函数 await 可�
 
 import
 ============
-SimpleLang 通过 import 导入包
+SimpleLang 通过 import 导入包，import 只能写在文件头部，简单起见，SimpleLang 总是一次导入整个包里的公共对象、函数
 
-// 导入指定函数、类
-import sin, print in org.simplelang
+`import org.simplelang`
 
-// 导入org.expz 包内，对org.slang.String 的注入
-import {org.slang.String} in org.expz	
+如果包有冲突，那么可以创建包别名
 
-// 导入整个包内函数及类，以及注入
-import * in org.slang
-注意：import 只能写在文件头部
+import org.simplelang as sl
+
+sl::MyClass my	// 包和对象之间使用 :: 做分隔符
+
+也可以用全名来使用包内函数或对象
+
+org.simplelang::printLine("Hello")
 
 # 其他
 
