@@ -48,19 +48,14 @@ CodeGen * AstImport::makeGen(AstContext * parent)
 	// 导入包
 	// TODO: 支持压缩包
 	loadPackage(dir);
-	if (isFunction) {
-		auto *f=CLangModule::findFunction(fullName);
-		if (f) {
-			parent->defineFunction(className, f);
-			return nullptr;
-		}
-	} else if ("*" != className) {
-		auto i = CLangModule::findClass(fullName);
-		if (i) {
-			parent->setClass(className, i);
-			return nullptr;
-		}
-	}
+
+
+		//auto i = CLangModule::findClass(fullName);
+		//if (i) {
+		//	parent->setClass(className, i);
+		//	return nullptr;
+		//}
+	
 	return nullptr;
 }
 

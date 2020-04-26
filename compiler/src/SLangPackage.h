@@ -11,7 +11,7 @@ public:
 	SLangPackage(const std::string& packageName);
 	AstClass* importClass(const std::string& name);
 private:
-	void loadDynamicLibrary(const string& dllPath);
+	void loadDynamicLibrary(const std::string& dllPath);
 private:
 	std::string _packageName;
 };

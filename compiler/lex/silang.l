@@ -111,6 +111,7 @@ H		[a-fA-F0-9]
 "--"					return DEC;
 "..."					return DOTS;
 "?:"					return WHEN_NULL;
+"::"					return PK;
 
 [&*+-/~!=^<>\|%\(\):`\?\{\}\[\];@\.]	return *yytext;
 

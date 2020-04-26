@@ -17,9 +17,8 @@ class TupleType;
 
 AstNode* packageName(AstNode* name);
 
-void packageImport(AstNode* n);
+void packageImport(AstNode* n, char* name=NULL);
 void setPackageLines(AstNode* n);
-AstNode* importName(AstNode* n, char* name, bool isFunc = false);
 AstNode* stringCat(AstNode* left, AstNode* right);
 
 AstType* getType( int type_id );

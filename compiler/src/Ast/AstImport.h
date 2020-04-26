@@ -9,7 +9,6 @@ class CodeGen;
 class AstImport : public AstNode {
 public:
 	std::vector<std::string> identifiers;
-	bool isFunction = false;
 public:
 	virtual CodeGen* makeGen(AstContext* parent);
 	// void loadCModule(llvm::Module * m);

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <memory>
+#include <boost/tokenizer.hpp>
 #include "DiskFile.h"
 #include "DiskDirectory.h"
 
@@ -18,9 +19,21 @@ void DiskDirectory::doEach(const Callback& callback,
 		auto &path = iter.path();
 		auto filename = path.string();
 		auto extension = path.extension().string();
-		if (filter(filename, extension)) {
+		if (!filter || filter(filename, extension)) {
 			unique_ptr<IFile> ptr(new DiskFile(path));
 			callback(move(ptr));
 		}
 	}
+}
+
+std::unique_ptr<IDirectory> DiskDirectory::path(const std::string& path)
+{
+	using namespace boost;
+	char_separator<char> separator("\\/");
+	tokenizer<char_separator<char>> tokenizer(path, separator);
+	auto x = _path;
+	for (auto i : tokenizer) {
+		x = x / i;
+	}
+	return std::unique_ptr<IDirectory>(new DiskDirectory(x));
 }

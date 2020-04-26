@@ -1,10 +1,7 @@
 ﻿package org.my
 
 // import si.String
-import si.printHello
-import si.printInt
-import si.println
-import si.hello
+import si
 
 printf("Hello world!")
 

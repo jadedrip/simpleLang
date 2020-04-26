@@ -11,6 +11,7 @@ protected:
 		const Callback& callback,
 		const FilterFunction& filter,
 		bool recursive = false);
+	virtual std::unique_ptr<IDirectory> path(const std::string& path);
 private:
 	std::filesystem::path _path;
 };

@@ -2,6 +2,7 @@
 #include "modules.h"
 #include "cparser.h"
 #include "Ast/AstModule.h"
+#include "FileSystem/DiskDirectory.h"
 
 #include <map>
 #include <vector>
@@ -10,6 +11,7 @@
 #include <llvm/IRReader/IRReader.h>
 #include <llvm/Support/SourceMgr.h>
 #include <llvm/Support/DynamicLibrary.h>
+#include <CompilerOptions.h>
 
 using namespace std;
 using namespace llvm;
@@ -26,6 +28,7 @@ Module* _clib;
 extern unique_ptr<Module> module;
 extern llvm::LLVMContext llvmContext;
 
+std::string _triple;
 void CLangModule::initialize(const std::string& triple)
 {
 	// 读取核心库
@@ -39,6 +42,8 @@ void CLangModule::initialize(const std::string& triple)
 	//		}
 	//	}
 	//	});
+	_triple = triple;
+	 
 	string err;
 	string clib = "lib/si/platform/" + triple + "/share/clib.dll";
 	if (sys::DynamicLibrary::LoadLibraryPermanently(clib.c_str(), &err)) {
@@ -206,11 +211,18 @@ void CLangModule::loadPackage(const string& packageName)
 		return;
 	packages.insert(packageName);
 
+
 	auto name = packageName;
 	for (char& i : name)
 		if (i == '.') i = '/';
 
+	// TODO: 多种匹配查找目录
 	auto base = "lib/" + name;
+	IDirectory* packageDir = new DiskDirectory(base);
+	if (CompilerOptions::instance().directlyExecute) {
+		CLangModule::importDll(packageDir);
+	}
+
 
 	for (auto& fe : stdfs::directory_iterator(base)) {
 		auto fp = fe.path();
@@ -280,6 +292,19 @@ AstFunction* CLangModule::findFunction(const string& fullName)
 		return i->second;
 	}
 	return nullptr;
+}
+
+void CLangModule::importDll(IDirectory* base)
+{
+	auto dllptr=base->path("platform/" + _triple + "/share");
+	dllptr->forEach().loop([](std::unique_ptr<IFile>&& ptr) {
+		ptr->lock([](const std::string& filename) {
+			std::string err;
+			if (llvm::sys::DynamicLibrary::LoadLibraryPermanently(filename.c_str(), &err)) {
+				cerr << "读取 " << filename << "失败：" << err << endl;
+			}
+			});
+		});
 }
 
 

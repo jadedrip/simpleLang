@@ -6,6 +6,7 @@ class AstModule;
 class AstContext;
 class AstClass;
 class AstFunction;
+struct IDirectory;
 class CLangModule {
 public:
 	static void initialize(const std::string& triple);
@@ -22,4 +23,5 @@ public:
 	static AstFunction* findFunction(const std::string& fullName);
 	static std::vector<llvm::StructType*> allClass(const std::string& fullName);
 	static llvm::SymbolTableList<llvm::Function>& allFunction(const std::string& fullName);
+	static void importDll(IDirectory* base);
 };

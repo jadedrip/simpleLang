@@ -10,7 +10,7 @@ struct IDirectory {
 	class ForeachStreams {
 		friend struct IDirectory;
 	private:
-		ForeachStreams(IDirectory* dir) {
+		ForeachStreams(IDirectory* dir){
 			_dir = dir;
 		}
 	public:
@@ -23,7 +23,7 @@ struct IDirectory {
 			return *this;
 		}
 		void loop(const Callback& callback) {
-			_dir->doEach(callback, _filterFunc, _recusive); 
+			_dir->doEach(callback, _filterFunc, _recusive);
 		}
 	private:
 		bool _recusive = false;
@@ -32,12 +32,16 @@ struct IDirectory {
 	};
 
 	ForeachStreams& forEach() {
-		return ForeachStreams(this);
+		return _streams;
 	}
+
+	virtual std::unique_ptr<IDirectory> path(const std::string& path) = 0;
 protected:
 	virtual void doEach(
 		const Callback& callback,
 		const FilterFunction& filter,
-		bool recursive=false
+		bool recursive = false
 	) = 0;
+private:
+	ForeachStreams _streams=ForeachStreams(this);
 };

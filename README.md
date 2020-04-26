@@ -627,7 +627,7 @@ SimpleLang 支持的异常。
 ----------------
 通过在类外部定义额外方法，可以增强类
 
-	fun MyCls.other(){	// 本函数定义在外部，通过 import org.other:org.pak.MyCls.other 引入
+	fun MyCls.other(){	// 本函数定义在外部，通过 import org.other 引入
 		this.val++
 	}
 	
@@ -665,10 +665,13 @@ SimpleLang 支持的异常。
 对象分托管和非托管两种，托管的对象会由 GC 管理，而非托管对象必须手动释放。但不管托管或者非托管对象，都可以有析构函数，
 托管对象的析构函数仅手工调用或触发 GC 时才会被调用。
 
-对象默认是托管的。
+对象默认是托管的，非托管对象一般人不推荐使用。
 
 	var managed = ManagedClass() 	// 托管的
 	free(managed)					// 调用析构函数
+
+	var unsafe = new Unsafe()
+	free(unsafe)			// 析构
 
 语法糖：对象作用区
 ----------------
@@ -1070,17 +1073,17 @@ import
 ============
 SimpleLang 通过 import 导入包，import 只能写在文件头部，简单起见，SimpleLang 总是一次导入整个包里的公共对象、函数
 
-`import org.simplelang`
+	import org.simplelang
 
 如果包有冲突，那么可以创建包别名
 
-import org.simplelang as sl
+	import org.simplelang as sl
 
 sl::MyClass my	// 包和对象之间使用 :: 做分隔符
 
-也可以用全名来使用包内函数或对象
+也可以用全名来使用包内函数或对象而不需要导入
 
-org.simplelang::printLine("Hello")
+	org.simplelang::printLine("Hello")
 
 # 其他
 

@@ -67,6 +67,7 @@ enum yytokentype {
     FINALIZE_TOKEN = 317,
     GO_TOKEN = 318,
     BBRACKETS = 319,
-    CONCEPT = 320
+    CONCEPT = 320,
+    PK = 321
 };
 #endif

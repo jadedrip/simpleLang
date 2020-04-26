@@ -129,17 +129,6 @@ AstNode* packageName(AstNode* names)
 	return nullptr;
 }
 
-AstNode* importName(AstNode* n, char* name, bool isFunc)
-{
-	auto *p = new AstImport();
-	foreach(n, [&p](AstNode* i) {
-		p->identifiers.push_back(std::move(i->name));
-	}, true);
-	p->identifiers.push_back(name);
-	p->isFunction = isFunc;
-	return p;
-}
-
 AstNode * stringCat(AstNode * left, AstNode * right)
 {
 	left->name += right->name;
@@ -147,11 +136,14 @@ AstNode * stringCat(AstNode * left, AstNode * right)
 	return left;
 }
 
-void packageImport(AstNode * n)
+void packageImport(AstNode * n, char* name)
 {
-	foreach<AstImport>(n, [](AstImport* i) {
-		currentPackage->imports.push_back(i);
-	});
+	auto* p = new AstImport();
+	foreach(n, [&p](AstNode* i) {
+		p->identifiers.push_back(std::move(i->name));
+		}, true);
+	if(name) p->name = name;
+	currentPackage->imports.push_back(p);
 }
 
 void setPackageLines(AstNode * a)

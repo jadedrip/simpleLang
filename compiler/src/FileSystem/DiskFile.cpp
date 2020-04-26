@@ -19,3 +19,8 @@ void DiskFile::loadDynamicLibrary()
 		throw LoadFileException(file, err);
 	}
 }
+
+void DiskFile::lock(const LockCallback& callback)
+{
+	callback(_path.string());
+}
