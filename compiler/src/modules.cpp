@@ -2,7 +2,6 @@
 #include "modules.h"
 #include "cparser.h"
 #include "Ast/AstModule.h"
-#include "FileSystem/DiskDirectory.h"
 
 #include <map>
 #include <vector>
@@ -43,7 +42,7 @@ void CLangModule::initialize(const std::string& triple)
 	//	}
 	//	});
 	_triple = triple;
-	 
+
 	string err;
 	string clib = "lib/si/platform/" + triple + "/share/clib.dll";
 	if (sys::DynamicLibrary::LoadLibraryPermanently(clib.c_str(), &err)) {
@@ -72,7 +71,7 @@ llvm::Function* CLangModule::getFunction(const string& name) {
 	auto* f = module->getFunction(name);
 	if (f) return f;
 
-	f= _clib->getFunction(name);
+	f = _clib->getFunction(name);
 	if (f) {
 		return Function::Create(f->getFunctionType(), Function::ExternalLinkage, f->getName(), module.get());
 	}
@@ -92,7 +91,7 @@ llvm::Function* CLangModule::getFunction(const string& name) {
 llvm::Function* CLangModule::getFunction(const string& package, const string& name) {
 	auto iter = _modules.find(package);
 	if (iter != _modules.end()) {
-		auto func=iter->second->getFunction(name);
+		auto func = iter->second->getFunction(name);
 		return Function::Create(func->getFunctionType(), Function::ExternalLinkage, name, module.get());
 	}
 	return nullptr;
@@ -195,7 +194,7 @@ llvm::StructType* CLangModule::getStruct(const string& path, const string& name)
 llvm::StructType* CLangModule::getStruct(const string& name)
 {
 	auto* p = _structs["struct." + name];
-	auto v= p ? p : _structs[name];
+	auto v = p ? p : _structs[name];
 	assert(v && "Can't find struct");
 	return v;
 }
@@ -203,6 +202,8 @@ llvm::StructType* CLangModule::getStruct(const string& name)
 set<string> packages;
 map<string, AstClass*> classes;
 map<string, AstFunction*> functions;
+
+using namespace std::filesystem;
 
 void CLangModule::loadPackage(const string& packageName)
 {
@@ -218,61 +219,69 @@ void CLangModule::loadPackage(const string& packageName)
 
 	// TODO: 多种匹配查找目录
 	auto base = "lib/" + name;
-	IDirectory* packageDir = new DiskDirectory(base);
+	path packageDir = path(base);
 	if (CompilerOptions::instance().directlyExecute) {
 		CLangModule::importDll(packageDir);
 	}
 
+	auto src = packageDir / "src";
 
-	for (auto& fe : stdfs::directory_iterator(base)) {
-		auto fp = fe.path();
-		//wcout << fp.filename().wstring() << endl;
-		auto si = fp.filename();
-		auto ex = fp.extension().string();
-		if (ex == ".dll") {
-			string err;
-			string dll = si.string();
-			if (sys::DynamicLibrary::LoadLibraryPermanently(dll.c_str(), &err)) {
-				cerr << "读取 " + dll + " 失败：" << err << endl;
-			}
-			else {
-				clog << "读取 dll：" << dll << endl;
-			}
-			continue;
-		}
-		if (ex == ".h" || ex == ".hpp") {
-			auto* m = loadCHeader(name, fp.string());
-			auto x = unique_ptr<llvm::Module>(m);
-			_modules.insert(make_pair(name, move(x)));
-		}
+					//AstContext* x = CLangModule::loadSiFile(osi, name, m);
+					//for (auto i : x->_class) {
+					//	auto full = packageName + "." + i.second->name;
+					//	classes[full] = i.second;
+					//};
 
-		if (ex == ".si") {
-			auto osi = base / si;
-			si.replace_extension(".ll");
-			auto llo = base / si;
 
-			llvm::Module* m;
-			if (stdfs::exists(llo)) {
-				m = CLangModule::loadLLFile(llo.string());
-			}
-			else {
-				m = new llvm::Module(packageName, llvmContext);
-			}
+			//for (auto& fe : stdfs::directory_iterator(base)) {
+			//	auto fp = fe.path();
+			//	//wcout << fp.filename().wstring() << endl;
+			//	auto si = fp.filename();
+			//	auto ex = fp.extension().string();
+			//	if (ex == ".dll") {
+			//		string err;
+			//		string dll = si.string();
+			//		if (sys::DynamicLibrary::LoadLibraryPermanently(dll.c_str(), &err)) {
+			//			cerr << "读取 " + dll + " 失败：" << err << endl;
+			//		}
+			//		else {
+			//			clog << "读取 dll：" << dll << endl;
+			//		}
+			//		continue;
+			//	}
+			//	if (ex == ".h" || ex == ".hpp") {
+			//		auto* m = loadCHeader(name, fp.string());
+			//		auto x = unique_ptr<llvm::Module>(m);
+			//		_modules.insert(make_pair(name, move(x)));
+			//	}
 
-			AstContext* x = CLangModule::loadSiFile(osi, packageName, m);
-			for (auto i : x->_class) {
-				auto full = packageName + "." + i.second->name;
-				classes[full] = i.second;
-			};
+			//	if (ex == ".si") {
+			//		auto osi = base / si;
+			//		si.replace_extension(".ll");
+			//		auto llo = base / si;
 
-			for (auto i : x->_functions) {
-				auto full = packageName + "." + i.second->name;
-				functions[full] = i.second;
-			}
-		}
-		//replace_extension替换扩展名
-		//stem去掉扩展名
-	}
+			//		llvm::Module* m;
+			//		if (stdfs::exists(llo)) {
+			//			m = CLangModule::loadLLFile(llo.string());
+			//		}
+			//		else {
+			//			m = new llvm::Module(packageName, llvmContext);
+			//		}
+
+			//		AstContext* x = CLangModule::loadSiFile(osi, packageName, m);
+			//		for (auto i : x->_class) {
+			//			auto full = packageName + "." + i.second->name;
+			//			classes[full] = i.second;
+			//		};
+
+			//		for (auto i : x->_functions) {
+			//			auto full = packageName + "." + i.second->name;
+			//			functions[full] = i.second;
+			//		}
+			//	}
+			//	//replace_extension替换扩展名
+			//	//stem去掉扩展名
+			//}
 }
 
 AstClass* CLangModule::findClass(const string& fullName)
@@ -294,17 +303,21 @@ AstFunction* CLangModule::findFunction(const string& fullName)
 	return nullptr;
 }
 
-void CLangModule::importDll(IDirectory* base)
+void CLangModule::importDll(const std::filesystem::path& base)
 {
-	auto dllptr=base->path("platform/" + _triple + "/share");
-	dllptr->forEach().loop([](std::unique_ptr<IFile>&& ptr) {
-		ptr->lock([](const std::string& filename) {
+	auto dllptr = base / "platform" / _triple / "share";
+	for (auto i : std::filesystem::directory_iterator(dllptr)) {
+		if (i.is_directory()) continue;	// 先不递归查找
+		auto& path = i.path();
+		std::string extension = path.extension().string();
+		// to_lower
+		std::for_each(extension.begin(), extension.end(), tolower);
+		if (extension == "dll" || extension == "so") {
 			std::string err;
+			std::string filename = path.string();
 			if (llvm::sys::DynamicLibrary::LoadLibraryPermanently(filename.c_str(), &err)) {
 				cerr << "读取 " << filename << "失败：" << err << endl;
 			}
-			});
-		});
+		}
+	}
 }
-
-

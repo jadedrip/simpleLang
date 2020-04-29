@@ -149,8 +149,6 @@
     <ClCompile Include="src\SLangPackage.cpp" />
     <ClCompile Include="src\Ast\AstModule.cpp" />
     <ClCompile Include="src\CompilerOptions.cpp" />
-    <ClCompile Include="src\FileSystem\DiskFile.cpp" />
-    <ClCompile Include="src\FileSystem\DiskDirectory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\CodeGenerate\BinaryGen.h">
@@ -325,10 +323,6 @@
     <ClInclude Include="src\Ast\AstModule.h" />
     <ClInclude Include="src\CompilerOptions.h" />
     <ClInclude Include="src\Exception\LoadFileException.h" />
-    <ClInclude Include="src\FileSystem\DiskFile.h" />
-    <ClInclude Include="src\FileSystem\IFile.h" />
-    <ClInclude Include="src\FileSystem\IDirectory.h" />
-    <ClInclude Include="src\FileSystem\DiskDirectory.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="lex\silang.l">

@@ -23,5 +23,5 @@ public:
 	static AstFunction* findFunction(const std::string& fullName);
 	static std::vector<llvm::StructType*> allClass(const std::string& fullName);
 	static llvm::SymbolTableList<llvm::Function>& allFunction(const std::string& fullName);
-	static void importDll(IDirectory* base);
+	static void importDll(const std::filesystem::path& base);
 };

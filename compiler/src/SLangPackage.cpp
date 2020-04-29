@@ -1,18 +1,21 @@
 #include "stdafx.h"
 #include <memory>
 #include <boost/algorithm/string.hpp>
+#include <llvm/Support/DynamicLibrary.h>
 #include "SLangPackage.h"
 #include "CompilerOptions.h"
-#include "FileSystem/DiskDirectory.h"
 
 using namespace std;
 
 SLangPackage::SLangPackage(const std::string& packageName)
 	: _packageName(packageName)
 {
-	string path = "lib/" + packageName;
+	_triple = llvm::sys::getProcessTriple();
+	filesystem::path path("lib/" + packageName);
 	if (CompilerOptions::instance().directlyExecute)
 		loadDynamicLibrary(path);
+
+	loadSiFiles(path);
 }
 
 AstClass* SLangPackage::importClass(const std::string& name)
@@ -22,28 +25,25 @@ AstClass* SLangPackage::importClass(const std::string& name)
 }
 
 
-void SLangPackage::loadDynamicLibrary(const string& path)
+void SLangPackage::loadDynamicLibrary(const std::filesystem::path& base)
 {
-	string dllPath = path + "/platform/" + CompilerOptions::instance().triple + "/share";
-	// 先读取所有动态链接库
-	DiskDirectory dir(dllPath);
-	dir.forEach()
-		.filter(
-			[](const string& filename, const string& extension) {
-				if (extension == "so") return true;
-				std::string ex = boost::to_lower_copy(extension);
-				return ex == "dll";
+	auto dllptr = base / "platform" / _triple / "share";
+	for (auto i : std::filesystem::directory_iterator(dllptr)) {
+		if (i.is_directory()) continue;	// 先不递归查找
+		auto& path = i.path();
+		std::string extension = path.extension().string();
+		// to_lower
+		std::for_each(extension.begin(), extension.end(), tolower);
+		if (extension == "dll" || extension == "so") {
+			std::string err;
+			std::string filename = path.string();
+			if (llvm::sys::DynamicLibrary::LoadLibraryPermanently(filename.c_str(), &err)) {
+				cerr << "读取 " << filename << "失败：" << err << endl;
 			}
-		)
-		.recusive(true)
-		.loop(
-			[](unique_ptr<IFile>&& file) {
-				try {
-					file->loadDynamicLibrary();
-				}
-				catch (exception& e) {
-					std::cerr << e.what() << std::endl;
-				}
-			}
-	);
+		}
+	}
+}
+
+void SLangPackage::loadSiFiles(const std::filesystem::path& base)
+{
 }
