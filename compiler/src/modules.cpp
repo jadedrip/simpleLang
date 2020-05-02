@@ -2,6 +2,7 @@
 #include "modules.h"
 #include "cparser.h"
 #include "Ast/AstModule.h"
+#include "Ast/AstPackage.h"
 
 #include <map>
 #include <vector>
@@ -19,8 +20,8 @@ namespace stdfs = filesystem;
 map<string, unique_ptr<Module> > _modules;
 map<string, string> funcs;	// 被使用的函数
 map<string, StructType* > _structs;
-map<string, AstContext* > _packages;
 map<string, Function*> _functions;
+map<string, AstPackage*> _packages;
 
 Module* _clib;
 
@@ -155,12 +156,8 @@ extern int yyparse(void);
 extern FILE* yyin;
 extern AstModule* currentPackage;
 extern int yylineno;
-AstContext* CLangModule::loadSiFile(const stdfs::path& file, const string& packageName, llvm::Module* m) {
+AstModule* CLangModule::loadSiFile(const stdfs::path& file, const string& packageName) {
 	string fname = file.string();
-	auto i = _packages.find(fname);
-	if (i != _packages.end())
-		return i->second;
-
 	auto* old = currentPackage;
 
 	currentPackage = new AstModule();
@@ -180,7 +177,7 @@ AstContext* CLangModule::loadSiFile(const stdfs::path& file, const string& packa
 	auto* importedPackage = currentPackage;
 	currentPackage = old;
 
-	return _packages[fname] = importedPackage->preprocessor(m);
+	return importedPackage;
 }
 
 void CLangModule::shutdown() {
@@ -199,89 +196,46 @@ llvm::StructType* CLangModule::getStruct(const string& name)
 	return v;
 }
 
-set<string> packages;
 map<string, AstClass*> classes;
 map<string, AstFunction*> functions;
 
 using namespace std::filesystem;
 
-void CLangModule::loadPackage(const string& packageName)
+void CLangModule::recurvePath(AstPackage& package, const string& base, const path& path) {
+	for (auto& i : stdfs::directory_iterator(path)) {
+		if (i.is_directory()) {
+			recurvePath(package, base + "." + i.path().string(), i.path());
+			continue;
+		}
+		auto& file = i.path();
+		string ex = file.extension().string();
+		std::for_each(ex.begin(), ex.end(), tolower);
+		if (ex == ".si") {
+			auto* p = loadSiFile(file, base);
+			string filename = file.string();
+			package.addModule(base + "." + filename.substr(0, filename.length() - 3), p);
+		}
+	}
+}
+
+AstPackage* CLangModule::loadPackage(const string& packageName)
 {
-	// 避免重复读入
-	if (packages.find(packageName) != packages.end())
+	if (_packages.contains(packageName))
 		return;
-	packages.insert(packageName);
-
-
-	auto name = packageName;
-	for (char& i : name)
-		if (i == '.') i = '/';
 
 	// TODO: 多种匹配查找目录
-	auto base = "lib/" + name;
+	auto base = "lib/" + packageName;
 	path packageDir = path(base);
 	if (CompilerOptions::instance().directlyExecute) {
 		CLangModule::importDll(packageDir);
 	}
 
+	auto package = new AstPackage(packageName);
+	_packages[packageName] = package;
+
 	auto src = packageDir / "src";
-
-					//AstContext* x = CLangModule::loadSiFile(osi, name, m);
-					//for (auto i : x->_class) {
-					//	auto full = packageName + "." + i.second->name;
-					//	classes[full] = i.second;
-					//};
-
-
-			//for (auto& fe : stdfs::directory_iterator(base)) {
-			//	auto fp = fe.path();
-			//	//wcout << fp.filename().wstring() << endl;
-			//	auto si = fp.filename();
-			//	auto ex = fp.extension().string();
-			//	if (ex == ".dll") {
-			//		string err;
-			//		string dll = si.string();
-			//		if (sys::DynamicLibrary::LoadLibraryPermanently(dll.c_str(), &err)) {
-			//			cerr << "读取 " + dll + " 失败：" << err << endl;
-			//		}
-			//		else {
-			//			clog << "读取 dll：" << dll << endl;
-			//		}
-			//		continue;
-			//	}
-			//	if (ex == ".h" || ex == ".hpp") {
-			//		auto* m = loadCHeader(name, fp.string());
-			//		auto x = unique_ptr<llvm::Module>(m);
-			//		_modules.insert(make_pair(name, move(x)));
-			//	}
-
-			//	if (ex == ".si") {
-			//		auto osi = base / si;
-			//		si.replace_extension(".ll");
-			//		auto llo = base / si;
-
-			//		llvm::Module* m;
-			//		if (stdfs::exists(llo)) {
-			//			m = CLangModule::loadLLFile(llo.string());
-			//		}
-			//		else {
-			//			m = new llvm::Module(packageName, llvmContext);
-			//		}
-
-			//		AstContext* x = CLangModule::loadSiFile(osi, packageName, m);
-			//		for (auto i : x->_class) {
-			//			auto full = packageName + "." + i.second->name;
-			//			classes[full] = i.second;
-			//		};
-
-			//		for (auto i : x->_functions) {
-			//			auto full = packageName + "." + i.second->name;
-			//			functions[full] = i.second;
-			//		}
-			//	}
-			//	//replace_extension替换扩展名
-			//	//stem去掉扩展名
-			//}
+	recurvePath(*package, "", src);
+	return package;
 }
 
 AstClass* CLangModule::findClass(const string& fullName)

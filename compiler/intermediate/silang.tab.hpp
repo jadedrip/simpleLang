@@ -109,7 +109,8 @@ extern int yydebug;
      GO_TOKEN = 318,
      BBRACKETS = 319,
      CONCEPT = 320,
-     PK = 321
+     PK = 321,
+     AS = 322
    };
 #endif
 
@@ -127,7 +128,7 @@ typedef union YYSTYPE
 
 
 /* Line 2058 of yacc.c  */
-#line 131 "intermediate/silang.tab.hpp"
+#line 132 "intermediate/silang.tab.hpp"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

@@ -23,7 +23,7 @@ class AstContext
 {
 public:
 	AstContext(AstContext* p);
-	AstContext(llvm::Module * m);
+	AstContext(llvm::Module* m);
 	AstContext* parent;
 	llvm::Module* module = nullptr;
 	llvm::LLVMContext& context();
@@ -62,15 +62,23 @@ public:
 		CodeGen* object = nullptr
 	);
 	virtual AstType* findType(const std::string& name);
+	void addImport(const std::string& name, AstModule* module) {
+		if (name.empty())
+			_anonymousModules.push_back(module);
+		_aliasModules[name] = module;
+	}
 public:
 	std::multimap<std::string, AstFunction*> _functions;		 // 模板函数
 	std::unordered_map< std::string, AstClass* > _class;			// 未特例化的自定义结构
 	std::unordered_map< std::string, CodeGen* > _symbols;	// 变量
 	std::map<std::string, EnumType*> _enums;    //	保存枚举变量			
 private:
-	/* 
+	/*
 	* 记录 c 的 struct 到 ClassInstanceType 的映射，以便
 	*  “点”生成器对 cls.method() 这样的代码，能够快速通过类名反查类
 	*/
 	static std::map<std::string, ClassInstanceType* > _compiledClass;
+
+	std::vector<AstModule*> _anonymousModules;
+	std::map<std::string, AstModule*> _aliasModules;
 };

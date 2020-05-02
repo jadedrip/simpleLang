@@ -1079,11 +1079,11 @@ SimpleLang 通过 import 导入包，import 只能写在文件头部，简单起
 
 	import org.simplelang as sl
 
-sl::MyClass my	// 包和对象之间使用 :: 做分隔符
+sl.MyClass my
 
 也可以用全名来使用包内函数或对象而不需要导入
 
-	org.simplelang::printLine("Hello")
+	org.simplelang.printLine("Hello")
 
 # 其他
 

@@ -25,7 +25,7 @@ inline void replaceToSlash(std::string& x)
 
 void AstImport::loadPackage(const std::string& packageName)
 {
-	CLangModule::loadPackage(packageName);
+	
 }
 
 CodeGen * AstImport::makeGen(AstContext * parent)
@@ -38,7 +38,7 @@ CodeGen * AstImport::makeGen(AstContext * parent)
 	for (auto i : identifiers) {
 		dir += i + ".";
 	}
-	if (!dir.empty()) // 去除最后的斜杠
+	if (!dir.empty()) // 去除最后的 .
 		dir.pop_back();
 	fullName = dir;
 	fullName += "." + className;
@@ -46,16 +46,8 @@ CodeGen * AstImport::makeGen(AstContext * parent)
 	std::clog << "import " << fullName << std::endl;
 
 	// 导入包
-	// TODO: 支持压缩包
-	loadPackage(dir);
-
-
-		//auto i = CLangModule::findClass(fullName);
-		//if (i) {
-		//	parent->setClass(className, i);
-		//	return nullptr;
-		//}
-	
+	auto* package = CLangModule::loadPackage(fullName);
+	parent.addImport(name, package);
 	return nullptr;
 }
 

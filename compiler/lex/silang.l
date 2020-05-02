@@ -90,6 +90,7 @@ H		[a-fA-F0-9]
 "init"				return INIT_TOKEN;
 "finalize"			return FINALIZE_TOKEN; 
 "go"				return GO_TOKEN;
+"as"				return AS;
 
 [a-z][a-zA-Z0-9]*		SAVETOKEN(L_IDENTIFIER); 
 [A-Z][a-zA-Z0-9]*		SAVETOKEN(U_IDENTIFIER); 
