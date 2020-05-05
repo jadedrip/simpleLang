@@ -215,6 +215,7 @@ copy /Y $(ProjectDir)export.h $(SolutionDir)lib\si</Command>
   </ItemGroup>
   <ItemGroup>
     <None Include="clib.def" />
+    <None Include="si\Charset.si" />
     <None Include="si\Coroutine.si" />
     <CustomBuild Include="si\String.si">
       <FileType>Document</FileType>

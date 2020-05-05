@@ -30,24 +30,18 @@ void AstImport::loadPackage(const std::string& packageName)
 
 CodeGen * AstImport::makeGen(AstContext * parent)
 {
-	std::string className = identifiers.back();
-	identifiers.pop_back();
-
 	std::string dir;
-	string fullName;
 	for (auto i : identifiers) {
 		dir += i + ".";
 	}
 	if (!dir.empty()) // 去除最后的 .
 		dir.pop_back();
-	fullName = dir;
-	fullName += "." + className;
 
-	std::clog << "import " << fullName << std::endl;
+	std::clog << "import " << dir << std::endl;
 
 	// 导入包
-	auto* package = CLangModule::loadPackage(fullName);
-	parent.addImport(name, package);
+	auto* package = CLangModule::loadPackage(dir);
+	parent->addImport(name, package);
 	return nullptr;
 }
 

@@ -10,7 +10,7 @@ class AstFunction;
 struct IDirectory;
 class CLangModule {
 public:
-	static void initialize(const std::string& triple);
+	static void initialize();
 	static llvm::Function* getFunction(const std::string& full_name);
 	static llvm::Function* getFunction(const std::string& package, const std::string & name);
 	static void moveAll(llvm::ExecutionEngine* engine);
@@ -24,7 +24,4 @@ public:
 	static AstFunction* findFunction(const std::string& fullName);
 	static std::vector<llvm::StructType*> allClass(const std::string& fullName);
 	static llvm::SymbolTableList<llvm::Function>& allFunction(const std::string& fullName);
-	static void importDll(const std::filesystem::path& base);
-private:
-	static void recurvePath(AstPackage& packageName, const std::string& base, const std::filesystem::path& path);
 };

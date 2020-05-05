@@ -1,8 +1,3 @@
-class Charset {
-	init(ushort code=0)
-	func code()
-}
-
 enum Charsets {
 	Default = Charset(0),
 	UTF8 = Charset(65001),

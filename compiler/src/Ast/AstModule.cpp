@@ -29,12 +29,12 @@ AstContext* AstModule::preprocessor(llvm::Module *m)
 	}
 
 	AstContext* block = new AstContext(m);
-	if (name != "si") { // 默认读入 String
-		AstClass* p=AstImport::loadClass("si", "String");
-		assert(p);
-		block->setCompiledClass("struct.si_String", p->generated);
-		block->setClass("String", p);
-	}
+	//if (name != "si") { // 默认读入 String
+	//	AstClass* p=AstImport::loadClass("si", "String");
+	//	assert(p);
+	//	block->setCompiledClass("struct.si_String", p->generated);
+	//	block->setClass("String", p);
+	//}
 	
 	block->module = m;
 	block->pathName = name;

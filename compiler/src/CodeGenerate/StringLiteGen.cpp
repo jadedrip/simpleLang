@@ -7,34 +7,43 @@
 #include "CallGen.h"
 #include "NewGen.h"
 #include "../modules.h"
+#include "AstContext.h"
+#include "CodeGenerate/IntegerGen.h"
 
+using namespace std;
 using namespace llvm;
 extern bool utf8File;
-StringLiteGen::StringLiteGen(llvm::LLVMContext& c, const std::string & s) : _str(s), _context(c)
+StringLiteGen::StringLiteGen(AstContext* c, const std::string & s) : _str(s)
 {
 	// ±àÂë±ä»Ã
-	UINT code = utf8File ? CP_UTF8 : CP_ACP;
-	int  len = (int)_str.length();
-	int  unicodeLen = ::MultiByteToWideChar(code,
-											0,
-											_str.c_str(),
-											-1,
-											NULL,
-											0);
-	wchar_t *  pUnicode = new  wchar_t[unicodeLen + 1];
-	memset(pUnicode, 0, (unicodeLen + 1) * sizeof(wchar_t));
-	::MultiByteToWideChar(code,
-						  0,
-						  _str.c_str(),
-						  -1,
-						  (LPWSTR)pUnicode,
-						  unicodeLen);
-	int ulen = unicodeLen * sizeof(wchar_t);
+	//UINT code = utf8File ? CP_UTF8 : CP_ACP;
+	//int  len = (int)_str.length();
+	//int  unicodeLen = ::MultiByteToWideChar(code,
+	//										0,
+	//										_str.c_str(),
+	//										-1,
+	//										NULL,
+	//										0);
+	//wchar_t *  pUnicode = new  wchar_t[unicodeLen + 1];
+	//memset(pUnicode, 0, (unicodeLen + 1) * sizeof(wchar_t));
+	//::MultiByteToWideChar(code,
+	//					  0,
+	//					  _str.c_str(),
+	//					  -1,
+	//					  (LPWSTR)pUnicode,
+	//					  unicodeLen);
+	//int ulen = unicodeLen * sizeof(wchar_t);
 
-	_data.assign(pUnicode, unicodeLen-1);
-	delete[]  pUnicode;
+	//_data.assign(pUnicode, unicodeLen-1);
+	//delete[]  pUnicode;
 
-	type = CLangModule::getStruct("si", "String");
+	//auto charset = c->findClass("Charset");
+	//vector<pair<string, CodeGen*>> vec = { pair(string(), new IntegerGen(c->context(), 65001)) };
+	//auto charsetObj = charset->makeNew(c, vec); // utf8
+
+	//auto* str = c->findClass("String");
+	//str->makeNew(c, s.c_str(), )
+
 }
 
 void StringLiteGen::append(StringLiteGen * g)

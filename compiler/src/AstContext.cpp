@@ -67,6 +67,12 @@ void AstContext::setClass(const std::string & name, AstClass * cls)
 AstClass * AstContext::findClass(const std::string & name) {
 	auto i = _class.find(name); 
 	if (i != _class.end()) return i->second;
+
+	for (auto& i : _anonymousModules) {
+	 	auto *c = i.findClass(name);
+		if (c) return c;
+	}
+
 	if (parent) return parent->findClass(name);
 	return nullptr;
 }

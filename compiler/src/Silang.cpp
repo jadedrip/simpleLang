@@ -148,7 +148,7 @@ int main(int argc, char* argv[],  char * const *envp)
 	auto *m = new Module("TOP", llvmContext);
 	module.reset(m);
 
-	CLangModule::initialize(::sys::getProcessTriple());
+	CLangModule::initialize();
 
 	bool b;
 	if (argc > 1) {

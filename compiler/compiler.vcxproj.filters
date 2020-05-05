@@ -146,9 +146,9 @@
     <ClCompile Include="src\cparser.cpp" />
     <ClCompile Include="src\CodeGenerate\CLangCallGen.cpp" />
     <ClCompile Include="src\CodeGenerate\GlobelWrapValue.cpp" />
-    <ClCompile Include="src\SLangPackage.cpp" />
     <ClCompile Include="src\Ast\AstModule.cpp" />
     <ClCompile Include="src\CompilerOptions.cpp" />
+    <ClCompile Include="src\Ast\AstPackage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\CodeGenerate\BinaryGen.h">
@@ -319,10 +319,10 @@
     <ClInclude Include="src\Ast\AstNewArray.h" />
     <ClInclude Include="src\cparser.h" />
     <ClInclude Include="src\CodeGenerate\CLangCallGen.h" />
-    <ClInclude Include="src\SLangPackage.h" />
     <ClInclude Include="src\Ast\AstModule.h" />
     <ClInclude Include="src\CompilerOptions.h" />
     <ClInclude Include="src\Exception\LoadFileException.h" />
+    <ClInclude Include="src\Ast\AstPackage.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="lex\silang.l">

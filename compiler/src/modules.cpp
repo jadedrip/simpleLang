@@ -1,6 +1,5 @@
 ﻿#include "stdafx.h"
 #include "modules.h"
-#include "cparser.h"
 #include "Ast/AstModule.h"
 #include "Ast/AstPackage.h"
 
@@ -10,7 +9,7 @@
 #include <algorithm>
 #include <llvm/IRReader/IRReader.h>
 #include <llvm/Support/SourceMgr.h>
-#include <llvm/Support/DynamicLibrary.h>
+
 #include <CompilerOptions.h>
 
 using namespace std;
@@ -28,8 +27,7 @@ Module* _clib;
 extern unique_ptr<Module> module;
 extern llvm::LLVMContext llvmContext;
 
-std::string _triple;
-void CLangModule::initialize(const std::string& triple)
+void CLangModule::initialize()
 {
 	// 读取核心库
 	//enumDirectory("lib", [](const string& relativePath, stdfs::path& file) {
@@ -42,17 +40,16 @@ void CLangModule::initialize(const std::string& triple)
 	//		}
 	//	}
 	//	});
-	_triple = triple;
 
-	string err;
-	string clib = "lib/si/platform/" + triple + "/share/clib.dll";
-	if (sys::DynamicLibrary::LoadLibraryPermanently(clib.c_str(), &err)) {
-		cerr << "读取 clib.dll 失败：" << err << endl;
-	}
-	_clib = loadCHeader("si", "lib/si/export.h");
-	for (auto i : _clib->getIdentifiedStructTypes()) {
-		_structs[i->getStructName()] = i;
-	}
+	//string err;
+	//string clib = "lib/si/platform/" + triple + "/share/clib.dll";
+	//if (sys::DynamicLibrary::LoadLibraryPermanently(clib.c_str(), &err)) {
+	//	cerr << "读取 clib.dll 失败：" << err << endl;
+	//}
+	//_clib = loadCHeader("si", "lib/si/export.h");
+	//for (auto i : _clib->getIdentifiedStructTypes()) {
+	//	_structs[i->getStructName()] = i;
+	//}
 
 	// CLangModule::loadPackage("si");
 	// CLangModule::loadLLFile("clib/si.ll");
@@ -201,40 +198,15 @@ map<string, AstFunction*> functions;
 
 using namespace std::filesystem;
 
-void CLangModule::recurvePath(AstPackage& package, const string& base, const path& path) {
-	for (auto& i : stdfs::directory_iterator(path)) {
-		if (i.is_directory()) {
-			recurvePath(package, base + "." + i.path().string(), i.path());
-			continue;
-		}
-		auto& file = i.path();
-		string ex = file.extension().string();
-		std::for_each(ex.begin(), ex.end(), tolower);
-		if (ex == ".si") {
-			auto* p = loadSiFile(file, base);
-			string filename = file.string();
-			package.addModule(base + "." + filename.substr(0, filename.length() - 3), p);
-		}
-	}
-}
+
 
 AstPackage* CLangModule::loadPackage(const string& packageName)
 {
 	if (_packages.contains(packageName))
-		return;
-
-	// TODO: 多种匹配查找目录
-	auto base = "lib/" + packageName;
-	path packageDir = path(base);
-	if (CompilerOptions::instance().directlyExecute) {
-		CLangModule::importDll(packageDir);
-	}
+		return _packages[packageName];
 
 	auto package = new AstPackage(packageName);
 	_packages[packageName] = package;
-
-	auto src = packageDir / "src";
-	recurvePath(*package, "", src);
 	return package;
 }
 
@@ -257,21 +229,4 @@ AstFunction* CLangModule::findFunction(const string& fullName)
 	return nullptr;
 }
 
-void CLangModule::importDll(const std::filesystem::path& base)
-{
-	auto dllptr = base / "platform" / _triple / "share";
-	for (auto i : std::filesystem::directory_iterator(dllptr)) {
-		if (i.is_directory()) continue;	// 先不递归查找
-		auto& path = i.path();
-		std::string extension = path.extension().string();
-		// to_lower
-		std::for_each(extension.begin(), extension.end(), tolower);
-		if (extension == "dll" || extension == "so") {
-			std::string err;
-			std::string filename = path.string();
-			if (llvm::sys::DynamicLibrary::LoadLibraryPermanently(filename.c_str(), &err)) {
-				cerr << "读取 " << filename << "失败：" << err << endl;
-			}
-		}
-	}
-}
+

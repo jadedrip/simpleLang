@@ -70,6 +70,9 @@
     <None Include="si\Coroutine.si">
       <Filter>si</Filter>
     </None>
+    <None Include="si\Charset.si">
+      <Filter>si</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="si\String.si">

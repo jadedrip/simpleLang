@@ -11,7 +11,7 @@
 class AstType;
 class ClassInstanceType;
 class FunctionInstance;
-class AstModule;
+class AstPackage;
 class AstFunction;
 class CodeGen;
 class EnumType;
@@ -62,7 +62,7 @@ public:
 		CodeGen* object = nullptr
 	);
 	virtual AstType* findType(const std::string& name);
-	void addImport(const std::string& name, AstModule* module) {
+	void addImport(const std::string& name, AstPackage* module) {
 		if (name.empty())
 			_anonymousModules.push_back(module);
 		_aliasModules[name] = module;
@@ -79,6 +79,6 @@ private:
 	*/
 	static std::map<std::string, ClassInstanceType* > _compiledClass;
 
-	std::vector<AstModule*> _anonymousModules;
-	std::map<std::string, AstModule*> _aliasModules;
+	std::vector<AstPackage*> _anonymousModules;
+	std::map<std::string, AstPackage*> _aliasModules;
 };
