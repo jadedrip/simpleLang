@@ -69,7 +69,7 @@ AstClass * AstContext::findClass(const std::string & name) {
 	if (i != _class.end()) return i->second;
 
 	for (auto& i : _anonymousModules) {
-	 	auto *c = i.findClass(name);
+	 	auto *c = i->findClass(name);
 		if (c) return c;
 	}
 

@@ -96,7 +96,7 @@ CodeGen * AstCall::makeGen(AstContext * parent)
 	if (g) return  g;
 
 	// 尝试调用纯 c 函数
-	auto* p = CLangModule::getFunction(name);
+	auto* p = parent->getFunction(name);
 	if (p) {
 		std::vector<CodeGen*> params;
 		for (auto i : gens) {

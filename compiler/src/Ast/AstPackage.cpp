@@ -4,6 +4,7 @@
 #include "cparser.h"
 #include "modules.h"
 #include "CompilerOptions.h"
+#include <vector>
 #include <llvm/Support/DynamicLibrary.h>
 
 using namespace std;
@@ -33,17 +34,20 @@ void AstPackage::importDll(const std::filesystem::path& base)
 
 AstPackage::AstPackage(const std::string& packageName) : _name(packageName) {
 	// TODO: 多种匹配查找目录
-	auto base = "lib/" + packageName;
-	stdfs::path packageDir = stdfs::path(base);
+	auto base = stdfs::path( "lib") / packageName;
 	if (CompilerOptions::instance().directlyExecute) {
-		importDll(packageDir);
+		importDll(base);
 	}
-	auto src = packageDir / "src";
+	auto src = base / "src";
 	recurvePath("", src);
 
-	auto export_h = stdfs::path(base) / "export.h";
+	auto export_h = base / "export.h";
 	if (stdfs::exists(export_h)) {
-		_llvmModule = loadCHeader(_name, export_h.string());
+		stdfs::path includePath = base / "include";
+		std::vector<string> includes;
+		if (stdfs::exists(includePath))
+			includes.push_back(includePath.string());
+		_llvmModule = loadCHeader(_name, export_h.string(), includes);
 		for (auto i : _llvmModule->getIdentifiedStructTypes()) {
 			_structs[i->getStructName()] = i;
 		}

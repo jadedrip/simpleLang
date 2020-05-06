@@ -69,10 +69,10 @@ llvm::Function* CLangModule::getFunction(const string& name) {
 	auto* f = module->getFunction(name);
 	if (f) return f;
 
-	f = _clib->getFunction(name);
-	if (f) {
-		return Function::Create(f->getFunctionType(), Function::ExternalLinkage, f->getName(), module.get());
-	}
+	//f = _clib->getFunction(name);
+	//if (f) {
+	//	return Function::Create(f->getFunctionType(), Function::ExternalLinkage, f->getName(), module.get());
+	//}
 
 	//for (auto& iter : _modules) {
 	//	auto f = iter.second->getFunction(name);

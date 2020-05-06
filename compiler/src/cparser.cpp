@@ -113,7 +113,7 @@ void setLangOpt(LangOptions& lo) {
 	lo.MSCompatibilityVersion = 160000000;
 }
 
-llvm::Module* loadCHeader(const string& packageName, const string& filename)
+llvm::Module* loadCHeader(const string& packageName, const string& filename, const vector<string>& includes)
 {
 	// CompilerInstance will hold the instance of the Clang compiler for us,
 	// managing the various objects needed to run the compiler.
@@ -145,14 +145,19 @@ llvm::Module* loadCHeader(const string& packageName, const string& filename)
 
 	const char* path = std::getenv("INCLUDE_PATH");
 	std::string includePath = path ? path : "";
+
+	auto& opts = TheCompInst.getHeaderSearchOpts();
 	if (!includePath.empty()) {
-		auto& opts = TheCompInst.getHeaderSearchOpts();
 		std::regex re{ ";" };
 		for (auto i = sregex_token_iterator(includePath.begin(), includePath.end(), re, -1);
 			i != sregex_token_iterator(); i++) {
 			if (i->first != i->second)
 				opts.AddPath(i->str(), frontend::System, false, false);
 		};
+	}
+
+	for (auto& i : includes) {
+		opts.AddPath(i, frontend::Angled, false, false);
 	}
 
 	// TheCompInst.createPreprocessor();

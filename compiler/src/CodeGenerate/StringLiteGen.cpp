@@ -9,7 +9,7 @@
 #include "../modules.h"
 #include "AstContext.h"
 #include "CodeGenerate/IntegerGen.h"
-
+#include <vcruntime.h>
 using namespace std;
 using namespace llvm;
 extern bool utf8File;
@@ -43,7 +43,7 @@ StringLiteGen::StringLiteGen(AstContext* c, const std::string & s) : _str(s)
 
 	//auto* str = c->findClass("String");
 	//str->makeNew(c, s.c_str(), )
-
+	type = c->findStruct("struct.si_String");
 }
 
 void StringLiteGen::append(StringLiteGen * g)

@@ -1,5 +1,7 @@
 #pragma once
 #include "CodeGen.h"
+
+class AstContext;
 class StringLiteGen : public CodeGen
 {
 public:

@@ -49,6 +49,22 @@ public:
 
 	static AstClass* loadClass(const std::string& path, const std::string& name);
 
+	llvm::StructType* findStruct(const std::string& path) {
+		for (auto& i : _anonymousModules) {
+			auto *p=i->findStruct(path);
+			if (p) return p;
+		}
+		return nullptr;
+	}
+
+	llvm::Function* getFunction(const std::string& name) {
+		for (auto& i : _anonymousModules) {
+			auto* p = i->getFunction(name);
+			if (p) return p;
+		}
+		return nullptr;
+	}
+
 	/// <summary>
 	/// 通过名称和参数查找函数，如果找到参数将被整理
 	/// </summary>
