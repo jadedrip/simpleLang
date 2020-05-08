@@ -15,7 +15,7 @@ public:
 	std::vector<AstNode*> lines;
 public:
 	virtual void draw(std::ostream& os);
-	AstContext* preprocessor(llvm::Module*);
+	void preprocessor(AstContext* context);
 	void generateCode(llvm::Module* m);
 	llvm::Function* getFunc() { return _func;  }
 

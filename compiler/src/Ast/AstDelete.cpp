@@ -6,7 +6,7 @@
 
 CodeGen * AstDelete::makeGen(AstContext * parent)
 {
-	auto *func= CLangModule::getFunction("freeObject");
+	auto *func= CLangModule::getFunction("si", "freeObject");
 	auto *p = new CallGen(new FunctionInstance(func));
 	p->params.push_back(expr->makeGen(parent));
 	return p;

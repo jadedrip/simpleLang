@@ -19,7 +19,7 @@ void AstModule::draw(std::ostream & os) {
 }
 
 ClassInstanceType* stringCls = nullptr;
-AstContext* AstModule::preprocessor(llvm::Module *m)
+void AstModule::preprocessor(AstContext* context)
 {
 	if (!names.empty()) {
 		for (auto i : names) {
@@ -28,7 +28,6 @@ AstContext* AstModule::preprocessor(llvm::Module *m)
 		name.erase(name.size() - 1);
 	}
 
-	AstContext* block = new AstContext(m);
 	//if (name != "si") { // 默认读入 String
 	//	AstClass* p=AstImport::loadClass("si", "String");
 	//	assert(p);
@@ -36,17 +35,14 @@ AstContext* AstModule::preprocessor(llvm::Module *m)
 	//	block->setClass("String", p);
 	//}
 	
-	block->module = m;
-	block->pathName = name;
 	for (auto a : imports) {
-		a->makeGen(block);
+		a->makeGen(context);
 	}
 
 	for (auto i : lines) {
-		auto *p=i->makeGen(block);
+		auto *p=i->makeGen(context);
 		if (p) _gens.push_back(p);
 	}
-	return block;
 }
 
 void AstModule::generateCode(Module *m)

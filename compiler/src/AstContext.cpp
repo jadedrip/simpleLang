@@ -137,6 +137,16 @@ CodeGen * AstContext::makeCall(
 			if (p) return p;
 		}
 	}
+
+	for (auto& i : _anonymousModules) {
+		auto pair=i->findFunction(name);
+		for( auto f : pair ){
+			auto* p = f->makeCall(this, arguments);
+			if (p) return p;
+		}
+	}
+	
+
 	return parent ? parent->makeCall(c, name, arguments, object) : nullptr;
 }
 

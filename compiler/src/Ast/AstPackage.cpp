@@ -34,7 +34,7 @@ void AstPackage::importDll(const std::filesystem::path& base)
 
 AstPackage::AstPackage(const std::string& packageName) : _name(packageName) {
 	// TODO: 多种匹配查找目录
-	auto base = stdfs::path( "lib") / packageName;
+	auto base = stdfs::path("lib") / packageName;
 	if (CompilerOptions::instance().directlyExecute) {
 		importDll(base);
 	}
@@ -55,13 +55,28 @@ AstPackage::AstPackage(const std::string& packageName) : _name(packageName) {
 	else {
 		_llvmModule = new Module(_name, llvmContext);
 	}
+
+	_contexts = new AstContext(_llvmModule);
+	_contexts->pathName = packageName;
+	for (auto i : _modules) {
+		i.second->preprocessor(_contexts);
+	}
+}
+
+std::vector<AstFunction*> AstPackage::findFunction(const std::string& name) {
+	std::vector<AstFunction*> vec;
+	auto x = _contexts->_functions.equal_range(name);
+	for (auto iter = x.first; iter != x.second; iter++) {
+		vec.push_back(iter->second);
+	}
+	return vec;
 }
 
 void AstPackage::recurvePath(const string& base, const stdfs::path& path)
 {
 	for (auto& i : stdfs::directory_iterator(path)) {
 		if (i.is_directory()) {
-			recurvePath( base + "." + i.path().string(), i.path());
+			recurvePath(base + "." + i.path().string(), i.path());
 			continue;
 		}
 		auto& file = i.path();
@@ -81,11 +96,11 @@ void AstPackage::addModule(const std::string& name, AstModule* module) {
 	_modules[name] = module;
 }
 
+
+
 AstClass* AstPackage::findClass(const std::string& name)
 {
-	auto *m=_modules[name];
-	if (m) {
-		m->generateCode(_llvmModule);
-	}
-	return nullptr;
+	// TODO: 定位
+	auto* m = _contexts->findClass(name);
+	return m;
 }

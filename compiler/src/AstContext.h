@@ -57,10 +57,19 @@ public:
 		return nullptr;
 	}
 
+	std::map<std::string, llvm::Function*> _llvmFunctions;
 	llvm::Function* getFunction(const std::string& name) {
-		for (auto& i : _anonymousModules) {
+		auto i = _llvmFunctions.find(name);
+		if (i != _llvmFunctions.end())
+			return i->second;
+
+		for (auto &i : _anonymousModules) {
 			auto* p = i->getFunction(name);
-			if (p) return p;
+			if (p) {
+				auto x = llvm::Function::Create(p->getFunctionType(), llvm::Function::ExternalLinkage, name, module);
+				_llvmFunctions[name] = x;
+				return x;
+			}
 		}
 		return nullptr;
 	}

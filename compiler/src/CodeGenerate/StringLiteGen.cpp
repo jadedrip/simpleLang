@@ -44,6 +44,8 @@ StringLiteGen::StringLiteGen(AstContext* c, const std::string & s) : _str(s)
 	//auto* str = c->findClass("String");
 	//str->makeNew(c, s.c_str(), )
 	type = c->findStruct("struct.si_String");
+	_init= c->getFunction("si_String_Init");
+	_finalize = c->getFunction("si_String_Finalize");
 }
 
 void StringLiteGen::append(StringLiteGen * g)
@@ -69,12 +71,9 @@ llvm::Value * StringLiteGen::generateCode(const Generater& generater)
 
 	NewGen n(type);
 	n.escape = escape;
-	auto* finalize = CLangModule::getFunction("si_String_Finalize");
-	assert(finalize);
-	n.finalize = new ValueGen(finalize);
+	n.finalize = new ValueGen(_finalize);
 	auto* obj = n.generate(generater);
-
-	auto *call=CallGen::call(builder, "si_String_Init",
+	auto *call=CallGen::call(builder, _init,
 		obj,
 		v,
 		_data.size(),

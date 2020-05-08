@@ -31,7 +31,7 @@ CodeGen * AstSplice::makeGen(AstContext * parent)
 	std::string n = ty->getStructName();
 	if (n.substr(0, 7) == "struct.")
 		n = n.substr(7);
-	auto *f=CLangModule::getFunction(n + "_Splice");
+	auto *f=parent->getFunction(n + "_Splice");
 	if (!f)
 		throw std::runtime_error("No splice object for " + n);
 	auto *ins=new FunctionInstance(f);

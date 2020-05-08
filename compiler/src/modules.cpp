@@ -16,7 +16,6 @@ using namespace std;
 using namespace llvm;
 namespace stdfs = filesystem;
 
-map<string, unique_ptr<Module> > _modules;
 map<string, string> funcs;	// 被使用的函数
 map<string, StructType* > _structs;
 map<string, Function*> _functions;
@@ -56,39 +55,22 @@ void CLangModule::initialize()
 }
 
 llvm::Function* CLangModule::getFunction(const string& name) {
-	//string packageName, name;
-	//auto i = full_name.find_last_of('.');
-	//if (i == string::npos) {
-	//	packageName = "c";
-	//	name = "c_" + full_name;
-	//} else {
-	//	packageName = full_name.substr(0, i);
-	//	name = full_name.substr(i + 1);
-	//}
+	auto *p=module->getFunction(name);
+	if (p) return p;
 
-	auto* f = module->getFunction(name);
-	if (f) return f;
-
-	//f = _clib->getFunction(name);
-	//if (f) {
-	//	return Function::Create(f->getFunctionType(), Function::ExternalLinkage, f->getName(), module.get());
-	//}
-
-	//for (auto& iter : _modules) {
-	//	auto f = iter.second->getFunction(name);
-	//	if (f) {
-	//		// 不同的模块之间是不能直接调用的，因此在本模块创建一个声明
-	//		return Function::Create(f->getFunctionType(), Function::ExternalLinkage, f->getName(), module.get());
-	//	}
-	//}
-	//auto iter = _functions.find(name);
-	//return iter == _functions.end() ? nullptr : iter->second;
+	for (auto i : _packages) {
+		auto f=i.second->getFunction(name);
+		if (f) {
+			auto x = llvm::Function::Create(f->getFunctionType(), llvm::Function::ExternalLinkage, name, module.get());
+			return x;
+		}
+	}
 	return nullptr;
 }
 
 llvm::Function* CLangModule::getFunction(const string& package, const string& name) {
-	auto iter = _modules.find(package);
-	if (iter != _modules.end()) {
+	auto iter = _packages.find(package);
+	if (iter != _packages.end()) {
 		auto func = iter->second->getFunction(name);
 		return Function::Create(func->getFunctionType(), Function::ExternalLinkage, name, module.get());
 	}
@@ -98,10 +80,10 @@ llvm::Function* CLangModule::getFunction(const string& package, const string& na
 extern unique_ptr<Module> module;
 
 void CLangModule::moveAll(llvm::ExecutionEngine* engine) {
-	for (auto& i : _modules) {
+	for (auto& i : _packages) {
 		auto& v = i.second;
 
-		clog << "Load module:" << v->getName().str() << endl;
+		clog << "Load module:" << v->name() << endl;
 
 		//for (auto &i : v->getFunctionList()) {
 		//	auto n = i.getName();
@@ -109,9 +91,9 @@ void CLangModule::moveAll(llvm::ExecutionEngine* engine) {
 
 		//	// auto p=engine->getFunctionAddress(n);
 		//}	    
-		engine->addModule(move(v));
+		std::unique_ptr<llvm::Module> p(v->llvmModule());
+		engine->addModule(std::move(p));
 	}
-	_modules.clear();
 }
 
 string getPackageName(const string& filename) {
@@ -126,28 +108,28 @@ string getPackageName(const string& filename) {
 // 在 packages.cpp 中实现
 void addModule(const string& InputFile, Module* Mod);
 extern unique_ptr<Module> module;
-Module* CLangModule::loadLLFile(const string& filename) {
-	auto i = _modules.find(filename);
-	if (i != _modules.end())
-		return i->second.get();
-
-	cout << "Try to load:" << filename << endl;
-	llvm::SMDiagnostic error;
-
-	auto m = parseIRFile(filename, error, llvmContext);
-	if (!m) {
-		clog << "Can't load file: " << filename << endl;
-		return nullptr;
-	}
-
-	for (auto& i : m->getIdentifiedStructTypes()) {
-		_structs[i->getStructName()] = i;
-	}
-
-	auto* p = m.get();
-	_modules.insert(make_pair(filename, move(m)));
-	return p;
-}
+//Module* CLangModule::loadLLFile(const string& filename) {
+//	auto i = _modules.find(filename);
+//	if (i != _modules.end())
+//		return i->second.get();
+//
+//	cout << "Try to load:" << filename << endl;
+//	llvm::SMDiagnostic error;
+//
+//	auto m = parseIRFile(filename, error, llvmContext);
+//	if (!m) {
+//		clog << "Can't load file: " << filename << endl;
+//		return nullptr;
+//	}
+//
+//	for (auto& i : m->getIdentifiedStructTypes()) {
+//		_structs[i->getStructName()] = i;
+//	}
+//
+//	auto* p = m.get();
+//	_modules.insert(make_pair(filename, move(m)));
+//	return p;
+//}
 
 extern int yyparse(void);
 extern FILE* yyin;
@@ -178,27 +160,25 @@ AstModule* CLangModule::loadSiFile(const stdfs::path& file, const string& packag
 }
 
 void CLangModule::shutdown() {
-	_modules.clear();
+	// _modules.clear();
 }
 
-llvm::StructType* CLangModule::getStruct(const string& path, const string& name) {
-	return getStruct(path + "_" + name);
-}
-
-llvm::StructType* CLangModule::getStruct(const string& name)
-{
-	auto* p = _structs["struct." + name];
-	auto v = p ? p : _structs[name];
-	assert(v && "Can't find struct");
-	return v;
-}
+//llvm::StructType* CLangModule::getStruct(const string& path, const string& name) {
+//	return path.empty() ? getStruct(name) : getStruct(path + "_" + name);
+//}
+//
+//llvm::StructType* CLangModule::getStruct(const string& name)
+//{
+//	auto* p = _structs["struct." + name];
+//	auto v = p ? p : _structs[name];
+//	assert(v && "Can't find struct");
+//	return v;
+//}
 
 map<string, AstClass*> classes;
 map<string, AstFunction*> functions;
 
 using namespace std::filesystem;
-
-
 
 AstPackage* CLangModule::loadPackage(const string& packageName)
 {

@@ -167,7 +167,9 @@ int main(int argc, char* argv[],  char * const *envp)
 
 	if (b) {
 		try {
-			currentPackage->preprocessor(m);
+			auto c=new AstContext(m);
+			CLangModule::loadPackage("si");
+			currentPackage->preprocessor(c);
 		}
 		catch (std::runtime_error e) {
 			std::cerr << "发生异常：" << e.what() << std::endl;

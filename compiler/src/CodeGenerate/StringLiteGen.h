@@ -14,5 +14,7 @@ public:
 private:
 	std::wstring _data;
 	std::string _str;
+	llvm::Function* _finalize;
+	llvm::Function* _init;
 };
 

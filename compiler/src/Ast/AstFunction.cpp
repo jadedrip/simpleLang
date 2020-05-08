@@ -193,6 +193,12 @@ CallGen * AstFunction::makeCall(
 
 	auto *func = _funcInstance ? _funcInstance
 		: getFunctionInstance(c, ordered->parameters, ordered->variableGen, clsType);
+
+	if (_funcInstance->block.codes.empty()) { // 如果不存在函数体
+		auto *f = context->getFunction(_funcInstance->name);
+		_funcInstance->func = f;
+	}
+
 	auto p = new CallGen(func);
 
 	p->object = object;
@@ -292,8 +298,10 @@ FunctionInstance* AstFunction::getFunctionInstance(
 	instance->overload = overload || isTemplate();
 
 	// 如果不是匿名函数，定义唯一名称
-	if(!name.empty())
-		instance->name = object ? object->uniqueName() + "." + name : pathName + "." + name;
+	if (!name.empty()) {
+		instance->name = object ? object->uniqueName() + "_" + name : (pathName.empty() ? name : pathName + "_" + name);
+		std::for_each(instance->name.begin(), instance->name.end(), [](char& c) {if (c == '.') c = '_'; }); // replace . to _
+	}
 	if (object) {
 		instance->module = object->name;
 	}

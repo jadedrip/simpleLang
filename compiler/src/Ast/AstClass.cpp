@@ -201,7 +201,7 @@ ClassInstanceType * AstClass::generateClass(AstContext* context, std::vector<Ast
 		auto *p=context->findCompiledClass(n);
 		if (p) return p;
 		
-		auto *s=CLangModule::getStruct(n);
+		auto *s=context->findStruct(n);
 		if (s) {
 			auto *a = new ClassInstanceType(_context, _context->pathName, n);
 			a->_type = s;
@@ -360,9 +360,9 @@ ClassInstanceType* AstClass::generateClass(
 	// 先创建一个声明
 	// 优先使用 C 里面定义的对象
 	if (cStructName.empty())
-		cls->_type = CLangModule::getStruct(packageName, n);
+		cls->_type = _context->findStruct(packageName + "_" + n);
 	else {
-		cls->_type = CLangModule::getStruct(cStructName);
+		cls->_type = _context->findStruct(cStructName);
 		n = cStructName;
 	}
 
