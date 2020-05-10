@@ -35,7 +35,7 @@ CodeGen 用来生成 llvm 代码，CodeGen::type 是 llvm 类型，但和生成�
 	| 12 | Func 函数指针
 	| 13 | Thread
 	| 14 | Coroutine
-	
+
 * 对象数据
 
 # 对 c 的兼容
@@ -95,10 +95,10 @@ ClassInstanceType 内的成员函数，有可能还是模板的，因此保存�
 
     在全局环境中，注入类内静态变量，另外，考虑到下面的写法
     class My{
-		func in()
-		var x=in() 
-	}
-	还要注入方法。
+    	func in()
+    	var x=in() 
+    }
+    还要注入方法。
 
 ## 成员函数上下文
 成员函数上下文为成员函数自身 + 类上下文
@@ -167,25 +167,11 @@ new 了以后没被任何参数引用的对象肯定是非逃逸的，可以不�
 
 # interface 的实现
 
-interface 一个关键字，但在不同的地方有不同的实现
+interface 赋值的时候使用结构实现，保存 this 指针，成员变量保存变量指针，成员函数使用函数指针，赋值、传递的时候“构造”一个 interface 结构，并赋值所有指针。
 
-如果在类型定义上，那么仅仅由编译器检查类是否符合标准，生成代码里并不体现。
+类实现接口，会在类中创建对应的变量以及函数指针。
 
-	class MyClass : Interface0
-
-如果在函数的参数里，如果函数是带代码的，那么会作为模板参数来实现，以提高性能。
-
-	func myFunc( Interface a ) {}  // a 是模板变量
-
-如果作为变量或者不带代码（二进制实现）的函数，那么实现为一个结构，结构里保存了指针，赋值的时候复制指针。
-这个结构还附带原对象的指针和类型，析构函数，以便销毁对象，或者转（cast）回原对象。
-
-	interface MyInterface{
-		int value
-		func print(){}		// 函数保存为函数指针
-	}
-
-	MyInterface v=object	// 这里会把各个成员变量的指针赋值给 v，并引用 object
+接口在导出函数里，可以考虑直接展开。
 
 # 数组
 
@@ -198,25 +184,25 @@ interface 一个关键字，但在不同的地方有不同的实现
 
 注意：除了首层目录，可以用 . 来把几层目录缩减到一层，以简化目录
 
-	[package name]-0.0.1 ->  包目录(包含版本号)，或者 zip 文件名(zip 改为 spz 后缀名, 7z 改为 sp7 后缀)
+	[package name]-0.0.1-release ->  包目录(包含版本号)，或者 zip 文件名(zip 改为 spz 后缀名, 7z 改为 sp7 后缀), release 可以省略
 	  └ src							->  源码目录，sl 文件放在这里，所有的文件都会被导入
-		   └ img					-> src 内部仍然通过目录结构来存放源文件，并且包名会作为前缀
+		   └ [*.si]					-> src 内部仍然通过目录结构来存放源文件，并且包名会作为前缀
 	   └ overload				-> 重载目录
 	           └ -> [other package(org.si)]  -> 可以注入其他包
 		└ resources				-> 资源目录
 		└ platform				-> 各平台的库
-			└ linux64				-> 64位 linux
-				└ release			-> lib, 或者 so 文件
-		└ include					-> .h 头文件(如果有的话)
-		└ export.h				-> 导出头文件，编译器会解析这个文件来导入其他文件
-	    └ export-linux64.h  -> 特定平台的导入文件，如果存在，会忽略 export.h 
-		└ meta.txt				-> 包描述文件      
+			└ x86_64-pc-windows-msvc		-> 参见 llvm Triple 
+					└ share					-> 动态库（dll 或者 so 文件) 及其对应的 lib 文件
+					└ static				-> 静态库 (lib 文件)
+		└ include							-> .h 头文件(如果有的话)
+		└ export.h			-> 导出头文件，编译器会解析这个文件来导入其他文件，如果没有，说明是纯源码库
+		└ meta.txt			-> 包描述文件      
 
 meta.txt 文件
 
-	version: 1.0.1-release								-> 4层数字版本号 + 字符，前两位表示接口稳定，有接口删除、参数改变的情况必须升级第一位
-																	-> 第二位允许接口有增加，但其他接口必须稳定
-																	-> 第三位表示 bug 修正，接口稳定，如果是 release, 最后的字符串可以省略
-	platform:	all												-> 支持的平台，允许 [win32, win64]
-	dependency: org.other.package-1.^3.*	-> 引用包名，每个引用一行，^表示超过，*表示任意，尾部 .* 可以省略
+	version: 1.0.1							-> 3层数字版本号 + 字符，                             前两位表示接口稳定，有接口删除、参数改变的情况必须升级第一位
+											-> 第二位允许接口有增加，但其他接口必须稳定
+											-> 第三位表示 bug 修正，接口稳定
+	configure: release 					-> 如果是 release, 可以省略 
+	dependency: org.other.package-1.3.0	-> 引用包名，每个引用一行，版本号是最低版本，编译器会尝试使用最新稳定接口版本（第一位相同
 

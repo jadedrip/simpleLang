@@ -75,8 +75,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\SDK\llvm-9.0.0\build\include;D:\SDK\llvm-9.0.0\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\SDK\llvm-9.0.0\build\Debug\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\SDK\llvm-10.0.0\build\include;D:\SDK\llvm-10.0.0\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\SDK\llvm-10.0.0\build\Debug\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -116,8 +116,15 @@
       <ModuleDefinitionFile>clib.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y $(ProjectDir)si\*.si $(SolutionDir)lib\si
-copy /Y $(TargetPath) $(SolutionDir)lib\si</Command>
+      <Command>mkdir $(SolutionDir)lib\si\src
+mkdir $(SolutionDir)lib\si\platform\win64
+copy /Y $(ProjectDir)si\*.si $(SolutionDir)lib\si\src
+echo $(TargetPath) &gt; $(SolutionDir)lib\si\platform\x86_64-pc-windows-msvc\share\clib.dll.link
+copy /Y $(ProjectDir)export.h $(SolutionDir)lib\si
+mkdir $(SolutionDir)lib\si\include
+copy /Y $(ProjectDir)core.h $(SolutionDir)lib\si\include
+copy /Y $(ProjectDir)Coroutine.h $(SolutionDir)lib\si\include
+copy /Y $(ProjectDir)String.h $(SolutionDir)lib\si\include</Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>
@@ -212,6 +219,7 @@ copy /Y $(TargetPath) $(SolutionDir)lib\si</Command>
   </ItemGroup>
   <ItemGroup>
     <None Include="clib.def" />
+    <None Include="si\Charset.si" />
     <None Include="si\Coroutine.si" />
     <CustomBuild Include="si\String.si">
       <FileType>Document</FileType>

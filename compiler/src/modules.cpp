@@ -1,6 +1,6 @@
 ﻿#include "stdafx.h"
 #include "modules.h"
-#include "cparser.h"
+#include "Ast/AstModule.h"
 #include "Ast/AstPackage.h"
 
 #include <map>
@@ -9,17 +9,17 @@
 #include <algorithm>
 #include <llvm/IRReader/IRReader.h>
 #include <llvm/Support/SourceMgr.h>
-#include <llvm/Support/DynamicLibrary.h>
+
+#include <CompilerOptions.h>
 
 using namespace std;
 using namespace llvm;
 namespace stdfs = filesystem;
 
-map<string, unique_ptr<Module> > _modules;
 map<string, string> funcs;	// 被使用的函数
 map<string, StructType* > _structs;
-map<string, AstContext* > _packages;
 map<string, Function*> _functions;
+map<string, AstPackage*> _packages;
 
 Module* _clib;
 
@@ -39,54 +39,39 @@ void CLangModule::initialize()
 	//		}
 	//	}
 	//	});
-	string err;
-	if (sys::DynamicLibrary::LoadLibraryPermanently("lib/si/clib.dll", &err)) {
-		cerr << "读取 clib.dll 失败：" << err << endl;
-	}
-	_clib = loadCHeader("clib", "clib/export.h");
-	for (auto i : _clib->getIdentifiedStructTypes()) {
-		_structs[i->getStructName()] = i;
-	}
 
-	CLangModule::loadPackage("si");
+	//string err;
+	//string clib = "lib/si/platform/" + triple + "/share/clib.dll";
+	//if (sys::DynamicLibrary::LoadLibraryPermanently(clib.c_str(), &err)) {
+	//	cerr << "读取 clib.dll 失败：" << err << endl;
+	//}
+	//_clib = loadCHeader("si", "lib/si/export.h");
+	//for (auto i : _clib->getIdentifiedStructTypes()) {
+	//	_structs[i->getStructName()] = i;
+	//}
+
+	//CLangModule::loadPackage("si");
 	// CLangModule::loadLLFile("clib/si.ll");
 }
 
 llvm::Function* CLangModule::getFunction(const string& name) {
-	//string packageName, name;
-	//auto i = full_name.find_last_of('.');
-	//if (i == string::npos) {
-	//	packageName = "c";
-	//	name = "c_" + full_name;
-	//} else {
-	//	packageName = full_name.substr(0, i);
-	//	name = full_name.substr(i + 1);
-	//}
+	auto *p=module->getFunction(name);
+	if (p) return p;
 
-	auto* f = module->getFunction(name);
-	if (f) return f;
-
-	f= _clib->getFunction(name);
-	if (f) {
-		return Function::Create(f->getFunctionType(), Function::ExternalLinkage, f->getName(), module.get());
+	for (auto i : _packages) {
+		auto f=i.second->getFunction(name);
+		if (f) {
+			auto x = llvm::Function::Create(f->getFunctionType(), llvm::Function::ExternalLinkage, name, module.get());
+			return x;
+		}
 	}
-
-	//for (auto& iter : _modules) {
-	//	auto f = iter.second->getFunction(name);
-	//	if (f) {
-	//		// 不同的模块之间是不能直接调用的，因此在本模块创建一个声明
-	//		return Function::Create(f->getFunctionType(), Function::ExternalLinkage, f->getName(), module.get());
-	//	}
-	//}
-	//auto iter = _functions.find(name);
-	//return iter == _functions.end() ? nullptr : iter->second;
 	return nullptr;
 }
 
 llvm::Function* CLangModule::getFunction(const string& package, const string& name) {
-	auto iter = _modules.find(package);
-	if (iter != _modules.end()) {
-		auto func=iter->second->getFunction(name);
+	auto iter = _packages.find(package);
+	if (iter != _packages.end()) {
+		auto func = iter->second->getFunction(name);
 		return Function::Create(func->getFunctionType(), Function::ExternalLinkage, name, module.get());
 	}
 	return nullptr;
@@ -95,10 +80,10 @@ llvm::Function* CLangModule::getFunction(const string& package, const string& na
 extern unique_ptr<Module> module;
 
 void CLangModule::moveAll(llvm::ExecutionEngine* engine) {
-	for (auto& i : _modules) {
+	for (auto& i : _packages) {
 		auto& v = i.second;
 
-		clog << "Load module:" << v->getName().str() << endl;
+		clog << "Load module:" << v->name() << endl;
 
 		//for (auto &i : v->getFunctionList()) {
 		//	auto n = i.getName();
@@ -106,9 +91,9 @@ void CLangModule::moveAll(llvm::ExecutionEngine* engine) {
 
 		//	// auto p=engine->getFunctionAddress(n);
 		//}	    
-		engine->addModule(move(v));
+		std::unique_ptr<llvm::Module> p(v->llvmModule());
+		engine->addModule(std::move(p));
 	}
-	_modules.clear();
 }
 
 string getPackageName(const string& filename) {
@@ -123,42 +108,38 @@ string getPackageName(const string& filename) {
 // 在 packages.cpp 中实现
 void addModule(const string& InputFile, Module* Mod);
 extern unique_ptr<Module> module;
-Module* CLangModule::loadLLFile(const string& filename) {
-	auto i = _modules.find(filename);
-	if (i != _modules.end())
-		return i->second.get();
-
-	cout << "Try to load:" << filename << endl;
-	llvm::SMDiagnostic error;
-
-	auto m = parseIRFile(filename, error, llvmContext);
-	if (!m) {
-		clog << "Can't load file: " << filename << endl;
-		return nullptr;
-	}
-
-	for (auto& i : m->getIdentifiedStructTypes()) {
-		_structs[i->getStructName()] = i;
-	}
-
-	auto* p = m.get();
-	_modules.insert(make_pair(filename, move(m)));
-	return p;
-}
+//Module* CLangModule::loadLLFile(const string& filename) {
+//	auto i = _modules.find(filename);
+//	if (i != _modules.end())
+//		return i->second.get();
+//
+//	cout << "Try to load:" << filename << endl;
+//	llvm::SMDiagnostic error;
+//
+//	auto m = parseIRFile(filename, error, llvmContext);
+//	if (!m) {
+//		clog << "Can't load file: " << filename << endl;
+//		return nullptr;
+//	}
+//
+//	for (auto& i : m->getIdentifiedStructTypes()) {
+//		_structs[i->getStructName()] = i;
+//	}
+//
+//	auto* p = m.get();
+//	_modules.insert(make_pair(filename, move(m)));
+//	return p;
+//}
 
 extern int yyparse(void);
 extern FILE* yyin;
-extern AstPackage* currentPackage;
+extern AstModule* currentPackage;
 extern int yylineno;
-AstContext* CLangModule::loadSiFile(const stdfs::path& file, const string& packageName, llvm::Module* m) {
+AstModule* CLangModule::loadSiFile(const stdfs::path& file, const string& packageName) {
 	string fname = file.string();
-	auto i = _packages.find(fname);
-	if (i != _packages.end())
-		return i->second;
-
 	auto* old = currentPackage;
 
-	currentPackage = new AstPackage();
+	currentPackage = new AstModule();
 	currentPackage->name = packageName;
 	int ono = yylineno;
 	yylineno = 0;
@@ -175,90 +156,38 @@ AstContext* CLangModule::loadSiFile(const stdfs::path& file, const string& packa
 	auto* importedPackage = currentPackage;
 	currentPackage = old;
 
-	return _packages[fname] = importedPackage->preprocessor(m);
+	return importedPackage;
 }
 
 void CLangModule::shutdown() {
-	_modules.clear();
+	// _modules.clear();
 }
 
-llvm::StructType* CLangModule::getStruct(const string& path, const string& name) {
-	return getStruct(path + "_" + name);
-}
+//llvm::StructType* CLangModule::getStruct(const string& path, const string& name) {
+//	return path.empty() ? getStruct(name) : getStruct(path + "_" + name);
+//}
+//
+//llvm::StructType* CLangModule::getStruct(const string& name)
+//{
+//	auto* p = _structs["struct." + name];
+//	auto v = p ? p : _structs[name];
+//	assert(v && "Can't find struct");
+//	return v;
+//}
 
-llvm::StructType* CLangModule::getStruct(const string& name)
-{
-	auto* p = _structs["struct." + name];
-	auto v= p ? p : _structs[name];
-	assert(v && "Can't find struct");
-	return v;
-}
-
-set<string> packages;
 map<string, AstClass*> classes;
 map<string, AstFunction*> functions;
-void CLangModule::loadPackage(const string& packageName)
+
+using namespace std::filesystem;
+
+AstPackage* CLangModule::loadPackage(const string& packageName)
 {
-	// 避免重复读入
-	if (packages.find(packageName) != packages.end())
-		return;
-	packages.insert(packageName);
+	if (_packages.contains(packageName))
+		return _packages[packageName];
 
-	auto name = packageName;
-	for (char& i : name)
-		if (i == '.') i = '/';
-
-	auto base = "lib/" + name;
-
-	for (auto& fe : stdfs::directory_iterator(base)) {
-		auto fp = fe.path();
-		//wcout << fp.filename().wstring() << endl;
-		auto si = fp.filename();
-		auto ex = fp.extension().string();
-		if (ex == ".dll") {
-			string err;
-			string dll = si.string();
-			if (sys::DynamicLibrary::LoadLibraryPermanently(dll.c_str(), &err)) {
-				cerr << "读取 " + dll + " 失败：" << err << endl;
-			}
-			else {
-				clog << "读取 dll：" << dll << endl;
-			}
-			continue;
-		}
-		if (ex == ".h" || ex == ".hpp") {
-			auto* m = loadCHeader(name, fp.string());
-			auto x = unique_ptr<llvm::Module>(m);
-			_modules.insert(make_pair(name, move(x)));
-		}
-
-		if (ex == ".si") {
-			auto osi = base / si;
-			si.replace_extension(".ll");
-			auto llo = base / si;
-
-			llvm::Module* m;
-			if (stdfs::exists(llo)) {
-				m = CLangModule::loadLLFile(llo.string());
-			}
-			else {
-				m = new llvm::Module(packageName, llvmContext);
-			}
-
-			AstContext* x = CLangModule::loadSiFile(osi, packageName, m);
-			for (auto i : x->_class) {
-				auto full = packageName + "." + i.second->name;
-				classes[full] = i.second;
-			};
-
-			for (auto i : x->_functions) {
-				auto full = packageName + "." + i.second->name;
-				functions[full] = i.second;
-			}
-		}
-		//replace_extension替换扩展名
-		//stem去掉扩展名
-	}
+	auto package = new AstPackage(packageName);
+	_packages[packageName] = package;
+	return package;
 }
 
 AstClass* CLangModule::findClass(const string& fullName)

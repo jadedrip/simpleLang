@@ -117,7 +117,6 @@
     <ClCompile Include="src\Ast\AstLoop.cpp" />
     <ClCompile Include="src\Ast\AstNew.cpp" />
     <ClCompile Include="src\Ast\AstNode.cpp" />
-    <ClCompile Include="src\Ast\AstPackage.cpp" />
     <ClCompile Include="src\Ast\AstReturn.cpp" />
     <ClCompile Include="src\Ast\AstSequence.cpp" />
     <ClCompile Include="src\Ast\AstSet.cpp" />
@@ -146,7 +145,10 @@
     <ClCompile Include="src\Ast\AstNewArray.cpp" />
     <ClCompile Include="src\cparser.cpp" />
     <ClCompile Include="src\CodeGenerate\CLangCallGen.cpp" />
-    <ClCompile Include="TypeManager.cpp" />
+    <ClCompile Include="src\CodeGenerate\GlobelWrapValue.cpp" />
+    <ClCompile Include="src\Ast\AstModule.cpp" />
+    <ClCompile Include="src\CompilerOptions.cpp" />
+    <ClCompile Include="src\Ast\AstPackage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\CodeGenerate\BinaryGen.h">
@@ -283,7 +285,6 @@
     <ClInclude Include="src\Ast\AstLoop.h" />
     <ClInclude Include="src\Ast\AstNew.h" />
     <ClInclude Include="src\Ast\AstNode.h" />
-    <ClInclude Include="src\Ast\AstPackage.h" />
     <ClInclude Include="src\Ast\AstProtected.h" />
     <ClInclude Include="src\Ast\AstReturn.h" />
     <ClInclude Include="src\Ast\AstSequence.h" />
@@ -318,7 +319,10 @@
     <ClInclude Include="src\Ast\AstNewArray.h" />
     <ClInclude Include="src\cparser.h" />
     <ClInclude Include="src\CodeGenerate\CLangCallGen.h" />
-    <ClInclude Include="TypeManager.h" />
+    <ClInclude Include="src\Ast\AstModule.h" />
+    <ClInclude Include="src\CompilerOptions.h" />
+    <ClInclude Include="src\Exception\LoadFileException.h" />
+    <ClInclude Include="src\Ast\AstPackage.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="lex\silang.l">

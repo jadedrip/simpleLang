@@ -113,7 +113,7 @@ void setLangOpt(LangOptions& lo) {
 	lo.MSCompatibilityVersion = 160000000;
 }
 
-llvm::Module* loadCHeader(const string& packageName, const string& filename)
+llvm::Module* loadCHeader(const string& packageName, const string& filename, const vector<string>& includes)
 {
 	// CompilerInstance will hold the instance of the Clang compiler for us,
 	// managing the various objects needed to run the compiler.
@@ -145,8 +145,9 @@ llvm::Module* loadCHeader(const string& packageName, const string& filename)
 
 	const char* path = std::getenv("INCLUDE_PATH");
 	std::string includePath = path ? path : "";
+
+	auto& opts = TheCompInst.getHeaderSearchOpts();
 	if (!includePath.empty()) {
-		auto& opts = TheCompInst.getHeaderSearchOpts();
 		std::regex re{ ";" };
 		for (auto i = sregex_token_iterator(includePath.begin(), includePath.end(), re, -1);
 			i != sregex_token_iterator(); i++) {
@@ -155,14 +156,21 @@ llvm::Module* loadCHeader(const string& packageName, const string& filename)
 		};
 	}
 
+	for (auto& i : includes) {
+		opts.AddPath(i, frontend::Angled, false, false);
+	}
+
 	// TheCompInst.createPreprocessor();
 	 ///TU_Complete   TU_Prefix  TU_Module
 	TheCompInst.createPreprocessor(TU_Complete);
 	TheCompInst.createASTContext();
 
 	// Set the main file handled by the source manager to the input file.
-	const FileEntry* FileIn = FileMgr.getFile(filename);
-	SourceMgr.setMainFileID(SourceMgr.createFileID(FileIn, SourceLocation(), SrcMgr::C_User));
+	auto errOrFileIn = FileMgr.getFile(filename);
+	if (errOrFileIn)
+		SourceMgr.setMainFileID(SourceMgr.createFileID(errOrFileIn.get(), SourceLocation(), SrcMgr::C_User));
+	else
+		throw errOrFileIn.getError();
 
 	TheCompInst.getDiagnosticClient().BeginSourceFile(
 		TheCompInst.getLangOpts(),

@@ -1,6 +1,6 @@
 ﻿#include "stdafx.h"
 #include "AstStringLiteral.h"
-#include "AstPackage.h"
+#include "AstModule.h"
 #include "../CodeGenerate/StringLiteGen.h"
 
 AstStringLiteral::AstStringLiteral(const char * v) {
@@ -17,7 +17,7 @@ AstStringLiteral::AstStringLiteral(const char * v) {
 
 CodeGen * AstStringLiteral::makeGen(AstContext * parent)
 {
-	return new StringLiteGen(parent->context(), name);
+	return new StringLiteGen(parent, name);
 }
 
 void AstStringLiteral::escape() {

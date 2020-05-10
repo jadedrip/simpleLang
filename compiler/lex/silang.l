@@ -45,18 +45,18 @@ H		[a-fA-F0-9]
 "ulong"		yylval.type=13;	return ITYPE; 
 	
 
-"0"[lL]|(\-?[1-9]{D}*)[lL] { yylval.expr=makeValue(yytext,std::stoll(yytext));			return INT64; }
+"0"[lL]|(\-?[1-9]{D}*)[lL] { yylval.expr=makeValue(yytext,std::stoll(yytext));			return INT64_TOKEN; }
 "0"|("-"?[1-9]{D}*)			{ yylval.expr=makeValue(yytext,std::stol(yytext));			return INTEGER;  }
 "0x"{H}[lL]					{ yylval.expr=makeValue(yytext,std::stol(yytext, 0, 16 ));	return INTEGER; }
-"0x"{H}						{ yylval.expr=makeValue(yytext,std::stoll(yytext, 0, 16 ));	return INT64; }
+"0x"{H}						{ yylval.expr=makeValue(yytext,std::stoll(yytext, 0, 16 ));	return INT64_TOKEN; }
 0[0-7]+[lL]					{ yylval.expr=makeValue(yytext,std::stol(yytext,0,8));		return INTEGER; }
-0[0-7]+						{ yylval.expr=makeValue(yytext,std::stoll(yytext,0,8));		return INT64; }
-"-"{D}+\.{D}+[fF]			{ yylval.expr=makeValue(yytext,std::stof(yytext));			return FLOAT; }		// 负数小数点前必须有值
+0[0-7]+						{ yylval.expr=makeValue(yytext,std::stoll(yytext,0,8));		return INT64_TOKEN; }
+"-"{D}+\.{D}+[fF]			{ yylval.expr=makeValue(yytext,std::stof(yytext));			return FLOAT_TOKEN; }		// 负数小数点前必须有值
 "-"{D}+\.{D}+				{ yylval.expr=makeValue(yytext,std::stod(yytext));			return FLOAT64; }	// 负数小数点前必须有值
-{D}*\.{D}+[fF]				{ yylval.expr=makeValue(yytext,std::stof(yytext));			return FLOAT; }	
+{D}*\.{D}+[fF]				{ yylval.expr=makeValue(yytext,std::stof(yytext));			return FLOAT_TOKEN; }	
 {D}*\.{D}+					{ yylval.expr=makeValue(yytext,std::stod(yytext));			return FLOAT64; }	
-"true"						{ yylval.expr=makeValue(yytext,true);	return BOOLEAN; }	
-"false"						{ yylval.expr=makeValue(yytext,false);	return BOOLEAN; }
+"true"						{ yylval.expr=makeValue(yytext,true);	return BOOLEAN_TOKEN; }	
+"false"						{ yylval.expr=makeValue(yytext,false);	return BOOLEAN_TOKEN; }
 
 "package"				return PACKAGE;
 "import"				return IMPORT;
@@ -69,9 +69,10 @@ H		[a-fA-F0-9]
 "while"					return WHILE;
 "for"					return FOR;
 "interface"				return INTERF;
+"concept"					return CONCEPT;
 "protected"				return PROTECTED;
 "static"				return STATIC;
-"const"					return CONST;
+"const"					return CONST_TOKEN;
 "enum"					return ENUM;
 "switch"				return SWITCH;
 "case"					return CASE;
@@ -89,6 +90,7 @@ H		[a-fA-F0-9]
 "init"				return INIT_TOKEN;
 "finalize"			return FINALIZE_TOKEN; 
 "go"				return GO_TOKEN;
+"as"				return AS;
 
 [a-z][a-zA-Z0-9]*		SAVETOKEN(L_IDENTIFIER); 
 [A-Z][a-zA-Z0-9]*		SAVETOKEN(U_IDENTIFIER); 
@@ -110,6 +112,7 @@ H		[a-fA-F0-9]
 "--"					return DEC;
 "..."					return DOTS;
 "?:"					return WHEN_NULL;
+"::"					return PK;
 
 [&*+-/~!=^<>\|%\(\):`\?\{\}\[\];@\.]	return *yytext;
 

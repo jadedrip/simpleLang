@@ -1,9 +1,11 @@
 #pragma once
 #include "CodeGen.h"
+
+class AstContext;
 class StringLiteGen : public CodeGen
 {
 public:
-	StringLiteGen(llvm::LLVMContext&, const std::string& str);
+	StringLiteGen(AstContext*, const std::string& str);
 
 	void append(StringLiteGen* gen);
 	const std::string& str() const { return _str; }
@@ -12,6 +14,7 @@ public:
 private:
 	std::wstring _data;
 	std::string _str;
-	llvm::LLVMContext& _context;
+	llvm::Function* _finalize;
+	llvm::Function* _init;
 };
 

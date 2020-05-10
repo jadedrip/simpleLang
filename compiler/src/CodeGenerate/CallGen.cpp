@@ -90,6 +90,7 @@ Value * CallGen::generateCode(const Generater& generater)
 		} else {
 			assert(function);
 			llvmFunction = function->generateCode(m, builder.getContext());
+			assert(llvmFunction);
 			funcType = function->func->getFunctionType();
 		}
 	}
@@ -104,7 +105,7 @@ Value * CallGen::generateCode(const Generater& generater)
 
 llvm::CallInst * CallGen::callFunc(llvm::IRBuilder<>& builder, llvm::Function * func, std::vector<llvm::Value*>& params)
 {
-	
+	assert(func);
 //llvm::raw_os_ostream os(std::cout);
 	std::vector< llvm::Value* > a;
 	auto *argIterator = func->arg_begin();

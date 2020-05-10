@@ -5,7 +5,7 @@
 #include "Ast/AstReturn.h"
 #include "AstContext.h"
 #include "utility.h"
-#include "Ast/AstPackage.h"
+#include "Ast/AstModule.h"
 #include "CodeGenerate/ValueGen.h"
 #include "CodeGenerate/DefGen.h"
 #include "CodeGenerate/ReturnGen.h"

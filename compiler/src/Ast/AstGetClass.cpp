@@ -8,11 +8,8 @@ llvm::Type * AstGetClass::llvmType(llvm::LLVMContext & c)
 	assert(context);
 	AstClass* cls=context->findClass(name);
 	if (cls) {
-		auto* p = context->findCompiledClass("struct." + cls->cStructName);
-		if (p) return p->llvmType(c);
-
-		p = context->findCompiledClass(cls->cStructName);
-		if (p) return p->llvmType(c);
+		auto* p = context->findStruct("struct." + cls->cStructName);
+		if (p) return p;
 	}
 
 	auto *p=context->findCompiledClass(name);

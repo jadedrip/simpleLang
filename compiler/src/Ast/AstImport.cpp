@@ -1,7 +1,7 @@
 ﻿#include "stdafx.h"
 #include <filesystem>
 #include "AstImport.h"
-#include "AstPackage.h"
+#include "AstModule.h"
 #include "AstContext.h"
 #include "AstClass.h"
 #include "AstDef.h"
@@ -11,7 +11,7 @@
 #include "../FunctionInstance.h"
 #include <llvm/Support/DynamicLibrary.h>
 
-extern AstPackage* currentPackage;
+extern AstModule* currentPackage;
 
 using namespace std;
 using namespace llvm;
@@ -25,42 +25,23 @@ inline void replaceToSlash(std::string& x)
 
 void AstImport::loadPackage(const std::string& packageName)
 {
-	CLangModule::loadPackage(packageName);
+	
 }
 
 CodeGen * AstImport::makeGen(AstContext * parent)
 {
-	std::string className = identifiers.back();
-	identifiers.pop_back();
-
 	std::string dir;
-	string fullName;
 	for (auto i : identifiers) {
 		dir += i + ".";
 	}
-	if (!dir.empty()) // 去除最后的斜杠
+	if (!dir.empty()) // 去除最后的 .
 		dir.pop_back();
-	fullName = dir;
-	fullName += "." + className;
 
-	std::clog << "import " << fullName << std::endl;
+	std::clog << "import " << dir << std::endl;
 
 	// 导入包
-	// TODO: 支持压缩包
-	loadPackage(dir);
-	if (isFunction) {
-		auto *f=CLangModule::findFunction(fullName);
-		if (f) {
-			parent->defineFunction(className, f);
-			return nullptr;
-		}
-	} else if ("*" != className) {
-		auto i = CLangModule::findClass(fullName);
-		if (i) {
-			parent->setClass(className, i);
-			return nullptr;
-		}
-	}
+	auto* package = CLangModule::loadPackage(dir);
+	parent->addImport(name, package);
 	return nullptr;
 }
 

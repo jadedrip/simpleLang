@@ -21,9 +21,10 @@
 #include <llvm/IRReader/IRReader.h>
 #include <llvm/Support/SourceMgr.h>
 #include "si_c.h"
-#include "Ast/AstPackage.h"
+#include "Ast/AstModule.h"
 #include "modules.h"
 #include "utility.h"
+#include "CompilerOptions.h"
 
 extern int yyparse(void);
 extern FILE *yyin, *yyout;
@@ -44,7 +45,7 @@ using namespace llvm;
 LLVMContext llvmContext;
 std::unique_ptr<Module> module;
 
-AstPackage* currentPackage = new AstPackage();
+AstModule* currentPackage = new AstModule();
 ExecutionEngine* buildEngine(std::unique_ptr<Module> Owner);
 
 // 源文件是否 utf8 的
@@ -58,7 +59,6 @@ void execute(char * const *envp){
 	llvm::StringRef MCPU = llvm::sys::getHostCPUName();
 
 	std::cout << "MCPU: " << MCPU.str() << std::endl;
-	std::cout << "Triple: " << ::sys::getDefaultTargetTriple() << std::endl;
 
 	// module->setTargetTriple("x86_64-pc-windows-msvc");
 	Function *mainFunction = currentPackage->getFunc();
@@ -136,6 +136,15 @@ int main(int argc, char* argv[],  char * const *envp)
 	//	// return -1;
 	//}
 
+
+	std::cout << "Triple: " << ::sys::getProcessTriple() << std::endl;
+	std::cout << "HostCpu: " << ::sys::getHostCPUName().str() << std::endl;
+
+	CompilerOptions::instance().triple = ::sys::getProcessTriple();
+
+	llvm::Triple triple;
+	std::cout << "OsName: " << triple.getOSName().str() << std::endl;
+
 	auto *m = new Module("TOP", llvmContext);
 	module.reset(m);
 
@@ -158,7 +167,11 @@ int main(int argc, char* argv[],  char * const *envp)
 
 	if (b) {
 		try {
-			currentPackage->preprocessor(m);
+			auto c=new AstContext(m);
+			// 默认导入 si
+			auto package= CLangModule::loadPackage("si");
+			c->addImport("", package);
+			currentPackage->preprocessor(c);
 		}
 		catch (std::runtime_error e) {
 			std::cerr << "发生异常：" << e.what() << std::endl;

@@ -11,5 +11,5 @@ using namespace llvm;
 using namespace std::experimental;
 
 void make_c_functions(llvm::Module *module) {
-	CLangModule::loadLLFile("lib/core.ll");
+	// CLangModule::loadLLFile("lib/core.ll");
 }

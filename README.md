@@ -495,9 +495,9 @@ SimpleLang 支持的异常。
 ​	`var val = getValue() ?: defaultValue`
 
 类
------------
+===========
 基础
-================
+----------------
 每个文件（.sc）可以定义一个或多个类。
 访问控制被简化，si 中的类类似 Java。成员变量、方法只有**公开**和**包内**的，公开的可以被包外访问，
 否则只允许同名包或者*子包* 或者继承的类来访问。
@@ -548,7 +548,7 @@ SimpleLang 支持的异常。
 *设计语：使用 Type name 这样的方式构造，可以帮助 IDE 自动补全（输入 My, IDE可以帮你连变量名一起补全了)*
 
 继承&重载
-===================
+-------------------
 继承和重载的概念被简化，类可以单一继承，并且**不允许**重载方法，当你需要一个可以重载的类、或者虚函数时，需要把它定义成函数对象。
 类可以有多个接口实现，这些接口仅仅作为编译约束，你并不可以把一个实现赋值给接口。
 
@@ -557,7 +557,7 @@ SimpleLang 支持的异常。
 	
 		}
 	
-		var virtualFunction=func( int v ) 	// 定义一个函数对象，可以实现纯虚函数的功能
+		func virtualFunction( int v ) 	// 纯定义会定义为一个函数对象，可以实现纯虚函数的功能
 	
 		var canOverload = func(int v){	// 以函数对象的语法定义函数，可以通过替换函数对象的方法达到重载的目的
 			print(v)
@@ -580,10 +580,13 @@ SimpleLang 支持的异常。
 		}
 	}
 	
-	Interface0 obj = Second()	// TODO: 这个如何实现需要思考
+	Interface0 obj = Second()
+
+相应的，类没有虚类或者纯虚类，所有类都可以被构造，如果有些类的函数没实现，就是一个空的函数指针，可以通过后期赋值的方式来实现。
 
 类的构造
-=================
+-----------------
+
 对象构造使用构造函数的形式，括号不可省略。
 
     MyCls my              	// 括号可省略
@@ -624,7 +627,7 @@ SimpleLang 支持的异常。
 ----------------
 通过在类外部定义额外方法，可以增强类
 
-	fun MyCls.other(){	// 本函数定义在外部，通过 import org.other:org.pak.MyCls.other 引入
+	fun MyCls.other(){	// 本函数定义在外部，通过 import org.other 引入
 		this.val++
 	}
 	
@@ -662,10 +665,13 @@ SimpleLang 支持的异常。
 对象分托管和非托管两种，托管的对象会由 GC 管理，而非托管对象必须手动释放。但不管托管或者非托管对象，都可以有析构函数，
 托管对象的析构函数仅手工调用或触发 GC 时才会被调用。
 
-对象默认是托管的。
+对象默认是托管的，非托管对象一般人不推荐使用。
 
 	var managed = ManagedClass() 	// 托管的
 	free(managed)					// 调用析构函数
+
+	var unsafe = new Unsafe()
+	free(unsafe)			// 析构
 
 语法糖：对象作用区
 ----------------
@@ -727,6 +733,8 @@ SimpleLang 支持的异常。
 
 模板
 ==================
+**注意：凡是涉及模板的类、函数，都必须通过源码的形式存在导出包里。**
+
 可以通过把类中的成员函数，定义为 var 来创建模板类，模板类必须在构造时，能确定所有模板成员的类型。
 
 	class MyTuple {
@@ -900,48 +908,29 @@ if( TplFunc(a,b) ){	// 静态语句，在编译期展开
 }
 ```
 
-## 概念（*concept*）
-
-通过 concept 来约束模板函数，*concept* 的定义类似 class，只要类实现了概念里的所有方法和变量，并且他们是可访问的，那么就视为他实现了该接口，可以传送给接受该接口的方法。
-
-```
-
-concept MyConcept {
-	var a	// 表示传入必须有 a 变量
-	int b	// 必须有 b 变量
-	func doIt(int, double) // 必须有个类似的 doIt 函数
-} 
-
-func aTemplateFunc( MyConcept come ){  // 其实是个模板函数
-
-}
-
-```
-
-另外，有且只有一个条件的简单的概念，可以通过尖括号在参数中直接定义（匿名模板接口）
-
-	void aFunc( <int a> inc ){ // 传入对象必须有个int型成员变量a
-		inc.a++
-	}
-
 # 接口
 
 SimpleLang 可以通过 interface 关键字定义接口，是一个抽象类型，是抽象方法的集合，接口所有的方法、变量都是公开的。
-接口可以带默认方法、变量默认值，但需要注意的是，接口的方法会被认为是函数对象。
+
+接口必须以源码的形式导出。
+
+接口可以带默认方法、变量默认值，但需要注意的是，接口的方法会被认为是函数对象，接口内如果包含模板变量、方法，它只能被用在使用源码导出的函数里，事实上，如果函数体是使用源码导出的，编译器会按模板函数的方式来编译带接口的函数。
 
 比如
 
 	interface MyInterface{
-		var a
-		int b
+		int value
 		func getSome():int	// 这是个函数定义
 	}
-	
-	func notTemplateFunc( MyInterface inc ){ // 这不是一个模板函数 	
+	func notTemplateFunc( MyInterface inc ) // 函数体通过二进制（c函数）方式导出 	
+
+有且只有几个简单条件的接口，可以通过尖括号在参数中直接定义（匿名模板接口）
+
+	void aFunc( <int a, String b> inc ){ // 传入对象必须有个int型成员变量a, 一个 String型变量b
+		inc.a++
 	}
 
-
-接口无法被实例化，但是可以被实现。一个实现接口的类，应该实现接口内所描述的所有方法：
+接口无法被实例化，但是可以被实现。实现接口的类会生成接口定义的成员变量和函数指针。
 
 	class MyClass : Base, MyInterface{	   
 	}
@@ -951,6 +940,21 @@ SimpleLang 可以通过 interface 关键字定义接口，是一个抽象类型�
 	void bFunc(MyInterface v){  // 必须从 MyInterface 继承的对象，才能传入
 	                            
 	}
+
+或者，接口也可以隐式实现：
+
+	class MyClass {
+		int value;
+		func getSome(): int {
+		
+		}
+	}	
+	// 虽然 MyClass 并没有显式实现 MyInterface，但它包含了 MyInterface 所需要的所有元素，因此也可以直接传递给接受 MyInterface 作为参数的函数。
+	func myFunc( MyInterface a ){} 
+	MyClass x
+	myFunc(x)	
+
+另外，和 Go 不同，纯空的接口是非法的。
 
 # 语言特性
 
@@ -1054,7 +1058,7 @@ SimpleLang 通过通道来支持跨协程数据交换，成员函数 await 可�
 		int i = chan.await(4000) // 这里会阻塞，直到 4000毫秒后超时抛出 TimeoutException 异常，或者 chan 被其他线程调用，参数会作为 await 的返回值返回。
 			catch(TimeoutException e){
 	
-		}		 
+			}		 
 	
 		// 后续的代码
 		print(i)	// 输出 10
@@ -1067,16 +1071,19 @@ SimpleLang 通过通道来支持跨协程数据交换，成员函数 await 可�
 
 import
 ============
-SimpleLang 通过 import 导入包
+SimpleLang 通过 import 导入包，import 只能写在文件头部，简单起见，SimpleLang 总是一次导入整个包里的公共对象、函数
 
-// 导入指定函数、类
-import sin, print in org.simplelang
-// 导入整个包内函数及类
-import org.slang.*
-// 导入org.expz 包内，对org.slang.String 的注入
-import org.expz::org.slang.String	
+	import org.simplelang
 
-注意：import 只能写在文件头部
+如果包有冲突，那么可以创建包别名
+
+	import org.simplelang as sl
+
+sl.MyClass my
+
+也可以用全名来使用包内函数或对象而不需要导入
+
+	org.simplelang.printLine("Hello")
 
 # 其他
 
@@ -1136,8 +1143,6 @@ SimpleLang 支持有限的操作符重载，可以对类重载一元或二元操
 			// return this 可省略
 		}
 	}
-
-
 
 备选（思考中，暂时吧实现）
 ==============

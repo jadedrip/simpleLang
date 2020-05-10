@@ -7,34 +7,45 @@
 #include "CallGen.h"
 #include "NewGen.h"
 #include "../modules.h"
-
+#include "AstContext.h"
+#include "CodeGenerate/IntegerGen.h"
+#include <vcruntime.h>
+using namespace std;
 using namespace llvm;
 extern bool utf8File;
-StringLiteGen::StringLiteGen(llvm::LLVMContext& c, const std::string & s) : _str(s), _context(c)
+StringLiteGen::StringLiteGen(AstContext* c, const std::string & s) : _str(s)
 {
 	// ±àÂë±ä»Ã
-	UINT code = utf8File ? CP_UTF8 : CP_ACP;
-	int  len = (int)_str.length();
-	int  unicodeLen = ::MultiByteToWideChar(code,
-											0,
-											_str.c_str(),
-											-1,
-											NULL,
-											0);
-	wchar_t *  pUnicode = new  wchar_t[unicodeLen + 1];
-	memset(pUnicode, 0, (unicodeLen + 1) * sizeof(wchar_t));
-	::MultiByteToWideChar(code,
-						  0,
-						  _str.c_str(),
-						  -1,
-						  (LPWSTR)pUnicode,
-						  unicodeLen);
-	int ulen = unicodeLen * sizeof(wchar_t);
+	//UINT code = utf8File ? CP_UTF8 : CP_ACP;
+	//int  len = (int)_str.length();
+	//int  unicodeLen = ::MultiByteToWideChar(code,
+	//										0,
+	//										_str.c_str(),
+	//										-1,
+	//										NULL,
+	//										0);
+	//wchar_t *  pUnicode = new  wchar_t[unicodeLen + 1];
+	//memset(pUnicode, 0, (unicodeLen + 1) * sizeof(wchar_t));
+	//::MultiByteToWideChar(code,
+	//					  0,
+	//					  _str.c_str(),
+	//					  -1,
+	//					  (LPWSTR)pUnicode,
+	//					  unicodeLen);
+	//int ulen = unicodeLen * sizeof(wchar_t);
 
-	_data.assign(pUnicode, unicodeLen-1);
-	delete[]  pUnicode;
+	//_data.assign(pUnicode, unicodeLen-1);
+	//delete[]  pUnicode;
 
-	type = CLangModule::getStruct("si", "String");
+	//auto charset = c->findClass("Charset");
+	//vector<pair<string, CodeGen*>> vec = { pair(string(), new IntegerGen(c->context(), 65001)) };
+	//auto charsetObj = charset->makeNew(c, vec); // utf8
+
+	//auto* str = c->findClass("String");
+	//str->makeNew(c, s.c_str(), )
+	type = c->findStruct("struct.si_String");
+	_init= c->getFunction("si_String_Init");
+	_finalize = c->getFunction("si_String_Finalize");
 }
 
 void StringLiteGen::append(StringLiteGen * g)
@@ -60,12 +71,9 @@ llvm::Value * StringLiteGen::generateCode(const Generater& generater)
 
 	NewGen n(type);
 	n.escape = escape;
-	auto* finalize = CLangModule::getFunction("si_String_Finalize");
-	assert(finalize);
-	n.finalize = new ValueGen(finalize);
+	n.finalize = new ValueGen(_finalize);
 	auto* obj = n.generate(generater);
-
-	auto *call=CallGen::call(builder, "si_String_Init",
+	auto *call=CallGen::call(builder, _init,
 		obj,
 		v,
 		_data.size(),

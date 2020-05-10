@@ -1,26 +1,42 @@
-﻿#pragma once
+#pragma once
 #include <vector>
-#include "AstContext.h"
+#include <filesystem>
+#include <llvm/IR/DerivedTypes.h>
 
-class AstImport;
-class AstNode;
+class AstClass;
 class AstContext;
-
-/// 定义一个包
-class AstPackage 
+class AstFunction;
+class AstModule;
+class AstPackage
 {
 public:
-	std::vector<std::string> names;
-	std::vector<AstImport*> imports;
-	std::vector<AstNode*> lines;
-public:
-	virtual void draw(std::ostream& os);
-	AstContext* preprocessor(llvm::Module*);
-	void generateCode(llvm::Module* m);
-	llvm::Function* getFunc() { return _func;  }
+	AstPackage(const std::string& name);
+	void addModule(const std::string& name, AstModule* module);
+	const std::string& name() const { return _name; }
+	AstClass* findClass(const std::string& name);
+	llvm::StructType* findStruct(const std::string& name) {
+		auto iter = _structs.find(name);
+		return (iter == _structs.end()) ? nullptr : iter->second;
+	}
 
-	std::string name;
+	llvm::Function* getFunction(const std::string& name) {
+		return _llvmModule ? _llvmModule->getFunction(name) : nullptr;
+	}
+
+	std::vector<AstFunction*> findFunction(const std::string& name);
+
+	llvm::Module* llvmModule() { return _llvmModule;  }
 private:
-	llvm::Function* _func = nullptr;
-	std::vector<CodeGen* > _gens;
+	void recurvePath(const std::string& base, const std::filesystem::path& path);
+	void importDll(const std::filesystem::path& base);
+private:
+	std::string _name;
+	llvm::Module* _llvmModule = nullptr;
+
+	std::map<std::string, AstModule*> _modules;
+	AstContext* _contexts;
+
+	std::map<std::string, llvm::StructType*> _structs;
+	std::map<std::string, llvm::Function*> _functions;
 };
+

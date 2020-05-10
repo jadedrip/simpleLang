@@ -73,10 +73,10 @@ extern int yydebug;
      L_IDENTIFIER = 282,
      U_IDENTIFIER = 283,
      INTEGER = 284,
-     FLOAT = 285,
-     INT64 = 286,
+     FLOAT_TOKEN = 285,
+     INT64_TOKEN = 286,
      FLOAT64 = 287,
-     BOOLEAN = 288,
+     BOOLEAN_TOKEN = 288,
      CALL = 289,
      IF = 290,
      ELSE = 291,
@@ -90,7 +90,7 @@ extern int yydebug;
      IMPORT = 299,
      NULLPTR = 300,
      STATIC = 301,
-     CONST = 302,
+     CONST_TOKEN = 302,
      ENUM = 303,
      SWITCH = 304,
      CASE = 305,
@@ -107,7 +107,10 @@ extern int yydebug;
      INIT_TOKEN = 316,
      FINALIZE_TOKEN = 317,
      GO_TOKEN = 318,
-     BBRACKETS = 319
+     BBRACKETS = 319,
+     CONCEPT = 320,
+     PK = 321,
+     AS = 322
    };
 #endif
 
@@ -125,7 +128,7 @@ typedef union YYSTYPE
 
 
 /* Line 2058 of yacc.c  */
-#line 129 "intermediate/silang.tab.hpp"
+#line 132 "intermediate/silang.tab.hpp"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

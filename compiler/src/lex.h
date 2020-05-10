@@ -17,9 +17,8 @@ class TupleType;
 
 AstNode* packageName(AstNode* name);
 
-void packageImport(AstNode* n);
+void packageImport(AstNode* n, char* name=NULL);
 void setPackageLines(AstNode* n);
-AstNode* importName(AstNode* n, char* name, bool isFunc = false);
 AstNode* stringCat(AstNode* left, AstNode* right);
 
 AstType* getType( int type_id );
@@ -60,7 +59,7 @@ AstNode* makeFor(AstNode* let, AstNode* cond, AstNode* inc, AstNode* block );
 AstNode* createFunction(int funcType, const std::string& name, AstNode*parameters,  AstNode* ret, AstNode* block );
 AstNode* addFunctionBlock(AstNode*, AstNode* block, AstNode* annotation = nullptr);
 AstNode* createOperator(int oper, AstNode*variables, AstNode* ret, AstNode* block);
-AstType* createInterface( char* name, AstNode* block );
+AstType* createInterface(char* name, AstNode* block, bool isConcept = false);
 
 // 返回命令
 AstNode* callReturn(AstNode* val=nullptr);

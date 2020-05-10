@@ -1,7 +1,7 @@
 ﻿#include "stdafx.h"
 #include "Ast/AstFunction.h"
 #include "Ast/AstClass.h"
-#include "Ast/AstPackage.h"
+#include "Ast/AstModule.h"
 #include "AstContext.h"
 #include "Type/AutoType.h"
 #include "FunctionInstance.h"
@@ -67,6 +67,12 @@ void AstContext::setClass(const std::string & name, AstClass * cls)
 AstClass * AstContext::findClass(const std::string & name) {
 	auto i = _class.find(name); 
 	if (i != _class.end()) return i->second;
+
+	for (auto& i : _anonymousModules) {
+	 	auto *c = i->findClass(name);
+		if (c) return c;
+	}
+
 	if (parent) return parent->findClass(name);
 	return nullptr;
 }
@@ -131,6 +137,16 @@ CodeGen * AstContext::makeCall(
 			if (p) return p;
 		}
 	}
+
+	for (auto& i : _anonymousModules) {
+		auto pair=i->findFunction(name);
+		for( auto f : pair ){
+			auto* p = f->makeCall(this, arguments);
+			if (p) return p;
+		}
+	}
+	
+
 	return parent ? parent->makeCall(c, name, arguments, object) : nullptr;
 }
 
