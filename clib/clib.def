@@ -13,3 +13,20 @@ freeObject @7
 referenceIncrease @8
 createArray @9
 arrayLet @10
+
+si_println @11
+si_Charset_Init @12
+
+si_String_Init @13
+si_String_Finalize @14
+si_String_Splice @15
+
+si_String_GET_size @16
+si_String_at @17
+
+si_String_PLUS_si_String @18
+si_String_Init_I32 @19
+si_String_Init_I64 @20
+si_String_Init_M @21
+si_String_Init_N @22
+si_String_Init_si_String @23

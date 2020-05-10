@@ -1,12 +1,12 @@
 ﻿package org.my
 
 // import si.String
-import si
+// import si
 
 printf("Hello world!")
 
-var c="Ni hao"
- println(c)
+//var c="Ni hao"
+// println(c)
 
 /*
 func world(){
@@ -20,16 +20,17 @@ printHello()
 // world()
 
 
-go {
+go { 
 	println("Hello world:" + c)
 }
 */
 
-
+var nice = "Nice"
 var strs=String[10]
-strs[0] = "Nice"
+//strs[0] = nice
 
-println(strs[0])
+// println(strs[0])
+var x = strs[0]
 
 /*
 class Base {

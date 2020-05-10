@@ -18,8 +18,18 @@ void AstPackage::importDll(const std::filesystem::path& base)
 	auto dllptr = base / "platform" / triple / "share";
 	for (auto i : std::filesystem::directory_iterator(dllptr)) {
 		if (i.is_directory()) continue;	// ÏÈ²»µÝ¹é²éÕÒ
-		auto& path = i.path();
+		auto path = i.path();
 		std::string extension = path.extension().string();
+
+		if (extension == ".link") {
+			std::string fname;
+			std::ifstream fs(path);
+			fs >> fname;
+			path = stdfs::path(fname);
+			if (!stdfs::exists(path)) continue;
+			extension = path.extension().string();
+		}
+
 		// to_lower
 		std::for_each(extension.begin(), extension.end(), tolower);
 		if (extension == ".dll" || extension == ".so") {
@@ -58,6 +68,7 @@ AstPackage::AstPackage(const std::string& packageName) : _name(packageName) {
 
 	_contexts = new AstContext(_llvmModule);
 	_contexts->pathName = packageName;
+
 	for (auto i : _modules) {
 		i.second->preprocessor(_contexts);
 	}

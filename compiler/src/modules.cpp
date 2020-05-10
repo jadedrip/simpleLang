@@ -50,7 +50,7 @@ void CLangModule::initialize()
 	//	_structs[i->getStructName()] = i;
 	//}
 
-	// CLangModule::loadPackage("si");
+	//CLangModule::loadPackage("si");
 	// CLangModule::loadLLFile("clib/si.ll");
 }
 

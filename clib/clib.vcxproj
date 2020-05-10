@@ -119,7 +119,7 @@
       <Command>mkdir $(SolutionDir)lib\si\src
 mkdir $(SolutionDir)lib\si\platform\win64
 copy /Y $(ProjectDir)si\*.si $(SolutionDir)lib\si\src
-copy /Y $(TargetPath) $(SolutionDir)lib\si\platform\x86_64-pc-windows-msvc\share
+echo $(TargetPath) &gt; $(SolutionDir)lib\si\platform\x86_64-pc-windows-msvc\share\clib.dll.link
 copy /Y $(ProjectDir)export.h $(SolutionDir)lib\si
 mkdir $(SolutionDir)lib\si\include
 copy /Y $(ProjectDir)core.h $(SolutionDir)lib\si\include

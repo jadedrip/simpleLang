@@ -168,7 +168,9 @@ int main(int argc, char* argv[],  char * const *envp)
 	if (b) {
 		try {
 			auto c=new AstContext(m);
-			CLangModule::loadPackage("si");
+			// 默认导入 si
+			auto package= CLangModule::loadPackage("si");
+			c->addImport("", package);
 			currentPackage->preprocessor(c);
 		}
 		catch (std::runtime_error e) {
