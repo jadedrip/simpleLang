@@ -131,7 +131,6 @@
     <ClCompile Include="src\AstContext.cpp" />
     <ClCompile Include="src\Silang.cpp" />
     <ClCompile Include="src\Type\SIntegerType.cpp" />
-    <ClCompile Include="src\si_c.cpp" />
     <ClCompile Include="src\Type\TupleType.cpp" />
     <ClCompile Include="src\utility.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -244,7 +243,6 @@
     <ClInclude Include="src\CodeGenerate\UnaryGen.h" />
     <ClInclude Include="src\CodeGenerate\UnaryIntGen.h" />
     <ClInclude Include="src\CodeGenerate\ValueGen.h" />
-    <ClInclude Include="src\dot.h" />
     <ClInclude Include="src\EnumContent.h" />
     <ClInclude Include="src\Type\EnumType.h" />
     <ClInclude Include="src\FunctionInstance.h" />
@@ -255,7 +253,6 @@
     <ClInclude Include="src\Type\SArrayType.h" />
     <ClInclude Include="src\AstContext.h" />
     <ClInclude Include="src\Type\SIntegerType.h" />
-    <ClInclude Include="src\si_c.h" />
     <ClInclude Include="src\token.h" />
     <ClInclude Include="src\Type\TupleType.h" />
     <ClInclude Include="src\utility.h" />

@@ -20,7 +20,6 @@
 #include <llvm/Support/PrettyStackTrace.h>
 #include <llvm/IRReader/IRReader.h>
 #include <llvm/Support/SourceMgr.h>
-#include "si_c.h"
 #include "Ast/AstModule.h"
 #include "modules.h"
 #include "utility.h"

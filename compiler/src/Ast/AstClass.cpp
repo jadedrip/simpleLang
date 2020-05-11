@@ -295,7 +295,7 @@ std::vector<llvm::Type*> AstClass::fillMember(llvm::LLVMContext&c, ClassInstance
 				if (!l)
 					throw std::runtime_error("成员变量" + a.name + "无法确定类型");
 				m->type = l->llvmType(c);
-				cls->name += "_" + toReadable(m->type);
+				cls->name += "_" + getReadable(m->type);
 			}
 		} else {
 			auto *l = cls->findType(v->name);
@@ -339,7 +339,7 @@ ClassInstanceType* AstClass::generateClass(
 	std::string n = name;
 	for (auto &i : templateTypes) {
 		if (isupper(i.first.at(0))){
-			n += "_" + toReadable(i.second->llvmType(c));
+			n += "_" + getReadable(i.second->llvmType(c));
 		}
 	}
 

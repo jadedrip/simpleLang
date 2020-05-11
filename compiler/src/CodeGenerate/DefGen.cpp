@@ -14,6 +14,17 @@ DefGen::DefGen(const std::string & n, Type * t, CodeGen* value, int s) : name(n)
 	this->type = t;
 }
 
+inline llvm::Value* getDefaultValue(llvm::Type* type)
+{
+	if (type->isIntegerTy()) {
+		return llvm::ConstantInt::get(type, 0);
+	}
+	else if (type->isFloatingPointTy() || type->isDoubleTy()) {
+		return llvm::ConstantFP::get(type, 0.0);
+	}
+	return nullptr;
+}
+
 llvm::Value * DefGen::generateCode(const Generater& generater)
 {
 	auto func = generater.func;

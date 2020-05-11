@@ -87,10 +87,24 @@ Value * IntegerBinaryGen::generateCode(const Generater& generater)
 	}
 }
 
+/// 转换成布尔
+Value* intToBoolean(IRBuilder<>& builder, Value* v)
+{
+	auto type = v->getType();
+	if (!type->isIntegerTy()) throw std::runtime_error("无法转换成布尔类型");
+
+	int w = type->getScalarSizeInBits();
+	if (1 == w) return v;	// 本来就是布尔类型（i1）
+
+	auto x = IntegerType::get(builder.getContext(), w);
+	Value* zero = ConstantInt::getSigned(x, 0);
+	return builder.CreateICmpNE(v, zero);
+}
+
 llvm::Value * IntegerBinaryGen::genBooleanCode(llvm::IRBuilder<>& builder, llvm::Value * l, llvm::Value * r)
 {
-	l = int_to_bool(builder, l);
-	r = int_to_bool(builder, r);
+	l = intToBoolean(builder, l);
+	r = intToBoolean(builder, r);
 
 	switch (op) {
 	case EQ:	// ==
