@@ -365,9 +365,9 @@ FunctionInstance* AstFunction::getFunctionInstance(
 		fillFunctionBlock(s, instance);
 		instance->generateCode(module.get(), c);
 	}
-	if (!_isTemplate)
+	if (!_isTemplate) {
 		_funcInstance = instance;
-
+	}
 	return instance;
 }
 

@@ -95,9 +95,6 @@ Value * CallGen::generateCode(const Generater& generater)
 		}
 	}
 
-	if(function)
-		function->generateBody(m, builder.getContext());
-
 	auto* x=dyn_cast<llvm::Function>(llvmFunction);
 	assert(x);
 	return CLangCallGen::call(generater, x, params, type);

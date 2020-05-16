@@ -22,6 +22,7 @@ FunctionInstance::FunctionInstance(llvm::Function * f) : func(f)
 
 void FunctionInstance::generateBody(llvm::Module *m, llvm::LLVMContext & context)
 {
+	assert(func);
 	if (!func->getBasicBlockList().empty())
 		return;
 
@@ -89,14 +90,15 @@ llvm::Function * FunctionInstance::generateCode(llvm::Module *m, llvm::LLVMConte
 		}
 	}
 
-	func = m->getFunction(n);
-	if (!func) {
-		if (n.empty()) {
-			FunctionType* FT = FunctionType::get(retType, param, variable);
-			func = Function::Create(FT, Function::ExternalLinkage, n, m);
-		}
-		else
-			func = CLangModule::getFunction(n);
+	// 仅有定义
+	if (block.codes.empty()) {
+		func = CLangModule::getFunction(n);
+		if (!func)
+			std::clog << "Warning, not find function " << name << std::endl;
+	}else{
+		FunctionType* FT = FunctionType::get(retType, param, variable);
+		func = Function::Create(FT, Function::ExternalLinkage, n, m);
+		generateBody(m, context);
 	}
 	return func;
 }
