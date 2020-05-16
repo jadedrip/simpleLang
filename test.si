@@ -32,6 +32,16 @@ var strs=String[10]
 // println(strs[0])
 var x = strs[0]
 
+func test(int v) {
+	printf("%d", v)
+}
+
+func test(String v){
+	printf(v)
+}
+
+test(15)
+
 /*
 class Base {
 	int a = 10

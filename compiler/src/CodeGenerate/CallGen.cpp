@@ -95,9 +95,6 @@ Value * CallGen::generateCode(const Generater& generater)
 		}
 	}
 
-	if(function)
-		function->generateBody(m, builder.getContext());
-
 	auto* x=dyn_cast<llvm::Function>(llvmFunction);
 	assert(x);
 	return CLangCallGen::call(generater, x, params, type);
@@ -116,10 +113,10 @@ llvm::CallInst * CallGen::callFunc(llvm::IRBuilder<>& builder, llvm::Function * 
 			auto *to = try_cast(builder, tp, i);
 			a.push_back(to);
 			argIterator++;
-			//std::clog << toReadable(to->getType()) << ", ";
+			//std::clog << getReadable(to->getType()) << ", ";
 		} else if (func->isVarArg()) {
 			a.push_back(i);
-			//std::clog << toReadable(i->getType()) << ", ";
+			//std::clog << getReadable(i->getType()) << ", ";
 		} else
 			throw std::runtime_error("To many paramter for " + func->getName().str());
 	}

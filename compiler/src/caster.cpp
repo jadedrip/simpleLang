@@ -11,13 +11,13 @@ Value* structCast(IRBuilder<>& builder, Type* dest, Value *v)
 {
 	Type* r = v->getType()->getPointerElementType();
 
-	string n = toReadable(r);
+	string n = getReadable(r);
 	if (dest->isPointerTy()) {
 		auto *x = dest->getPointerElementType();
 		if (x->isStructTy())
 			dest = x;
 	}
-	string to = toReadable(dest);
+	string to = getReadable(dest);
 	string name = n + "_Cast_" + to;
 	auto* func = CLangModule::getFunction(name);// find the cast function
 	if (func) {

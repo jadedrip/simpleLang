@@ -94,18 +94,7 @@ std::string operator_to_word(int op)
 	}
 }
 
-Value * int_to_bool(IRBuilder<>& builder, Value * v)
-{
-	auto type=v->getType();
-	if (!type->isIntegerTy()) throw std::runtime_error("无法转换成布尔类型");
 
-	int w = type->getScalarSizeInBits();
-	if (1 == w ) return v;	// 本来就是布尔类型（i1）
-
-	auto x = IntegerType::get(builder.getContext(), w); 
-	Value* zero=ConstantInt::getSigned(x, 0);
-	return builder.CreateICmpNE(v, zero);
-}
 
 std::string getReadable(llvm::Type *type)
 {
@@ -157,44 +146,23 @@ BlockGen * makeCodeGenList(AstContext * parent, std::vector<AstNode*>& lines)
 	return x;
 }
 
-std::string toReadable(llvm::Type * type)
-{
-	if (type->isIntegerTy()) {
-		return "i" + std::to_string(llvm::dyn_cast<llvm::IntegerType>(type)->getBitWidth());
-	}
-	if (type->isPointerTy()) {
-		return toReadable(type->getPointerElementType()) + "_ptr";
-	}
-	if (type->isStructTy()) {
-		auto * ty = llvm::dyn_cast<llvm::StructType>(type);
-		std::string n = ty->getName().str();
-		return (0 == n.compare(0, 7, "struct.")) ? n.substr(7) : n;
-	}
-	if (type->isArrayTy()) {
-		auto * ty = llvm::dyn_cast<llvm::ArrayType>(type);
-		return toReadable(ty->getElementType()) + "_arr";
-	}
-	return std::to_string(type->getTypeID());
-}
-
-namespace stdfs = std::filesystem;
-void doEnumDirectory(const std::filesystem::path& base, const std::string& relative, const std::function<void(const std::string&, std::filesystem::path&)>& callback)
-{
-
-	for (auto& fe : stdfs::directory_iterator(base)) {
-		auto fp = fe.path();
-		auto si = fp.filename();
-
-		if (fe.is_directory()) {
-			std::string rel = relative.empty() ? si.string() : relative + "/" + si.string();
-			doEnumDirectory(fp, rel, callback);
-		}
-
-		callback(relative, fp);
-	}
-}
-
-void enumDirectory(const std::string& base, const std::function<void(const std::string&/*relativePath*/, std::filesystem::path&)>& callback)
-{
-	doEnumDirectory(base, "", callback);
-}
+//std::string getReadable(llvm::Type * type)
+//{
+//	if (type->isIntegerTy()) {
+//		return "i" + std::to_string(llvm::dyn_cast<llvm::IntegerType>(type)->getBitWidth());
+//	}
+//	if (type->isPointerTy()) {
+//		return getReadable(type->getPointerElementType()) + "_ptr";
+//	}
+//	if (type->isStructTy()) {
+//		auto * ty = llvm::dyn_cast<llvm::StructType>(type);
+//		std::string n = ty->getName().str();
+//		return (0 == n.compare(0, 7, "struct.")) ? n.substr(7) : n;
+//	}
+//	if (type->isArrayTy()) {
+//		auto * ty = llvm::dyn_cast<llvm::ArrayType>(type);
+//		return getReadable(ty->getElementType()) + "_arr";
+//	}
+//	return std::to_string(type->getTypeID());
+//}
+//

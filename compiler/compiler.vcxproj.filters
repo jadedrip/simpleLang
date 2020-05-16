@@ -61,7 +61,6 @@
     <ClCompile Include="src\FunctionInstance.cpp" />
     <ClCompile Include="src\lex.cpp" />
     <ClCompile Include="src\modules.cpp" />
-    <ClCompile Include="src\si_c.cpp" />
     <ClCompile Include="src\Silang.cpp" />
     <ClCompile Include="src\utility.cpp" />
     <ClCompile Include="stdafx.cpp" />
@@ -221,11 +220,9 @@
       <Filter>CodeGenerate</Filter>
     </ClInclude>
     <ClInclude Include="src\ClassContext.h" />
-    <ClInclude Include="src\dot.h" />
     <ClInclude Include="src\FunctionInstance.h" />
     <ClInclude Include="src\lex.h" />
     <ClInclude Include="src\modules.h" />
-    <ClInclude Include="src\si_c.h" />
     <ClInclude Include="src\token.h" />
     <ClInclude Include="src\utility.h" />
     <ClInclude Include="stdafx.h" />
