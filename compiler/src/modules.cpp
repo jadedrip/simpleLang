@@ -26,34 +26,6 @@ Module* _clib;
 extern unique_ptr<Module> module;
 extern llvm::LLVMContext llvmContext;
 
-void CLangModule::initialize()
-{
-	// 读取核心库
-	//enumDirectory("lib", [](const string& relativePath, stdfs::path& file) {
-	//	auto filename = file.string();
-	//	if (file.extension() == ".dll") {
-	//		// TODO: 编译是不需要读取 dll 的，未来通过参数控制
-	//		string err;
-	//		if (sys::DynamicLibrary::LoadLibraryPermanently(filename.c_str(), &err)) {
-	//			cerr << "读取 " + filename + " 失败：" << err << endl;
-	//		}
-	//	}
-	//	});
-
-	//string err;
-	//string clib = "lib/si/platform/" + triple + "/share/clib.dll";
-	//if (sys::DynamicLibrary::LoadLibraryPermanently(clib.c_str(), &err)) {
-	//	cerr << "读取 clib.dll 失败：" << err << endl;
-	//}
-	//_clib = loadCHeader("si", "lib/si/export.h");
-	//for (auto i : _clib->getIdentifiedStructTypes()) {
-	//	_structs[i->getStructName()] = i;
-	//}
-
-	//CLangModule::loadPackage("si");
-	// CLangModule::loadLLFile("clib/si.ll");
-}
-
 llvm::Function* CLangModule::getFunction(const string& name) {
 	auto *p=module->getFunction(name);
 	if (p) return p;
@@ -77,20 +49,9 @@ llvm::Function* CLangModule::getFunction(const string& package, const string& na
 	return nullptr;
 }
 
-extern unique_ptr<Module> module;
-
 void CLangModule::moveAll(llvm::ExecutionEngine* engine) {
 	for (auto& i : _packages) {
-		auto& v = i.second;
-
-		clog << "Load module:" << v->name() << endl;
-
-		//for (auto &i : v->getFunctionList()) {
-		//	auto n = i.getName();
-		//	clog << "Find function: " << n.str() << endl;
-
-		//	// auto p=engine->getFunctionAddress(n);
-		//}	    
+		auto& v = i.second;   
 		std::unique_ptr<llvm::Module> p(v->llvmModule());
 		engine->addModule(std::move(p));
 	}

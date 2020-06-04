@@ -409,13 +409,6 @@ SimpleLang 语言中，传入的参数（不包括 int 等内部参数）都被�
 
 	var v= fun( name="myname", 10, 20 )
 
-另外可以使用前置参数来调用函数
-
-	fun1() ~> fun2(1)			// 等同 fun2( 1, fun1() )
-	fun1() ~> fun2(1, name=?)	// 等同 fun2( 1, name= fun1() )
-
-如果你想玩一下函数式编程，这种语法也许会让你的程序更容易阅读
-
 函数对象、匿名函数
 -------
 SimpleLang 在语言级别支持函数对象、匿名函数，匿名函数**不能**是模板的，参数不能有默认值，不允许可变参数。
@@ -534,21 +527,38 @@ SimpleLang 支持的异常。
 
 注：成员变量的默认值必须能确定，不能是模板的，也不能是成员函数调用或引用另一个成员变量（这时类还没构造）
 
-类如果没有构造函数，将生成一个默认的构造函数，所有可访问成员，都可以使用命名构造的方式构造：
+类如果没有构造函数，可以通过元组的形式进行初始化：
 
 	class Mydata {
 		int a
 		int b
-	
-		init( int .a=0, int .b=0 ){}	// 默认生成的构造函数
 	}
 	
-	Mydata mydata( a=10, b=20 )	
+	Mydata mydata = ( a=10, b=20 )	
 
 *设计语：使用 Type name 这样的方式构造，可以帮助 IDE 自动补全（输入 My, IDE可以帮你连变量名一起补全了)*
 
+## Get & Set
+
+SimpleLang 支持成员变量的 Get & Set，它们必须紧接着变量定义，set 方法在变量设置完成后被调用，但允许定义一个参数，编译器会把原本的值作为参数传入。
+
+```
+class MyCls {
+	int a 
+    get{
+
+	} 
+	set(int old){  // 或者直接 set{}
+
+	}
+}
+```
+
+
+
 继承&重载
 -------------------
+
 继承和重载的概念被简化，类可以单一继承，并且**不允许**重载方法，当你需要一个可以重载的类、或者虚函数时，需要把它定义成函数对象。
 类可以有多个接口实现，这些接口仅仅作为编译约束，你并不可以把一个实现赋值给接口。
 
@@ -669,7 +679,7 @@ SimpleLang 支持的异常。
 
 	var managed = ManagedClass() 	// 托管的
 	free(managed)					// 调用析构函数
-
+	
 	var unsafe = new Unsafe()
 	free(unsafe)			// 析构
 
@@ -783,7 +793,7 @@ SimpleLang 支持的异常。
 
 ```
 class MyClass{
-	func get() : var v{
+	func getVal() : var v{
 		if(v is int) 
 			return 10 // 返回 int
 		else if(v is double) 
@@ -791,7 +801,7 @@ class MyClass{
 	}
 }
 
-double v = myClass.get()	// 通过返回值推导
+double v = myClass.getVal()	// 通过返回值推导
 ```
 
 类型定义 def
@@ -1146,6 +1156,15 @@ SimpleLang 支持有限的操作符重载，可以对类重载一元或二元操
 
 备选（思考中，暂时吧实现）
 ==============
+
+## 函数的前置参数
+
+使用前置参数来调用函数，函数如果返回多个返回值，会依次填入
+
+	fun1() fun2(1, ?)			// 等同 fun2( 1, fun1() )
+	fun1() fun2(1, name=?)	// 等同 fun2( 1, name= fun1() )
+
+如果你想玩一下函数式编程，这种语法也许会让你的程序更容易阅读
 
 非托管对象
 --------------

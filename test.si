@@ -5,25 +5,26 @@
 
 printf("Hello world!")
 
-//var c="Ni hao"
+var c="Ni hao"
 // println(c)
 
-/*
+
 func world(){
-	//var h = "hello"
-	//println(h)
+	var h = "hello"
+	println(h)
 }
 
-printHello()
 // var data = "Data"
 // println("Hello")
 // world()
 
 
+/*
 go { 
 	println("Hello world:" + c)
 }
 */
+world()
 
 var nice = "Nice"
 var strs=String[10]

@@ -290,6 +290,7 @@ AstNode * createFunction(int funcType, const string& name, AstNode * parameters,
 {
 	auto* p = new AstFunction();
 	p->name = name;
+	std::cout << "Create function: " << name << std::endl;
 	p->funcType = (AstFunction::FunctionType)funcType;
 	moveLines(p->block, block);
 	p->def = block == nullptr;
@@ -474,7 +475,7 @@ AstNode* makeTuple(AstNode* elem, AstNode* list)
 
 AstNode * tupleResolve(AstNode * left, AstNode * tuple, bool def)
 {
-	cout << "tupleResolve: " << tuple->name << endl;
+	clog << "tupleResolve: " << tuple->name << endl;
 	auto spread = new AstTupleSpread();
 	spread->tuple = tuple;
 	spread->def = def;
