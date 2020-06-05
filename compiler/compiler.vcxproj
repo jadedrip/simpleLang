@@ -336,8 +336,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\SDK\llvm-10.0.0\build\include;D:\SDK\llvm-10.0.0\include;D:\SDK\llvm-10.0.0\build\tools\clang\include;D:\SDK\llvm-10.0.0\tools\clang\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\SDK\llvm-10.0.0\build\Debug\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(LLVM_DIR)\build\include;$(LLVM_DIR)\include;$(LLVM_DIR)\build\tools\clang\include;$(LLVM_DIR)\tools\clang\include;$(INCLUDE);$(IncludePath)</IncludePath>
+    <LibraryPath>$(LLVM_DIR)\build\Debug\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>

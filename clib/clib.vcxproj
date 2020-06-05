@@ -75,8 +75,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\SDK\llvm-10.0.0\build\include;D:\SDK\llvm-10.0.0\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\SDK\llvm-10.0.0\build\Debug\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(LLVM_DIR)\build\include;$(LLVM_DIR)\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LLVM_DIR)\build\Debug\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -117,7 +117,7 @@
     </Link>
     <PostBuildEvent>
       <Command>mkdir $(SolutionDir)lib\si\src
-mkdir $(SolutionDir)lib\si\platform\win64
+mkdir $(SolutionDir)lib\si\platform\x86_64-pc-windows-msvc\share
 copy /Y $(ProjectDir)si\*.si $(SolutionDir)lib\si\src
 echo $(TargetPath) &gt; $(SolutionDir)lib\si\platform\x86_64-pc-windows-msvc\share\clib.dll.link
 copy /Y $(ProjectDir)export.h $(SolutionDir)lib\si

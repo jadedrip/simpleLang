@@ -71,7 +71,7 @@ public:
 				return x;
 			}
 		}
-		return nullptr;
+		return parent ? parent->getFunction(name) : nullptr;
 	}
 
 	/// <summary>

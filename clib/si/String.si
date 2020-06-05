@@ -31,4 +31,4 @@ class String {
 	// finalize
 }
 
-func println(String str) : void
+
