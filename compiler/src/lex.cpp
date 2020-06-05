@@ -290,7 +290,7 @@ AstNode * createFunction(int funcType, const string& name, AstNode * parameters,
 {
 	auto* p = new AstFunction();
 	p->name = name;
-	std::cout << "Create function: " << name << std::endl;
+	// std::cout << "Create function: " << name << std::endl;
 	p->funcType = (AstFunction::FunctionType)funcType;
 	moveLines(p->block, block);
 	p->def = block == nullptr;

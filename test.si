@@ -3,10 +3,10 @@
 // import si.String
 // import si
 
-printf("Hello world!")
+print("Hello world!")
 
 var c="Ni hao"
-// println(c)
+println(c)
 
 
 func world(){
