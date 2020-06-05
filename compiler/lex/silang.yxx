@@ -44,7 +44,7 @@ void yyerror( const char* error );
 %token CALL IF ELSE WHILE FOR RETURN CLASS INTERF PROTECTED 
 %token PACKAGE IMPORT NULLPTR STATIC CONST_TOKEN ENUM SWITCH CASE DEFAULT SINGLETON
 %token TRY_TOKEN CATCH FINALLY GET_TOKEN SET_TOKEN OPERATOR NEW_TOKEN DELETE_TOKEN
-%token INIT_TOKEN FINALIZE_TOKEN GO_TOKEN BBRACKETS CONCEPT PK AS
+%token INIT_TOKEN FINALIZE_TOKEN GO_TOKEN BBRACKETS CONCEPT PK AS VOID_TOKEN
 
 %defines
 
@@ -408,8 +408,9 @@ operator_overload
 	;
 
 function_ret
-	:									{ $$=nullptr; }
-	| ':' return_tuple_elems 			{ $$=$<expr>2; }/*命名返回*/
+	:														{ $$=nullptr; }
+	| ':' return_tuple_elems 		{ $$=$<expr>2; }/*命名返回*/
+	| ':' VOID_TOKEN						{ $$=nullptr; }
 	;
 
 return_tuple_elem

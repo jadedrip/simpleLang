@@ -44,7 +44,6 @@ H		[a-fA-F0-9]
 "uint"		    yylval.type=12;	return ITYPE; 
 "ulong"		yylval.type=13;	return ITYPE; 
 	
-
 "0"[lL]|(\-?[1-9]{D}*)[lL] { yylval.expr=makeValue(yytext,std::stoll(yytext));			return INT64_TOKEN; }
 "0"|("-"?[1-9]{D}*)			{ yylval.expr=makeValue(yytext,std::stol(yytext));			return INTEGER;  }
 "0x"{H}[lL]					{ yylval.expr=makeValue(yytext,std::stol(yytext, 0, 16 ));	return INTEGER; }
@@ -91,6 +90,7 @@ H		[a-fA-F0-9]
 "finalize"			return FINALIZE_TOKEN; 
 "go"				return GO_TOKEN;
 "as"				return AS;
+"void"			return VOID_TOKEN;
 
 [a-z][a-zA-Z0-9]*		SAVETOKEN(L_IDENTIFIER); 
 [A-Z][a-zA-Z0-9]*		SAVETOKEN(U_IDENTIFIER); 
