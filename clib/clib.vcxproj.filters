@@ -73,6 +73,9 @@
     <None Include="si\Charset.si">
       <Filter>si</Filter>
     </None>
+    <None Include="si\globals.si">
+      <Filter>si</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="si\String.si">
