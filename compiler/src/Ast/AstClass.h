@@ -22,7 +22,10 @@ public:
 	);
 	// ClassInstanceType* getInstance(std::vector<std::pair<std::string, CodeGen*> >& args);
 public:
-	bool singleton = false;
+	enum class ClassType {
+		ENormal = 0, ESingleton = 1, EInterface = 2
+	};
+	ClassType classType;
 	std::map<std::string, AstAnnotation*> annotations;
 	AstGetClass* inherit = nullptr;	// 继承
 	std::vector<AstNode*> block;

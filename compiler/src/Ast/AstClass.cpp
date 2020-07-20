@@ -272,13 +272,15 @@ std::vector<llvm::Type*> AstClass::fillMember(llvm::LLVMContext&c, ClassInstance
 		auto *b = cls->inherit->llvmType(c);
 
 		StructType* s = dyn_cast<StructType>(b);
-		for_each(s->element_begin(), s->element_end(), [&idx, &types](Type* ty) {
+		/*for_each(s->element_begin(), s->element_end(), [&idx, &types](Type* ty) {
 			types.push_back(ty);
 			idx++;
 			});
 		for (auto i : cls->inherit->memberGens) {
 			cls->memberGens[i.first] = i.second;
-		}
+		}*/
+		types.push_back(s);
+		idx++;
 	}
 	// String v="1", b
 	for (auto a : _members) {
@@ -345,6 +347,7 @@ ClassInstanceType* AstClass::generateClass(
 
 	ClassInstanceType* cls = new ClassInstanceType(_context, packageName, name);
 	cls->templateTypes = templateTypes;
+	cls->isInterface = classType == ClassType::EInterface;
 
 	ThisGen* thisGen = new ThisGen();
 	cls->setSymbolValue("this", thisGen);

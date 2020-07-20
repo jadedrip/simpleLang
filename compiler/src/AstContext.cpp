@@ -44,7 +44,7 @@ void AstContext::setSymbolValue(const std::string & name, CodeGen * v) {
 	auto i = _symbols.find(name);
 	if (i != _symbols.end()) {
 		auto* type = i->second->type;
-		if (!type) // 只是给占位符
+		if (type) // 只是给占位符
 			throw std::runtime_error("Duplicate variable: " + name);
 		delete i->second;
 	}

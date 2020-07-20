@@ -8,6 +8,15 @@ print("Hello world!")
 var c="Ni hao"
 println(c)
 
+class Base {
+	int a
+}
+
+class MyClass : Base {
+	int b
+}
+
+var xd = MyClass()
 
 func world(){
 	var h = "hello"

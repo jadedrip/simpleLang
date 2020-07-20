@@ -4,6 +4,8 @@
 #include "String.h"
 #include "Coroutine.h"
 
+c
+
 Chan* chan = new Chan;;
 void* test()
 {

@@ -70,7 +70,6 @@
     <ClCompile Include="src\Ast\AstImport.cpp" />
     <ClCompile Include="src\Ast\AstInc.cpp" />
     <ClCompile Include="src\Ast\AstIndex.cpp" />
-    <ClCompile Include="src\Ast\AstInterface.cpp" />
     <ClCompile Include="src\Ast\AstIs.cpp" />
     <ClCompile Include="src\Ast\AstLet.cpp" />
     <ClCompile Include="src\Ast\AstLoop.cpp" />
@@ -181,7 +180,6 @@
     <ClInclude Include="src\Ast\AstImport.h" />
     <ClInclude Include="src\Ast\AstInc.h" />
     <ClInclude Include="src\Ast\AstIndex.h" />
-    <ClInclude Include="src\Ast\AstInterface.h" />
     <ClInclude Include="src\Ast\AstIs.h" />
     <ClInclude Include="src\Ast\AstLet.h" />
     <ClInclude Include="src\Ast\AstList.h" />

@@ -238,8 +238,8 @@ cls_block
 *	½Ó¿Ú / Ô¼Êø
 /**********************************************/
 interface
-	:  INTERF U_IDENTIFIER '{' interface_lines '}' { $<tp>$=createInterface($2, $<expr>4); }
-	|  CONCEPT U_IDENTIFIER '{' interface_lines '}' { $<tp>$=createInterface($2, $<expr>4, true); }
+	:  INTERF U_IDENTIFIER '{' interface_lines '}' { $$=createInterface($2, $<expr>4); }
+	|  CONCEPT U_IDENTIFIER '{' interface_lines '}' { $$=createInterface($2, $<expr>4, true); }
 	;
 	
 interface_line
