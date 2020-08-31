@@ -173,9 +173,11 @@ copy /Y $(ProjectDir)String.h $(SolutionDir)lib\si\include</Command>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ClassInfo.h" />
     <ClInclude Include="core.h" />
     <ClInclude Include="Coroutine.h" />
     <ClInclude Include="DispatchBind.h" />
+    <ClInclude Include="Field.h" />
     <ClInclude Include="GoDispatch.h" />
     <ClInclude Include="export.h" />
     <ClInclude Include="stdafx.h" />

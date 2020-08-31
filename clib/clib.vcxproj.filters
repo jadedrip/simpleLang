@@ -42,6 +42,12 @@
     <ClInclude Include="export.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="ClassInfo.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Field.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
