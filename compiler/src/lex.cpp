@@ -23,7 +23,6 @@
 #include "Ast/AstSwitch.h"
 #include "Ast/AstTry.h"
 #include "Ast/AstNew.h"
-#include "Ast/AstInterface.h"
 #include "Ast/AstInc.h"
 #include "Ast/AstBased.h"
 #include "Ast/AstModule.h"
@@ -290,6 +289,7 @@ AstNode * createFunction(int funcType, const string& name, AstNode * parameters,
 {
 	auto* p = new AstFunction();
 	p->name = name;
+	// std::cout << "Create function: " << name << std::endl;
 	p->funcType = (AstFunction::FunctionType)funcType;
 	moveLines(p->block, block);
 	p->def = block == nullptr;
@@ -321,11 +321,11 @@ AstNode * createOperator(int oper, AstNode * variables, AstNode * ret, AstNode *
 	return p;
 }
 
-AstType * createInterface(char * name, AstNode * block, bool isConcept)
+AstNode * createInterface(char * name, AstNode * block, bool isConcept)
 {
-	auto *p = new AstInterface();
+	auto *p = new AstClass();
+	p->classType = AstClass::ClassType::EInterface;
 	p->name = name;
-	p->isConcept = isConcept;
 	moveLines(p->block, block);
 	return p;
 }
@@ -474,7 +474,7 @@ AstNode* makeTuple(AstNode* elem, AstNode* list)
 
 AstNode * tupleResolve(AstNode * left, AstNode * tuple, bool def)
 {
-	cout << "tupleResolve: " << tuple->name << endl;
+	clog << "tupleResolve: " << tuple->name << endl;
 	auto spread = new AstTupleSpread();
 	spread->tuple = tuple;
 	spread->def = def;
@@ -496,7 +496,7 @@ AstNode* makeClass(
 {
 	auto *p = new AstClass();
 	p->name = name;
-	p->singleton = (type == 1);
+	p->classType = AstClass::ClassType(type);
 	if (inherit) p->inherit = (AstGetClass*)inherit;
 	moveLines(p->block, block);
 

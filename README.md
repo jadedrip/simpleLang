@@ -57,7 +57,9 @@ SimpleLang 是拍脑袋的产物，试验性的产品，现在仅仅处于最初
 | char    | 无   | 16 bit |
 | short   | 有   | 16 bit |
 | int     | 有   | 32 bit |
+| uint    | 无   | 32 bit |
 | long    | 有   | 64 bit |
+| ulong   | 无   | 64 bit |
 | float   | 有   | 32 bit |
 | double  | 有   | 64 bit |
 
@@ -75,16 +77,17 @@ SimpleLang 是拍脑袋的产物，试验性的产品，现在仅仅处于最初
 
 语言级别支持的内部类
 
-| 类型     | 说明                           |
-| -------- | ------------------------------ |
-| Tuple    | 元组                           |
-| String   | 字符串                         |
-| Array<?> | 数组模板类，可以和数组无缝切换 |
-| Any      | 可变类型                       |
-| Func     | 函数对象                       |
-| Delay    | 延迟对象                       |
-| Delegate | 委托（保留）                   |
-| Proxy    | 代理（保留）                   |
+| 类型     | 说明                                                         |
+| -------- | ------------------------------------------------------------ |
+| Tuple    | 元组                                                         |
+| String   | 字符串                                                       |
+| Array<?> | 数组模板类，可以和数组无缝切换，特别的 Array<byte> 可以用原生字符串初始化。 |
+| Any      | 可变类型                                                     |
+| Func     | 函数对象                                                     |
+| Delay    | 延迟对象                                                     |
+| Optional | 可选对象                                                     |
+| Delegate | 委托（保留）                                                 |
+| Proxy    | 代理（保留）                                                 |
 
 使用 const 来定义常量：
 
@@ -123,11 +126,12 @@ SimpleLang 语言中除了内置类型（整数和浮点），其他类型都保
 
 数组
 ------------
-除 singleton 外都可以定义成数组，数组有**固定长度**，并且不能更改长度，有个默认打开的编译选项，会让越界访问抛出异常。
+除 singleton 外都可以定义成数组，数组有**固定长度**，并且不能更改长度，有个默认打开的编译选项，会让越界访问抛出异常。数组实际上为 Array<T> 类型，（类型+[]） 只是简写，两者等价。
 数组下标从0开始
 
     int[] a=[ 0, 1 ]			// 数组可以直接初始化
-    int[] array2=int[10]		// 初始化一个空的数组  
+    Array<int> a = [ 0, 1 ]
+    int[10] array2				// 初始化一个空的数组  
     int v=array2[1]     		// 数组取值
     
     // 通过内置的 size 成员函数来获取数组的长度
@@ -215,6 +219,8 @@ SimpleLang 语言中支持元组，替代 C++ 中的 pair, tuple。Si 里的元�
 		print( i )
 	}
 	
+	var t=1 :: (10, 20)		// 通过 :: 可以连接两个元组为一个新元组，这里等价于 var t = (1, 10, 20) 
+	
 	var b0, b1 := a				// 元组的自动解构，注意复制的是引用，变量数量可以比实际的少，但不能多。
 	int c0, float c1 := (10， 10.0)
 	
@@ -225,7 +231,15 @@ SimpleLang 语言中支持元组，替代 C++ 中的 pair, tuple。Si 里的元�
 	var tuple=( key=1, value=2 )
 	print( tuple.key )
 
-特别的，元组必须放在 = 右边，也就是无根的元组是违法的。
+元组也支持 -> 操作
+
+	(10, 20) -> myFunc 	// 等价于 myFunc(10, 20)
+	
+	let v = (10, 20) -> firstFunc :: 20 -> second // 等价于 let v = second( firstFunc(10, 20), 20 )
+
+如果你想玩一下函数式编程，这种语法也许会让你的程序更容易阅读
+
+特别的，元组必须放在 = 右边或者接 -> 操作 ，也就是无根的元组是违法的。
 
 	( 10, 20 )		// 编译错误
 
@@ -409,15 +423,9 @@ SimpleLang 语言中，传入的参数（不包括 int 等内部参数）都被�
 
 	var v= fun( name="myname", 10, 20 )
 
-另外可以使用前置参数来调用函数
-
-	fun1() ~> fun2(1)			// 等同 fun2( 1, fun1() )
-	fun1() ~> fun2(1, name=?)	// 等同 fun2( 1, name= fun1() )
-
-如果你想玩一下函数式编程，这种语法也许会让你的程序更容易阅读
-
 函数对象、匿名函数
 -------
+
 SimpleLang 在语言级别支持函数对象、匿名函数，匿名函数**不能**是模板的，参数不能有默认值，不允许可变参数。
 
 	var add=func(int a, int b) : int{ return a+b }	// 匿名函数
@@ -504,12 +512,43 @@ SimpleLang 支持的异常。
 
 *包 org.first.second 是 org.first 的子包*
 
+## 纯数据类
+
+单纯保存数据用，类似 c 里的 struct。不具有成员函数（也没有的 get/set）。纯数据类构造函数默认生成，而不能自定义，构造函数按顺序填写字段，并且默认空值。
+
+```
+data MyData{
+	int val;
+	String str;
+	
+	// 默认生成
+	init(int val=0, string str=null);
+}
+
+MyData x(10, "你好")
+```
+
+纯数据类可以继承，并被一般类继承，但不能从一般类继承。
+
+## 纯数据类数组
+
+纯数据类数组是特殊的，对象数组非空，**不能**保存 null 值，并在创建时初始化，如果需要能保存 null 值的数组，请使用 Vecter。
+
+对象数组内的对象生存期跟随整个数组，而不是单独处理。
+
+    MyData[10] myArray		// 会一次性初始化 10个 MyClass 对象
+    myArray[0].val		
+
+
+
+## 一般类
+
 代码开始
 
 	/* File MyCls.sc 开始 *
 	class MyCls {	// 定义类
 		// 语法糖在变量前加个点，会自动赋值到内部变量
-		init(int .privateValue = 20 ){}	// 等同 this.privateValue = privateValue
+		init(int .privateValue = 20 ){}	// 变量前加 . 等同 this.privateValue = privateValue
 	
 		finalize{           // 析构函数始终是无参数的，不需要括号
 		}
@@ -529,37 +568,29 @@ SimpleLang 支持的异常。
 		}
 	protected:	// 类中有且仅能有一个 protected 分割线，分割线上部的是公开的变量、方法，下部是
 				// 保护的，只有在同一个类、子类或继承类内可以访问
-		int privateValue	// 可为 null 的变量
+		int privateValue	// 内置类型初始化为 0
 	}
 
 注：成员变量的默认值必须能确定，不能是模板的，也不能是成员函数调用或引用另一个成员变量（这时类还没构造）
-
-类如果没有构造函数，将生成一个默认的构造函数，所有可访问成员，都可以使用命名构造的方式构造：
-
-	class Mydata {
-		int a
-		int b
-	
-		init( int .a=0, int .b=0 ){}	// 默认生成的构造函数
-	}
-	
-	Mydata mydata( a=10, b=20 )	
 
 *设计语：使用 Type name 这样的方式构造，可以帮助 IDE 自动补全（输入 My, IDE可以帮你连变量名一起补全了)*
 
 继承&重载
 -------------------
-继承和重载的概念被简化，类可以单一继承，并且**不允许**重载方法，当你需要一个可以重载的类、或者虚函数时，需要把它定义成函数对象。
-类可以有多个接口实现，这些接口仅仅作为编译约束，你并不可以把一个实现赋值给接口。
+
+继承和重载的概念被简化，类可以单一继承，并且**允许**重载方法。类可以有多个接口实现。
 
 	class Base{
 		func cantOverload(){	// 普通函数不可以重载
 	
 		}
+		
+		virtual func virtualFunction(int v) = 0 	// 纯虚函数
+		virtual func canOverload(int v) {
+		
+		}
 	
-		func virtualFunction( int v ) 	// 纯定义会定义为一个函数对象，可以实现纯虚函数的功能
-	
-		var canOverload = func(int v){	// 以函数对象的语法定义函数，可以通过替换函数对象的方法达到重载的目的
+		var myFunc = func(int v){		// 函数对象
 			print(v)
 			virtualFunction(v)	// 调用虚函数
 		}
@@ -567,22 +598,71 @@ SimpleLang 支持的异常。
 	
 	// 类可以继承，只能单继承，但可以有多个接口
 	class Second : Base, Interface0, Interface1 {        
-		func cantOverload(){	  // 这会是个全新函数
+		func cantOverload(){	  // 这会是个全新函数，编译器报警
 	
 		}
 	
-		virtualFunction=func(int v){	// 实例之
+		virtual func virtualFunction(int v){	// 重载虚函数
 			print(v)
 		}
 	
-		canOverload = func(int v){
-			Base.canOverload(v)		// 这可以视为调用基类函数
+		myFunc = func(int v){
+			Base::canOverload(v)		// 强制调用基类函数
 		}
 	}
 	
 	Interface0 obj = Second()
 
 相应的，类没有虚类或者纯虚类，所有类都可以被构造，如果有些类的函数没实现，就是一个空的函数指针，可以通过后期赋值的方式来实现。
+
+## Get & Set
+
+SimpleLang 支持成员变量的 Get & Set，它们必须紧接着变量定义，set 方法在变量设置时被调用。
+
+```
+class MyCls {
+	int a {
+        get{	// 必须紧跟变量的定义
+            return a
+        } 
+        set(int newValue){  
+        	a = newValue
+        }
+	}
+	int readonly{
+		set = 0			// 去除 set 函数（变量只读）
+	}
+	int virtualValue{
+		get=func{ return virtualValue }			// get 赋值 func，可以把 get 定义为函数指针，也就是可重写的 a::get 
+		set=func(int newValue){ virtualValue = newValue  }
+	}
+}
+
+class YouCls : MyCls {
+	set(virtualVallue) = ...	// 继承内重写
+	
+	int b
+	get(a) = func{	// 虽然a没有被定义为函数，但仍然可以重写 get，但不会在基类生效，需要注意
+		return b
+	}
+}
+
+YouCls you
+print(you.a)	// 返回 b值
+MyCls me=you
+print(me.a)		// 返回 a值
+
+MyCls cls
+set(cls.virtualValue)=func(int newValue){ // 外部重写 set 方法
+
+}
+
+get(cls.virtualValue)=func(): int {		// 外部重写 get 方法
+
+}
+```
+
+
 
 类的构造
 -----------------
@@ -669,7 +749,7 @@ SimpleLang 支持的异常。
 
 	var managed = ManagedClass() 	// 托管的
 	free(managed)					// 调用析构函数
-
+	
 	var unsafe = new Unsafe()
 	free(unsafe)			// 析构
 
@@ -783,7 +863,7 @@ SimpleLang 支持的异常。
 
 ```
 class MyClass{
-	func get() : var v{
+	func getVal() : var v{
 		if(v is int) 
 			return 10 // 返回 int
 		else if(v is double) 
@@ -791,7 +871,7 @@ class MyClass{
 	}
 }
 
-double v = myClass.get()	// 通过返回值推导
+double v = myClass.getVal()	// 通过返回值推导
 ```
 
 类型定义 def
@@ -958,6 +1038,21 @@ SimpleLang 可以通过 interface 关键字定义接口，是一个抽象类型�
 
 # 语言特性
 
+## Optional<T> 对象
+
+Optional 可以保存一个内部对象，可以通过
+
+    Optional<int> opt=12
+    opt.isPresent()	// 是否存在
+    
+    opt->(int v){ // 当值存在时被调用
+    
+    }
+    
+    int? optInt	// 其实是  Optional<int> 的简化写法
+
+
+
 延迟优化
 ----
 
@@ -1069,7 +1164,7 @@ SimpleLang 通过通道来支持跨协程数据交换，成员函数 await 可�
 
 特别的，如果一个协程被阻塞，它可能会被调度去干别的事，因此唤醒可能并非“及时”的。
 
-import
+包 & import
 ============
 SimpleLang 通过 import 导入包，import 只能写在文件头部，简单起见，SimpleLang 总是一次导入整个包里的公共对象、函数
 
@@ -1079,11 +1174,15 @@ SimpleLang 通过 import 导入包，import 只能写在文件头部，简单起
 
 	import org.simplelang as sl
 
-sl.MyClass my
+sl:MyClass my
 
 也可以用全名来使用包内函数或对象而不需要导入
 
-	org.simplelang.printLine("Hello")
+	org.simplelang:printLine("Hello")
+
+包只有根目录下函数、接口、类才能被其他模块访问。
+
+
 
 # 其他
 
@@ -1144,7 +1243,7 @@ SimpleLang 支持有限的操作符重载，可以对类重载一元或二元操
 		}
 	}
 
-备选（思考中，暂时吧实现）
+备选（思考中，暂时不实现）
 ==============
 
 非托管对象

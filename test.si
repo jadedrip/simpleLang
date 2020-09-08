@@ -3,27 +3,37 @@
 // import si.String
 // import si
 
-printf("Hello world!")
+print("Hello world!")
 
-//var c="Ni hao"
-// println(c)
+var c="Ni hao"
+println(c)
 
-/*
-func world(){
-	//var h = "hello"
-	//println(h)
+class Base {
+	int a
 }
 
-printHello()
+class MyClass : Base {
+	int b
+}
+
+var xd = MyClass()
+
+func world(){
+	var h = "hello"
+	println(h)
+}
+
 // var data = "Data"
 // println("Hello")
 // world()
 
 
+/*
 go { 
 	println("Hello world:" + c)
 }
 */
+world()
 
 var nice = "Nice"
 var strs=String[10]

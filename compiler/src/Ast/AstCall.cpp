@@ -109,7 +109,7 @@ CodeGen * AstCall::makeGen(AstContext * parent)
 	if (!p) {
 		auto v = parent->findSymbolValue(name);
 		if (v) {
-			std::cout << "Labmda " << name << std::endl;
+			std::clog << "Labmda " << name << std::endl;
 			if (!v->type->isPointerTy()
 				|| !v->type->getPointerElementType()->isFunctionTy())
 				throw std::runtime_error("变量" + name + "不是函数");

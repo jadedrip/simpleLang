@@ -106,7 +106,7 @@ void freeObject(uint8_t* object, destructor func)
 const uint32_t arrayMark = 1 << 31;
 void * createArray(uint64_t typeId, uint32_t length) {
 	uint8_t flag = MARK_FLAG_REF | MARK_FLAG_ARRAY;
-	printf("createArray %ld, %llx\r\n", length, typeId);
+	// printf("createArray %ld, %llx\r\n", length, typeId);
 	size_t sz = (size_t)length * sizeof(intptr_t) + POINTER_SIZE + REF_SIZE + REF_SIZE;
 	uint8_t* p = (uint8_t*)malloc((size_t)sz);
 	if (!p) return NULL;
@@ -122,7 +122,7 @@ void * createArray(uint64_t typeId, uint32_t length) {
 
 void arrayLet(void** arrays, uint64_t index, void* object)
 {
-	printf("arrayLet %lld", index);
+	//printf("arrayLet %lld", index);
 	referenceIncrease(object); 
 	long* sz=arraySize((uint8_t*)arrays);
 	if (index >= *sz) {

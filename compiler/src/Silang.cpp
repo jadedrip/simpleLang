@@ -57,22 +57,15 @@ void execute(char * const *envp){
 	std::string ErrStr;
 	llvm::StringRef MCPU = llvm::sys::getHostCPUName();
 
-	std::cout << "MCPU: " << MCPU.str() << std::endl;
-
-	// module->setTargetTriple("x86_64-pc-windows-msvc");
 	Function *mainFunction = currentPackage->getFunc();
 
-	//auto iter=module->functions();
-	//for( auto i=iter.begin(); i!=iter.end(); i++){
-	//	std::cout << i->getName().str() << std::endl;
-	//}
 	raw_os_ostream os(std::clog);
 	//
 	// Execute the program
 	//
 	llvm::ExecutionEngine *EE = buildEngine(std::move(module));
 	if (EE) {
-
+		EE->setVerifyModules(true);
 		auto target = EE->getTargetMachine();
 
 		// The following functions have no effect if their respective profiling
@@ -88,13 +81,6 @@ void execute(char * const *envp){
 		EE->finalizeObject();
 		// EE->runStaticConstructorsDestructors(false);
 
-		//auto *p=EE->FindFunctionNamed("si_printHello");
-		//auto v=EE->getFunctionAddress("si_printHello");
-		//assert(v);
-		//os << "\r\n ***** \r\n";
-		//p->print(os);
-		//os << "\r\n ***** \r\n";
-		//os.flush();
 		std::vector<std::string> noargs;
 		EE->runFunctionAsMain(mainFunction, noargs, envp);
 
@@ -136,18 +122,18 @@ int main(int argc, char* argv[],  char * const *envp)
 	//}
 
 
-	std::cout << "Triple: " << ::sys::getProcessTriple() << std::endl;
-	std::cout << "HostCpu: " << ::sys::getHostCPUName().str() << std::endl;
+	std::clog << "Triple: " << ::sys::getProcessTriple() << std::endl;
+	std::clog << "HostCpu: " << ::sys::getHostCPUName().str() << std::endl;
 
 	CompilerOptions::instance().triple = ::sys::getProcessTriple();
 
 	llvm::Triple triple;
-	std::cout << "OsName: " << triple.getOSName().str() << std::endl;
+	std::clog << "OsName: " << triple.getOSName().str() << std::endl;
+
+	std::clog << "========" << std::endl;
 
 	auto *m = new Module("TOP", llvmContext);
 	module.reset(m);
-
-	CLangModule::initialize();
 
 	bool b;
 	if (argc > 1) {
@@ -199,7 +185,6 @@ int main(int argc, char* argv[],  char * const *envp)
 
 		// system("start out.gv");
 
-		llvm::SMDiagnostic error;
 		execute(envp);
 		// system("lli -force-interpreter out.ll");
 		// clang -lx64\Debug\clib.lib -x ir -o out.exe -g out.ll lib\si\String.ll lib\si\core.ll lib\si\Coroutine.ll

@@ -298,10 +298,15 @@ FunctionInstance* AstFunction::getFunctionInstance(
 	instance->overload = overload || isTemplate();
 
 	// 如果不是匿名函数，定义唯一名称
-	if (!name.empty()) {
+	auto clang=annotations["CLang"];
+	if (clang && clang->defaultValue) {
+		instance->name = clang->defaultValue->name;
+	}
+	else if (!name.empty()) {
 		instance->name = object ? object->uniqueName() + "_" + name : (pathName.empty() ? name : pathName + "_" + name);
 		std::for_each(instance->name.begin(), instance->name.end(), [](char& c) {if (c == '.') c = '_'; }); // replace . to _
 	}
+
 	if (object) {
 		instance->module = object->name;
 	}

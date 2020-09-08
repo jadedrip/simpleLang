@@ -26,7 +26,6 @@ void si_String_Init(String * str, char * data, uint64_t length, uint16_t encode)
 {
 	str->data = (wchar_t*)data;
 	str->length = length;
-	// str->encode = encode;
 	str->alloc = 0;
 	//if (!source && length>0 && encode != CP_WINUNICODE) {
 	//	toUNICODE(str);
@@ -36,7 +35,7 @@ void si_String_Init(String * str, char * data, uint64_t length, uint16_t encode)
 	// wprintf(L"\r\nCall String(data, %lld, %d): %.*ls\r\n", length, encode, (int)length, str->data);
 }
 
-void si_String_Finalize(struct si_String * str)
+void si_String_Finalize(String* str)
 {
 	// printf("si_String_Finalize\r\n");
 	if (str && str->alloc)
@@ -76,11 +75,11 @@ String* si_String_Splice(String * str, int64_t index, int64_t length)
 	return n;
 }
 
-uint64_t si_String_GET_size(struct si_String* s) {
+uint64_t si_String_GET_size(String* s) {
 	return s->length;
 }
 
-wchar_t si_String_at(struct si_String *str, uint64_t index)
+wchar_t si_String_at(String* str, uint64_t index)
 {
 	if (index >= str->length)
 		return -1;
@@ -89,12 +88,7 @@ wchar_t si_String_at(struct si_String *str, uint64_t index)
 	return d[index];
 }
 
-//char * si_String_Cast_i8_ptr(struct si_String *str)
-//{
-//	return (char*)str->data;
-//}
-
-void si_print(String * str)
+void si_print_si_String(String * str)
 {
 	if (!str || !str->data) return;
 	wchar_t* data = (wchar_t*)str->data;
@@ -102,10 +96,6 @@ void si_print(String * str)
 
 	// wprintf(L"\r\nCall print : %ls, %lld\r\n", data, len);
 	wprintf(L"%.*ls", (int)len, data);
-}
-void si_printHello() 
-{
-	printf("Hello world!\r\n");
 }
 
 void si_printInt(int v)

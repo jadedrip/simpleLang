@@ -42,6 +42,12 @@
     <ClInclude Include="export.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="ClassInfo.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Field.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -71,6 +77,9 @@
       <Filter>si</Filter>
     </None>
     <None Include="si\Charset.si">
+      <Filter>si</Filter>
+    </None>
+    <None Include="si\globals.si">
       <Filter>si</Filter>
     </None>
   </ItemGroup>

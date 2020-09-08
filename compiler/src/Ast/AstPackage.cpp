@@ -16,6 +16,7 @@ void AstPackage::importDll(const std::filesystem::path& base)
 {
 	string& triple = CompilerOptions::instance().triple;
 	auto dllptr = base / "platform" / triple / "share";
+	if (!stdfs::exists(dllptr)) return;
 	for (auto i : std::filesystem::directory_iterator(dllptr)) {
 		if (i.is_directory()) continue;	// œ»≤ªµ›πÈ≤È’“
 		auto path = i.path();

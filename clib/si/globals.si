@@ -1,0 +1,4 @@
+func println(String str)
+
+@CLang("si_print_si_String")
+func print(String str)

@@ -54,7 +54,7 @@ public:
 			auto *p=i->findStruct(path);
 			if (p) return p;
 		}
-		return nullptr;
+		return parent ? parent->findStruct(path) : nullptr;
 	}
 
 	std::map<std::string, llvm::Function*> _llvmFunctions;
@@ -71,7 +71,7 @@ public:
 				return x;
 			}
 		}
-		return nullptr;
+		return parent ? parent->getFunction(name) : nullptr;
 	}
 
 	/// <summary>

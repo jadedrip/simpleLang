@@ -3,38 +3,49 @@ CodeGen 用来生成 llvm 代码，CodeGen::type 是 llvm 类型，但和生成�
 
 # 对象的数据结构
 
-  4字节数组长度 *0
-  4字节引用计数 *1
-  1字节标志 + 7字节类型
+| 占用字节数 | 说明                                                         | 相关控制位 |
+| ---------- | ------------------------------------------------------------ | ---------- |
+| 4字节      | 数组长度                                                     | 0          |
+| 4字节      | 对象大小                                                     | 0+7        |
+| 4字节      | 数组索引位                                                   | 3          |
+| 1字节      | 标志位                                                       |            |
+| 7字节      | 类型ID，非默认类型ID的计算方式一般为类全名（包含包名）的 md5-16值去除首位 | 7          |
+| 不定       | 对象数据                                                     |            |
 
-标志定义
+指针会指向对象数据，其他数据通过指针向上回退获得
+
+## 标志定义
+
 0~7 位：
 
 	0	是否数组
 	1	是否具有引用计数（没引用计数的话，需要手工释放）
-	3	（保留）
+	3	是否指向数组的指针
 	4	是否有符号(保留)
-	5	是否指针 （一般在 interface 的成员变量，都保存指针）
-	6	是否是接口
-	7	是否默认类型
+	5	
+	6	
+	7	是否默认类型(如果是否表示 class)
 
 如果是默认类型，类型为:
 	
-	| 0 | String 字符串
-	| 1 | boolean	  
-	| 2 | byte	    
-	| 3 | char	    
-	| 4 | short		
-	| 5 | int		
-	| 6 | long		
-	| 7 | float		
-	| 8 | double
-	| 9 | interface
-	| 10 | Any
-	| 11 | Delay
-	| 12 | Func 函数指针
-	| 13 | Thread
-	| 14 | Coroutine
+
+| 序号 | 类型 |
+|:---|:-----|
+| 0 | Func 函数指针 |
+| 1 | boolean |
+| 2 | byte	    |
+| 3 | char	    |
+| 4 | short		|
+| 5 | int		|
+| 6 | long		|
+| 7 | float		|
+| 8 | double |
+| 9 | interface |
+| 10 | Any |
+| 11 | Delay |
+| 12 | Coroutine |
+| 13 | Thread |
+| 14 |  |
 
 * 对象数据
 
@@ -65,7 +76,7 @@ class MyClass : Base
 
 # 字符串
 
-字符串编译时转换为 unicode，表情符号占用2个字符。
+原生字符串为 byte[] 类型，默认 utf-8 编码，可以被赋值给 String 类，转换为 Unicode 编码，或者赋值给 Array<byte>。
 
 # 类
 
@@ -165,14 +176,6 @@ new 了以后没被任何参数引用的对象肯定是非逃逸的，可以不�
 
 这种情况下，变量 b 实际并不会逃逸，逃逸分析应该可以优化。但考虑到我们语言的定义，c 其实是 b 的别名，是完全一样的，所以应该不会带来多次引用计数加减。
 
-# interface 的实现
-
-interface 赋值的时候使用结构实现，保存 this 指针，成员变量保存变量指针，成员函数使用函数指针，赋值、传递的时候“构造”一个 interface 结构，并赋值所有指针。
-
-类实现接口，会在类中创建对应的变量以及函数指针。
-
-接口在导出函数里，可以考虑直接展开。
-
 # 数组
 
 对象数组内部保存的是对象的指针
@@ -205,4 +208,99 @@ meta.txt 文件
 											-> 第三位表示 bug 修正，接口稳定
 	configure: release 					-> 如果是 release, 可以省略 
 	dependency: org.other.package-1.3.0	-> 引用包名，每个引用一行，版本号是最低版本，编译器会尝试使用最新稳定接口版本（第一位相同
+
+​                                                               
+
+# 接口
+
+接口在代码里是同一种写法，但编译器会用不同的方式来实现接口。甚至某些非接口也会转为接口来实现。
+
+## 源码函数的参数
+
+带源码的函数的参数，如果附带有接口，那么它会当成模板函数被展开。
+
+```
+interface MyInterface
+func myFunc( MyInterface inf ){		// 这个函数会被当初模板函数处理
+	...
+}
+```
+
+顺便，对于普通含源码函数，所有参数类也当作接口来处理，这样就可以实现 golang 的函数调用逻辑
+
+```
+MyClass my;
+func youFunc( YouClass you ){}	// 函数带源码的情况下 YouClass 被视作接口
+youFunc(my)	// 这个调用会当模板函数调用展开
+```
+
+## 赋值接口、非源码函数的参数
+
+```
+MyInterface inf=myClass
+func myFunc( MyInterface inf )	// 无源码
+```
+
+这种情况下，接口会被创建为一个结构 `struct` <interface_Name>，结构里存放一个 this 指针，所有的成员变量都是 getter, setter 的函数指针，成员函数都是函数指针。这些指针在接口赋值的时候，通过对应的类来创建并赋值。
+
+## 类定义里的接口
+
+接口在类定义里的时候，仅仅被当成定义约束，仅仅在编译期起作用，以保证所有必要的成员函数都被实现了。
+
+## 接口继承
+
+多个接口依次继承的情况下，所有的成员变量、函数都会被整合到最终接口里
+
+```
+interface Base {
+	int bValue
+}
+
+interface MyIntf : Base {
+	int mValue;
+}
+```
+等同于
+
+```
+interface MyIntf {
+	int bValue
+	int mValue
+}
+```
+
+
+
+
+
+# 继承的实现
+
+```
+class Base {
+	int bValue 
+		getter {
+			return bValue
+		}
+}
+
+class MyClass : Base {
+	int mValue
+	override int bValue getter {
+		return mValue
+	}
+}
+
+
+```
+
+# RTTI 运行时类型信息
+
+ ```C++
+class ClassType {
+    const uint64_t id;
+	string packageName;
+    string className;
+    map<string, Field> fields;
+}
+ ```
 

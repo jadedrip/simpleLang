@@ -14,7 +14,6 @@ referenceIncrease @8
 createArray @9
 arrayLet @10
 
-si_println @11
 si_Charset_Init @12
 
 si_String_Init @13
@@ -30,3 +29,6 @@ si_String_Init_I64 @20
 si_String_Init_M @21
 si_String_Init_N @22
 si_String_Init_si_String @23
+
+si_println @24
+si_print_si_String @25

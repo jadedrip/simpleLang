@@ -34,6 +34,7 @@ public:
 	std::string path;
 	std::string name;
 	static int serial;
+	bool isInterface = false;
 	// CodeGen* thisGen();
 public:
 	llvm::StructType* _type = nullptr;

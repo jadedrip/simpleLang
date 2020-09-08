@@ -41,7 +41,8 @@ void AstModule::preprocessor(AstContext* context)
 
 	for (auto i : lines) {
 		auto *p=i->makeGen(context);
-		if (p) _gens.push_back(p);
+		if (p)
+			_gens.push_back(p);
 	}
 }
 
