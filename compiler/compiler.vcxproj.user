@@ -11,7 +11,7 @@
     <LocalDebuggerCommandArguments>test.si</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerWorkingDirectory>$(SolutionDir)</LocalDebuggerWorkingDirectory>
-    <LocalDebuggerEnvironment>INCLUDE_PATH=D:\SDK\llvm-10.0.0\build\include;D:\SDK\llvm-10.0.0\include;D:\SDK\llvm-10.0.0\build\tools\clang\include;D:\SDK\llvm-10.0.0\tools\clang\include;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\atlmfc\include;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\VS\include;C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\VS\UnitTest\include;C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\um;C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\shared;C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\winrt;C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\cppwinrt;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\Include\um;</LocalDebuggerEnvironment>
+    <LocalDebuggerEnvironment>INCLUDE_PATH=D:\SDK\llvm-10.0.0\build\include;D:\SDK\llvm-10.0.0\include;D:\SDK\llvm-10.0.0\build\tools\clang\include;D:\SDK\llvm-10.0.0\tools\clang\include;$(VC_IncludePath)</LocalDebuggerEnvironment>
   </PropertyGroup>
   <PropertyGroup>
     <ShowAllFiles>true</ShowAllFiles>
