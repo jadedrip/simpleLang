@@ -95,9 +95,12 @@ std::string operator_to_word(int op)
 }
 
 
-
 std::string getReadable(llvm::Type *type)
 {
+	if (type->isVoidTy()) {
+		return "V";
+	}
+
 	if (type->isStructTy()) {
 		string n = type->getStructName();
 		if (n.substr(0, 7) == "struct.")

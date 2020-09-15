@@ -15,10 +15,9 @@ class FunctionInstance
 {
 public:
 	FunctionInstance(llvm::Function * f = nullptr);
-	std::string module;
+	std::string packageName;
 	std::string name;
 	std::vector< std::pair<std::string, const llvm::Type*> > parameters;		// 参数表
-	std::map<std::string, size_t> paramenterMap; // 参数索引
 	llvm::Type* returnType = nullptr;			// 返回值类型
 	BlockGen block;
 	bool variable = false;
@@ -29,6 +28,8 @@ public:
 public:
 	llvm::Function* generateCode(llvm::Module*, llvm::LLVMContext& context);
 	llvm::Function* func = nullptr;
+	size_t getParamenterIndex(const std::string& name);
 private:
 	bool _body = false;
+	std::map<std::string, size_t> _paramenterMap; // 参数索引
 };

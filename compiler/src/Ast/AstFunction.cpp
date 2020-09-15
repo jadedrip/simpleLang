@@ -308,7 +308,10 @@ FunctionInstance* AstFunction::getFunctionInstance(
 	}
 
 	if (object) {
-		instance->module = object->name;
+		instance->packageName = object->path;
+	}
+	else {
+		instance->packageName = pathName;
 	}
 	
 	AstContext *s = new AstContext(_parent);

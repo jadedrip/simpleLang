@@ -61,11 +61,18 @@ void FunctionInstance::generateBody(llvm::Module *m, llvm::LLVMContext & context
 llvm::Function * FunctionInstance::generateCode(llvm::Module *m, llvm::LLVMContext & context)
 {
 	if (func) return func;
+	/*
+		函数：{函数名}_{返回值类型}_{参数名称}__包全名
+		成员函数：{函数名}_{返回值类型}_{参数类型}__{类名}_{包全名}
+		静态函数：A_{函数名}_{返回值类型}_{参数类型}__{类名}_{包全名}
+	*/
+	std::string n = name + "_";
 
 	Type* retType = returnType ? returnType : Type::getVoidTy(context);
+	n += getReadable(retType);
 
 	std::vector<Type*> param;
-	if (object) {
+	if (object) { // 是成员函数
 		auto *x=PointerType::get(object, 0);
 		param.push_back(x);
 	}
@@ -77,10 +84,11 @@ llvm::Function * FunctionInstance::generateCode(llvm::Module *m, llvm::LLVMConte
 			tp = PointerType::get(tp, 0);
 		}
 		param.push_back(tp);
+		n += getReadable(tp) + "_";
 	}
+	n += "_";
+	if (object) n += getReadable(object);
 
-	std::string n = name;
-	std::for_each(n.begin(), n.end(), [](char &n) { if (n == '.') n = '_'; });
 
 	if (overload && !parameters.empty()) {
 		for (auto i : parameters) {
@@ -101,6 +109,10 @@ llvm::Function * FunctionInstance::generateCode(llvm::Module *m, llvm::LLVMConte
 		generateBody(m, context);
 	}
 	return func;
+}
+
+size_t FunctionInstance::getParamenterIndex(const std::string& name) { 
+	return _paramenterMap[name];
 }
 
 //void FunctionInstance::draw(std::ostream & os)

@@ -45,7 +45,7 @@ CallGen::CallGen(FunctionInstance* func, const std::vector<std::pair<std::string
 			if (idx == std::string::npos) throw std::runtime_error("Can't match paramters for " + func->name);
 			params[idx] = i.second;
 		} else {
-			size_t v=func->paramenterMap[i.first];
+			size_t v=func->getParamenterIndex(i.first);
 			if (idx != v) idx = std::string::npos;
 			params[v] = i.second;
 		}

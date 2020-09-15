@@ -1053,7 +1053,7 @@ Optional 可以保存一个内部对象，可以通过
 
 
 
-延迟优化
+延迟优化( Delay 类型)
 ----
 
 SimpleLang 的函数参数，允许使用延迟生成的技术以优化效率。它让参数仅在被首次使用的时候，才会被生成它。
@@ -1075,11 +1075,9 @@ SimpleLang 的函数参数，允许使用延迟生成的技术以优化效率。
 		if(x) print( get_data() )
 	}
 
-要启用延迟优化，调用代码不用做任何更改，只要函数是模板函数，或者接受 Delay<?> 类型的参数。
+要启用延迟优化，调用代码不用做任何更改，只要函数是接受 Delay<?> 类型的参数。
 
-	trans_data( get_data(), x)		// trans_data 的第一个参数必须是模板，或者 Delay<?> 类型
-
-注意，默认情况下延迟优化只用于模板函数，因为编译器实际上是生成了一个 Delay 内部模板对象。
+	trans_data( get_data(), x)		// trans_data 的第一个参数必须是模 Delay<?> 类型
 
 其实也不一定用在函数里
 
@@ -1092,7 +1090,7 @@ SimpleLang 的函数参数，允许使用延迟生成的技术以优化效率。
 
 创建线程由线程库支持，类似 Java
 
-	Thread thread(daemon=true, level=3, loop=false) // loop = true 时线程函数会反复执行，直到线程结束
+	Thread thread(daemon=true, level=3, loop=false) // loop = true 时线程函数会反复执行，直到线程收到中断信号
 	thread->{       // 运行线程
 		aFunc()
 	}
@@ -1114,7 +1112,7 @@ SimpleLang 的函数参数，允许使用延迟生成的技术以优化效率。
 
 另外，如果库是二进制实现（无引用计数），那么可以在函数参数上添加 $ 符号，强制引用，
 由库内来释放它(仅仅在库内处理有多线程等逃逸的情况下有必要），这样编译器在调用函数时，
-会额外增加一次引用计数。
+不会额外增加一次引用计数。
 当然，未来二进制包的函数定义是由编译器来生成的，因此一般情况下用不到。
 
 	func myLibFunc( $MyObject obj ) // 这说明 obj 在函数内会逃逸
@@ -1130,7 +1128,7 @@ SimpleLang 的函数参数，允许使用延迟生成的技术以优化效率。
 	go {	// 通过go来创建一个并行任务
 		print( "go" )
 		yield();  // 放弃 cpu
-		sleep(x); // 放弃 cpu 并等待 x 毫秒后继续
+		sleep(x); // 放弃 cpu 并等待最少 x 毫秒后继续
 	}
 	
 	go dosomthing()		// 并行执行函数
@@ -1142,7 +1140,7 @@ SimpleLang 的函数参数，允许使用延迟生成的技术以优化效率。
 	Coroutine<int> c1=go doSomethine()
 	Coroutine<int> c2=go doSomethine()
 	....
-	var v1= c1.await(4000)  // 等待协程执行完毕，4000 毫秒后还未结束将抛异常
+	var v1= c1.await(4000)  // 等待协程执行完毕，最少 4000 毫秒后还未结束将抛异常
 	var v2= c2.await()
 
 SimpleLang 通过通道来支持跨协程数据交换，成员函数 await 可以把异步操作写得更像同步操作。
@@ -1160,13 +1158,13 @@ SimpleLang 通过通道来支持跨协程数据交换，成员函数 await 可�
 	}
 	chan(10)	// 调用通道，把数据塞进去，这里会阻塞，一直到数据被取走
 	
-	var cachedChan=Chan<int>(10) // 带缓存的通道，缓存满前不会阻塞
+	var cachedChan=CachedChan<int>(10) // 带缓存的通道，缓存满前不会阻塞
 
 特别的，如果一个协程被阻塞，它可能会被调度去干别的事，因此唤醒可能并非“及时”的。
 
 包 & import
 ============
-SimpleLang 通过 import 导入包，import 只能写在文件头部，简单起见，SimpleLang 总是一次导入整个包里的公共对象、函数
+SimpleLang 通过 import 导入包，import 只能写在文件头部，简单起见，SimpleLang 总是一次导入包里首层所有的公共对象、函数，而子包内不能在包外访问。
 
 	import org.simplelang
 
