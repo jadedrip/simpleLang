@@ -20,7 +20,6 @@ public:
 	std::vector< std::pair<std::string, const llvm::Type*> > parameters;		// 参数表
 	llvm::Type* returnType = nullptr;			// 返回值类型
 	BlockGen block;
-	bool variable = false;
 	llvm::StructType* object = nullptr;
 	bool overload = false;
 	std::set<std::string> excapes; // 逃逸的参数索引
@@ -28,8 +27,10 @@ public:
 public:
 	llvm::Function* generateCode(llvm::Module*, llvm::LLVMContext& context);
 	llvm::Function* func = nullptr;
+	void setVariable(bool v = true);
 	size_t getParamenterIndex(const std::string& name);
 private:
 	bool _body = false;
+	bool _variable = false;
 	std::map<std::string, size_t> _paramenterMap; // 参数索引
 };

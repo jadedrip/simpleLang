@@ -104,14 +104,16 @@ llvm::Function * FunctionInstance::generateCode(llvm::Module *m, llvm::LLVMConte
 		if (!func)
 			std::clog << "Warning, not find function " << name << std::endl;
 	}else{
-		FunctionType* FT = FunctionType::get(retType, param, variable);
+		FunctionType* FT = FunctionType::get(retType, param, _variable);
 		func = Function::Create(FT, Function::ExternalLinkage, n, m);
 		generateBody(m, context);
 	}
 	return func;
 }
 
-size_t FunctionInstance::getParamenterIndex(const std::string& name) { 
+void FunctionInstance::setVariable(bool v) { _variable = v; }
+
+size_t FunctionInstance::getParamenterIndex(const std::string& name) {
 	return _paramenterMap[name];
 }
 

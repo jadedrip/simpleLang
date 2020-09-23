@@ -343,7 +343,7 @@ FunctionInstance* AstFunction::getFunctionInstance(
 	// 可变参数
 	if (variable) {
 		if (AutoType::isAuto(variable)) {	 // 使用可变函数
-			instance->variable = true;
+			instance->setVariable(true);
 		}
 		else { // 类型确定的情况下，转为一个数组
 			AstType* tp = new SArrayType(variable, 0);
