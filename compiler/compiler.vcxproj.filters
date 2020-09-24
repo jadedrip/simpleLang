@@ -147,6 +147,7 @@
     <ClCompile Include="src\Ast\AstModule.cpp" />
     <ClCompile Include="src\CompilerOptions.cpp" />
     <ClCompile Include="src\Ast\AstPackage.cpp" />
+    <ClCompile Include="..\src\logger\logger.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\CodeGenerate\BinaryGen.h">
@@ -318,6 +319,7 @@
     <ClInclude Include="src\CompilerOptions.h" />
     <ClInclude Include="src\Exception\LoadFileException.h" />
     <ClInclude Include="src\Ast\AstPackage.h" />
+    <ClInclude Include="..\src\logger\logger.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="lex\silang.l">

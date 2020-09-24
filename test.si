@@ -16,7 +16,7 @@ class MyClass : Base {
 	int b
 }
 
-var xd = MyClass()
+Base xd = MyClass()
 
 func world(){
 	var h = "hello"

@@ -4,7 +4,7 @@
 #include <map>
 #include "Field.h"
 
-class ClassType {
+struct ClassType {
     const uint64_t id;
     std::string packageName;
     std::string className;

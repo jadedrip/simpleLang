@@ -39,3 +39,4 @@
 #include <llvm/Support/MathExtras.h>
 #pragma warning( pop )
 
+#include "../src/logger/logger.h"

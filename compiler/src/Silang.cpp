@@ -115,6 +115,9 @@ int main(int argc, char* argv[],  char * const *envp)
 		errs() << "Error loading program symbols.\n";
 		return -1;
 	}
+
+	initializeLog("", 1, true);
+
 	std::string err;
 	//if (sys::DynamicLibrary::LoadLibraryPermanently("msvcp_win.dll", &err)) {
 	//	errs() << "Error loading: "<< err<< "\n";

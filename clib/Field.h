@@ -1,8 +1,8 @@
 #pragma once
 #include <string>
 
-class ClassType;
-class Field {
+struct ClassType;
+struct Field {
 private:
 	std::string _name;
 	ClassType* _classType;	// 类的类型

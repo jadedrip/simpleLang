@@ -143,8 +143,9 @@ using namespace std::filesystem;
 
 AstPackage* CLangModule::loadPackage(const string& packageName)
 {
-	if (_packages.contains(packageName))
-		return _packages[packageName];
+	auto iter=_packages.find(packageName);
+	if (iter!=_packages.end())
+		return iter->second;
 
 	auto package = new AstPackage(packageName);
 	_packages[packageName] = package;

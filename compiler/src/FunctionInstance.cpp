@@ -89,7 +89,6 @@ llvm::Function * FunctionInstance::generateCode(llvm::Module *m, llvm::LLVMConte
 	n += "_";
 	if (object) n += getReadable(object);
 
-
 	if (overload && !parameters.empty()) {
 		for (auto i : parameters) {
 			n.push_back('_');
@@ -98,6 +97,7 @@ llvm::Function * FunctionInstance::generateCode(llvm::Module *m, llvm::LLVMConte
 		}
 	}
 
+	logger(severity_level::debug) << "Create function: " << n;
 	// 仅有定义
 	if (block.codes.empty()) {
 		func = CLangModule::getFunction(n);

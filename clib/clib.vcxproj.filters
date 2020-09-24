@@ -16,6 +16,9 @@
     <Filter Include="si">
       <UniqueIdentifier>{9ac4f59e-d8c8-4634-b3cc-0e14a9ecb631}</UniqueIdentifier>
     </Filter>
+    <Filter Include="reflect">
+      <UniqueIdentifier>{39930a6b-d3cb-4218-b8e5-a1e1bb6ace8f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -42,11 +45,14 @@
     <ClInclude Include="export.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="ClassInfo.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Field.h">
-      <Filter>头文件</Filter>
+      <Filter>reflect</Filter>
+    </ClInclude>
+    <ClInclude Include="ClassInfo.h">
+      <Filter>reflect</Filter>
+    </ClInclude>
+    <ClInclude Include="reflect.h">
+      <Filter>reflect</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -67,6 +73,9 @@
     </ClCompile>
     <ClCompile Include="Coroutine.c">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="reflect.cpp">
+      <Filter>reflect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

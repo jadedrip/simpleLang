@@ -19,6 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\logger\logger.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="src\Ast\AstPackage.cpp" />
     <ClCompile Include="src\CompilerOptions.cpp" />
     <ClCompile Include="src\Ast\AstArrayCall.cpp" />
@@ -139,6 +142,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\logger\logger.h" />
     <ClInclude Include="src\Ast\AstPackage.h" />
     <ClInclude Include="src\CompilerOptions.h" />
     <ClInclude Include="src\Exception\LoadFileException.h" />
@@ -335,7 +339,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(LLVM_DIR)\build\include;$(LLVM_DIR)\include;$(LLVM_DIR)\build\tools\clang\include;$(LLVM_DIR)\tools\clang\include;$(INCLUDE);$(IncludePath)</IncludePath>
-    <LibraryPath>$(LLVM_DIR)\build\Debug\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(LLVM_DIR)\build\Debug\lib;D:\SDK\vcpkg\installed\x64-windows\debug\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -373,12 +377,12 @@
       <AdditionalIncludeDirectories>./src;.</AdditionalIncludeDirectories>
       <SDLCheck>false</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
-      <AdditionalDependencies>chkstk.obj;version.lib;clangAnalysis.lib;clangAST.lib;clangASTMatchers.lib;clangBasic.lib;clangCodeGen.lib;clangDriver.lib;clangEdit.lib;clangFrontend.lib;clangLex.lib;clangParse.lib;clangRewrite.lib;clangSema.lib;clangSerialization.lib;LLVMAnalysis.lib;LLVMAsmParser.lib;LLVMAsmPrinter.lib;LLVMBinaryFormat.lib;LLVMBitReader.lib;LLVMBitstreamReader.lib;LLVMBitWriter.lib;LLVMCFGuard.lib;LLVMCodeGen.lib;LLVMCore.lib;LLVMCoverage.lib;LLVMDebugInfoCodeView.lib;LLVMDebugInfoDWARF.lib;LLVMDebugInfoMSF.lib;LLVMDemangle.lib;LLVMExecutionEngine.lib;LLVMFrontendOpenMP.lib;LLVMGlobalISel.lib;LLVMInstCombine.lib;LLVMInstrumentation.lib;LLVMInterpreter.lib;LLVMIRReader.lib;LLVMMC.lib;LLVMMCDisassembler.lib;LLVMMCJIT.lib;LLVMMCParser.lib;LLVMObject.lib;LLVMObjectYAML.lib;LLVMOption.lib;LLVMOrcError.lib;LLVMOrcJIT.lib;LLVMProfileData.lib;LLVMRemarks.lib;LLVMRuntimeDyld.lib;LLVMScalarOpts.lib;LLVMSelectionDAG.lib;LLVMSupport.lib;LLVMTarget.lib;LLVMTextAPI.lib;LLVMTransformUtils.lib;LLVMX86AsmParser.lib;LLVMX86CodeGen.lib;LLVMX86Desc.lib;LLVMX86Disassembler.lib;LLVMX86Info.lib;LLVMX86Utils.lib</AdditionalDependencies>
+      <AdditionalDependencies>chkstk.obj;version.lib;tbb_debug.lib;clangAnalysis.lib;clangAST.lib;clangASTMatchers.lib;clangBasic.lib;clangCodeGen.lib;clangDriver.lib;clangEdit.lib;clangFrontend.lib;clangLex.lib;clangParse.lib;clangRewrite.lib;clangSema.lib;clangSerialization.lib;LLVMAnalysis.lib;LLVMAsmParser.lib;LLVMAsmPrinter.lib;LLVMBinaryFormat.lib;LLVMBitReader.lib;LLVMBitstreamReader.lib;LLVMBitWriter.lib;LLVMCFGuard.lib;LLVMCodeGen.lib;LLVMCore.lib;LLVMCoverage.lib;LLVMDebugInfoCodeView.lib;LLVMDebugInfoDWARF.lib;LLVMDebugInfoMSF.lib;LLVMDemangle.lib;LLVMExecutionEngine.lib;LLVMFrontendOpenMP.lib;LLVMGlobalISel.lib;LLVMInstCombine.lib;LLVMInstrumentation.lib;LLVMInterpreter.lib;LLVMIRReader.lib;LLVMMC.lib;LLVMMCDisassembler.lib;LLVMMCJIT.lib;LLVMMCParser.lib;LLVMObject.lib;LLVMObjectYAML.lib;LLVMOption.lib;LLVMOrcError.lib;LLVMOrcJIT.lib;LLVMProfileData.lib;LLVMRemarks.lib;LLVMRuntimeDyld.lib;LLVMScalarOpts.lib;LLVMSelectionDAG.lib;LLVMSupport.lib;LLVMTarget.lib;LLVMTextAPI.lib;LLVMTransformUtils.lib;LLVMX86AsmParser.lib;LLVMX86CodeGen.lib;LLVMX86Desc.lib;LLVMX86Disassembler.lib;LLVMX86Info.lib;LLVMX86Utils.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
