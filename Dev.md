@@ -18,7 +18,7 @@ CodeGen 用来生成 llvm 代码，CodeGen::type 是 llvm 类型，但和生成�
 
 0~7 位：
 
-	0	是否数组
+	0	是否数组（是否有数组强度）
 	1	是否具有引用计数（没引用计数的话，需要手工释放）
 	3	是否指向数组的指针
 	4	是否有符号(保留)
@@ -278,44 +278,37 @@ func youFunc( YouClass you ){}	// 函数带源码的情况下 YouClass 被视作
 youFunc(my)	// 这个调用会当模板函数调用展开
 ```
 
-## 赋值接口、非源码函数的参数
-
-```
-MyInterface inf=myClass
-func myFunc( MyInterface inf )	// 无源码
-```
-
-这种情况下，接口会被创建为一个结构 `struct` <interface_Name>，结构里存放一个 this 指针，所有的成员变量都是 getter, setter 的函数指针，成员函数都是函数指针。这些指针在接口赋值的时候，通过对应的类来创建并赋值。
-
 ## 类定义里的接口
 
 接口在类定义里的时候，仅仅被当成定义约束，仅仅在编译期起作用，以保证所有必要的成员函数都被实现了。
 
-## 接口继承
 
-多个接口依次继承的情况下，所有的成员变量、函数都会被整合到最终接口里
 
-```
-interface Base {
-	int bValue
-}
+## 赋值接口、非源码函数的参数接口的实现
 
-interface MyIntf : Base {
-	int mValue;
-}
-```
-等同于
+这种情况下，接口会被创建为一个结构 `struct` <interface_Name>，结构里存放一个 this 指针，所有的成员变量都是 getter, setter 的函数指针，成员函数都是函数指针。这些指针在接口赋值的时候，通过对应的类来创建并赋值。
 
-```
-interface MyIntf {
-	int bValue
-	int mValue
+二进制情况下，接口被作为一个代理对象生成。
+
+``` 
+interface MyInf {
+	int a
+	func getInfo()
 }
 ```
 
+会被转换为一个对象
 
+```c
+struct MyInf_I {
+    void* _this;
+    int (a_GET)(void*/*this*/);	// 变量 a 的 GET 函数指针
+    void a_SET(void*/*this*/, int);	// 变量 a 的 SET 函数指针
+    void (getInfo)(void*/*this*/);		// getInfo 函数的函数指针
+}
+```
 
-
+ 因此接口如果作为入口函数的参数存在，并且函数不附带源码，那么调用这个函数就需要一点额外的接口转换开销。
 
 # 继承的实现
 
@@ -348,3 +341,4 @@ class ClassType {
 }
  ```
 
+ 

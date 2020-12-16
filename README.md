@@ -606,16 +606,16 @@ MyData x(10, "你好")
 继承&重载
 -------------------
 
-继承和重载的概念被简化，类可以单一继承，并且**允许**重载方法。类可以有多个接口实现。
+继承和重载的概念被简化，类可以单一继承，可以有多个接口实现。但类不再有虚函数，改用函数对象替代。
 
 	class Base{
 		func cantOverload(){	// 普通函数不可以重载
 	
 		}
 		
-		virtual func virtualFunction(int v) = 0 	// 纯虚函数
-		virtual func canOverload(int v) {
-		
+		func(int) virtualFunction = null 	// 代替纯虚函数
+		func(int) canOverload = func(int v) {
+			doSomethine()
 		}
 	
 		var myFunc = func(int v){		// 函数对象
@@ -630,7 +630,7 @@ MyData x(10, "你好")
 	
 		}
 	
-		virtual func virtualFunction(int v){	// 重载虚函数
+		virtualFunction = func(int v){	// 重载虚函数
 			print(v)
 		}
 	
@@ -645,49 +645,46 @@ MyData x(10, "你好")
 
 ## Get & Set
 
-SimpleLang 支持成员变量的 Get & Set，它们必须紧接着变量定义，set 方法在变量设置时被调用。
+SimpleLang 支持成员变量的 Get & Set，set 方法在变量设置时被调用，而不会预先设置值。
 
 ```
 class MyCls {
-	int a {
-        get{	// 必须紧跟变量的定义
-            return a
-        } 
-        set(int newValue){  
-        	a = newValue
-        }
+	int valueA;
+    
+    get valueA {	
+        return valueA
+    } 
+    set valueA(int newValue){  
+	    valueA = newValue
+    }
+    
+    get fakeValue: int {		// 可以 let x = myCls.fakeValue 这样调用
+    	return valueA + 10
+    }
+	
+	get virtualValue = func(): int {	// 可以 let x = myCls.virtualValue 这样使用
+									 //   另外可以 get(myCls.virtualValue) = func() -> int {}	这样“重载”
 	}
-	int readonly{
-		set = 0			// 去除 set 函数（变量只读）
-	}
-	int virtualValue{
-		get=func{ return virtualValue }			// get 赋值 func，可以把 get 定义为函数指针，也就是可重写的 a::get 
-		set=func(int newValue){ virtualValue = newValue  }
+	
+	set virtualValue = func(int newValue) {
+	
 	}
 }
 
 class YouCls : MyCls {
-	set(virtualVallue) = ...	// 继承内重写
-	
+	get(virtualValue) = ...	// 继承内重写
 	int b
-	get(a) = func{	// 虽然a没有被定义为函数，但仍然可以重写 get，但不会在基类生效，需要注意
-		return b
-	}
 }
 
 YouCls you
-print(you.a)	// 返回 b值
-MyCls me=you
-print(me.a)		// 返回 a值
+print(you.valueA)	// 返回 b值
 
 MyCls cls
-set(cls.virtualValue)=func(int newValue){ // 外部重写 set 方法
+get(cls.virtualValue)=func(): int{ // 外部重写 set 方法
 
 }
 
-get(cls.virtualValue)=func(): int {		// 外部重写 get 方法
 
-}
 ```
 
 
