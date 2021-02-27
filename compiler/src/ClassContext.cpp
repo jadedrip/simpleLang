@@ -10,7 +10,7 @@ ClassContext::ClassContext(AstContext * parent, CodeGen * gen) : AstContext(pare
 {
 	auto *type = llvm::dyn_cast<StructType>(gen->type);
 	value = gen;
-	std::string name = type->getName();
+	std::string name = type->getName().str();
 	std::for_each(name.begin(), name.end(), [](char&c) { if (c == '_') c = '.'; });
 	_type = ClassInstanceType::findByName(name);
 }

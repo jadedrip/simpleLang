@@ -52,7 +52,7 @@ CodeGen* AstBinary::makeGen(AstContext * parent)
 
 	if (lt->isStructTy() || rt->isStructTy()) {
 		std::string word = operator_to_word(op);
-		std::string n = lt->getStructName();
+		std::string n = lt->getStructName().str();
 		auto* cs=parent->findCompiledClass(n);
 		if (!cs)
 			throw std::runtime_error("Unknown type " + n);

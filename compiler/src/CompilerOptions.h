@@ -1,10 +1,7 @@
 #pragma once
 
-class CompilerOptions
+namespace CompilerOptions
 {
-public:
-	static CompilerOptions& instance();
-public:
-	std::string triple;
-	bool directlyExecute = true;	// 是否直接运行
+	extern std::string triple;
+	extern bool directlyExecute;	// 是否直接运行
 };

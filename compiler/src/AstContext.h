@@ -50,8 +50,20 @@ public:
 	static AstClass* loadClass(const std::string& path, const std::string& name);
 
 	llvm::StructType* findStruct(const std::string& path) {
+		if (module) {
+			auto p=module->getTypeByName(path);
+			if (p) return p;
+			p = module->getTypeByName("struct." + path);
+			if (p) return p;
+		}
+
 		for (auto& i : _anonymousModules) {
 			auto *p=i->findStruct(path);
+			if (p) return p;
+		}
+		// 默认查找 sl 包
+		if (AstPackage::simpleLang) {
+			auto p = AstPackage::simpleLang->findStruct(path);
 			if (p) return p;
 		}
 		return parent ? parent->findStruct(path) : nullptr;

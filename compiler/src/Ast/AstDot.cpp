@@ -25,7 +25,7 @@ CodeGen * AstDot::makeGen(AstContext * parent)
 		// 右值有两种可能，call or getmember
 		auto *c=dynamic_cast<AstCall*>(right);
 		if (c) {
-			auto * cls=parent->findCompiledClass(sty->getName());
+			auto * cls=parent->findCompiledClass(sty->getName().str());
 			if (!cls)
 				throw std::runtime_error("Can't find class:" + sty->getName().str());
 			auto p = cls->makeCall(parent->context(), right->name, c->getArguments(parent), o);
@@ -33,7 +33,7 @@ CodeGen * AstDot::makeGen(AstContext * parent)
 			return p;
 		}
 
-		auto* cls = parent->findCompiledClass(sty->getName());
+		auto* cls = parent->findCompiledClass(sty->getName().str());
 		if (!cls)
 			throw std::runtime_error("Can't find member:" + sty->getName().str());
 		auto p=cls->getMember(o, right->name);

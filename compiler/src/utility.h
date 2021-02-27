@@ -22,9 +22,11 @@ inline T* getMapValue(const std::unordered_map<std::string, T*>& map, const std:
 std::string operator_to_str(int op);
 /// 把操作符转换成英文
 std::string operator_to_word(int op);
+/// 返回可读
+std::string getReadable(const llvm::Type *);
 
-std::string getReadable(llvm::Type *);
-// std::string getReadable(llvm::Type* type);
+/// 返回压缩的类型文本
+std::string getCompression(const llvm::Type* type);
 
 class AstNode;
 class BlockGen;
@@ -93,3 +95,18 @@ inline llvm::Value* toLLValue(uint64_t v)
 	return llvm::ConstantInt::get(type, v, true);
 }
 
+inline char getCode(short m) {
+	if (m < 10) return m + '0';
+	if (m < 36) return m - 10 + 'A';
+	return m - 36 + 'a';
+}
+
+inline std::string i2hexString(uint64_t i) {
+	static const char* n = "0123456789abcdefghij";
+	std::string s;
+	while (i > 0) {
+		s.push_back(n[i % 0xF]);
+		i >>= 8;
+	}
+	return s;
+}

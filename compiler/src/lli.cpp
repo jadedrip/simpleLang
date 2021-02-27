@@ -2,7 +2,6 @@
 #include "llvm/ADT/StringExtras.h"
 #include "llvm/ADT/Triple.h"
 #include "llvm/Bitcode/BitcodeReader.h"
-#include "llvm/CodeGen/CommandFlags.inc"
 #include "llvm/CodeGen/LinkAllCodegenComponents.h"
 #include "llvm/ExecutionEngine/GenericValue.h"
 #include "llvm/ExecutionEngine/Interpreter.h"
@@ -59,13 +58,13 @@ RTDyldMemoryManager *RTDyldMM = nullptr;
 ExecutionEngine* buildEngine(std::unique_ptr<Module> Owner) {
   std::string ErrorMsg;
   EngineBuilder builder(std::move(Owner));
-  builder.setMArch(MArch);
-  builder.setMCPU(MCPU);
-  builder.setMAttrs(MAttrs);
-  if (RelocModel.getNumOccurrences())
-    builder.setRelocationModel(RelocModel);
-  if (CMModel.getNumOccurrences())
-    builder.setCodeModel(CMModel);
+  //builder.setMArch(MArch);
+  //builder.setMCPU(MCPU);
+  //builder.setMAttrs(MAttrs);
+  //if (RelocModel.getNumOccurrences())
+  //  builder.setRelocationModel(RelocModel);
+  //if (CMModel.getNumOccurrences())
+  //  builder.setCodeModel(CMModel);
   builder.setErrorStr(&ErrorMsg);
   builder.setEngineKind(EngineKind::JIT);
   builder.setUseOrcMCJITReplacement(false);
@@ -81,11 +80,11 @@ ExecutionEngine* buildEngine(std::unique_ptr<Module> Owner) {
 
   builder.setOptLevel(CodeGenOpt::Default);
 
-  TargetOptions Options = InitTargetOptionsFromCodeGenFlags();
-  if (FloatABIForCalls != FloatABI::Default)
-    Options.FloatABIType = FloatABIForCalls;
+  //TargetOptions Options = InitTargetOptionsFromCodeGenFlags();
+  //if (FloatABIForCalls != FloatABI::Default)
+  //  Options.FloatABIType = FloatABIForCalls;
 
-  builder.setTargetOptions(Options);
+  //builder.setTargetOptions(Options);
 
   auto * EE=builder.create();
   if (!EE)

@@ -13,18 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="si">
+    <Filter Include="sl">
       <UniqueIdentifier>{9ac4f59e-d8c8-4634-b3cc-0e14a9ecb631}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="reflect">
-      <UniqueIdentifier>{39930a6b-d3cb-4218-b8e5-a1e1bb6ace8f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="core.h">
@@ -45,14 +39,8 @@
     <ClInclude Include="export.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Field.h">
-      <Filter>reflect</Filter>
-    </ClInclude>
-    <ClInclude Include="ClassInfo.h">
-      <Filter>reflect</Filter>
-    </ClInclude>
-    <ClInclude Include="reflect.h">
-      <Filter>reflect</Filter>
+    <ClInclude Include="targetver.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -74,27 +62,22 @@
     <ClCompile Include="Coroutine.c">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="reflect.cpp">
-      <Filter>reflect</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="sl\Charset.sl">
+      <Filter>sl</Filter>
+    </None>
+    <None Include="sl\Coroutine.sl">
+      <Filter>sl</Filter>
+    </None>
+    <None Include="sl\globals.sl">
+      <Filter>sl</Filter>
+    </None>
+    <None Include="sl\String.sl">
+      <Filter>sl</Filter>
+    </None>
     <None Include="clib.def">
       <Filter>源文件</Filter>
     </None>
-    <None Include="si\Coroutine.si">
-      <Filter>si</Filter>
-    </None>
-    <None Include="si\Charset.si">
-      <Filter>si</Filter>
-    </None>
-    <None Include="si\globals.si">
-      <Filter>si</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="si\String.si">
-      <Filter>si</Filter>
-    </CustomBuild>
   </ItemGroup>
 </Project>

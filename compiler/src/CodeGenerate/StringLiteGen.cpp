@@ -43,11 +43,11 @@ StringLiteGen::StringLiteGen(AstContext* c, const std::string & s) : _str(s)
 
 	//auto* str = c->findClass("String");
 	//str->makeNew(c, s.c_str(), )
-	type = c->findStruct("struct.si_String");
+	type = c->findStruct("struct.String__sl");
 	assert(type);
-	_init= c->getFunction("si_String_Init");
+	_init= c->getFunction("Init__String__sl");
 	assert(_init);
-	_finalize = c->getFunction("si_String_Finalize");
+	_finalize = c->getFunction("Finalize__String__sl");
 	assert(_finalize);
 }
 

@@ -97,7 +97,7 @@ CodeGen * AstClass::makeGen(AstContext * parent)
 		std::map<std::string, AstType*> emptys;
 		auto *p = generateClass(parent->context(), std::move(emptys));
 		if (p->_type) {
-			parent->setCompiledClass(p->_type->getStructName(), p);
+			parent->setCompiledClass(p->_type->getStructName().str(), p);
 			gen->type = p->_type;
 		}
 	}
@@ -188,7 +188,7 @@ CodeGen * AstClass::makeNew(AstContext* parent,
 	//os.flush();
 	//std::clog << std::endl;
 	//classObject->type = type;
-	parent->setCompiledClass(type->getStructName(), cls);
+	parent->setCompiledClass(type->getStructName().str(), cls);
 	return classObject;
 }
 
@@ -319,6 +319,8 @@ std::vector<llvm::Type*> AstClass::fillMember(llvm::LLVMContext&c, ClassInstance
 	return types;
 }
 
+
+
 /// 通过构造函数，将类从模板转为编译的 ClassInstanceType
 ClassInstanceType* AstClass::generateClass(
 	llvm::LLVMContext& c, 
@@ -332,18 +334,18 @@ ClassInstanceType* AstClass::generateClass(
 	//	auto a=_cached.find(reinterpret_cast<intptr_t>(_construstor));
 	//	if (a != _cached.end()) return a->second;
 	//}
+
+	// { 类名 }_{ 包全名 }__{ 模板参数 }
 	
 	std::string packageName = _context->pathName;
-	std::string pathName = _context->pathName;
 
 	std::map< std::string, ClassMemberGen* > members;
 
-	std::string n = name;
-	for (auto &i : templateTypes) {
-		if (isupper(i.first.at(0))){
-			n += "_" + getReadable(i.second->llvmType(c));
-		}
+	for (char& c : packageName) {
+		if (c == '.') c = '_';
 	}
+
+
 
 	ClassInstanceType* cls = new ClassInstanceType(_context, packageName, name);
 	cls->templateTypes = templateTypes;
@@ -355,23 +357,32 @@ ClassInstanceType* AstClass::generateClass(
 		cls->setSymbolValue(i.first, i.second);
 	}
 
-	for (auto &cobj : pathName) {
-		if (cobj == '.') cobj = '_';
-	}
-
 	bool body = true;
 	// 先创建一个声明
 	// 优先使用 C 里面定义的对象
-	if (cStructName.empty())
-		cls->_type = _context->findStruct(packageName + "_" + n);
+	if (cStructName.empty()) {
+		std::string llvmStructName = name;
+		if (!templateTypes.empty()) {
+			llvmStructName += "__";
+			for (auto& i : templateTypes) {
+				if (isupper(i.first.at(0))) {
+					llvm::Type* type = i.second->llvmType(c);
+					llvmStructName += getCompression(type);
+				}
+			}
+		}
+		llvmStructName += "__" + packageName;
+		cls->_type = _context->findStruct(llvmStructName);
+		if (!cls->_type) {
+			body = false;
+			cls->_type = StructType::create(cls->context(), llvmStructName);
+		}
+	}
 	else {
 		cls->_type = _context->findStruct(cStructName);
-		n = cStructName;
-	}
-
-	if (!cls->_type) {
-		body = false;
-		cls->_type = StructType::create(cls->context(),  n);
+		if (!cls->_type) {	// 找不到 C 里定义的对象
+			cls->_type = StructType::create(cls->context(), cStructName);
+		}
 	}
 
 	// 如果是继承的，那么需要先生成继承对象
@@ -401,13 +412,12 @@ ClassInstanceType* AstClass::generateClass(
 	}
 
 	// 扫描类，初步生成对象
-	std::vector< Type* > types = fillMember(c, cls, thisGen);
 	fillMemberFunctionsTo(cls);
 
 	thisGen->type = cls->_type;
 
 	if (!body) {
-		cls->_type->setName(pathName + "_" + cls->name);
+		std::vector< Type* > types = fillMember(c, cls, thisGen);
 		cls->_type->setBody(std::move(types));
 	}
 

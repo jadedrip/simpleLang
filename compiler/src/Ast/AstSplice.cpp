@@ -28,7 +28,7 @@ CodeGen * AstSplice::makeGen(AstContext * parent)
 		throw std::runtime_error("Can't splice");
 	}
 
-	std::string n = ty->getStructName();
+	std::string n = ty->getStructName().str();
 	if (n.substr(0, 7) == "struct.")
 		n = n.substr(7);
 	auto *f=parent->getFunction(n + "_Splice");

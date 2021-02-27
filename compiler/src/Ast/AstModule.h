@@ -6,7 +6,7 @@ class AstImport;
 class AstNode;
 class AstContext;
 
-/// 定义一个 si 文件
+/// 定义一个 sl 文件
 class AstModule 
 {
 public:

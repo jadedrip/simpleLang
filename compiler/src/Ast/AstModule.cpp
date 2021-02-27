@@ -28,8 +28,8 @@ void AstModule::preprocessor(AstContext* context)
 		name.erase(name.size() - 1);
 	}
 
-	//if (name != "si") { // 默认读入 String
-	//	AstClass* p=AstImport::loadClass("si", "String");
+	//if (name != "sl") { // 默认读入 String
+	//	AstClass* p=AstImport::loadClass("sl", "String");
 	//	assert(p);
 	//	block->setCompiledClass("struct.si_String", p->generated);
 	//	block->setClass("String", p);

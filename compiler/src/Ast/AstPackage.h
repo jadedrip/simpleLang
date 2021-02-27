@@ -10,6 +10,8 @@ class AstModule;
 class AstPackage
 {
 public:
+	static AstPackage* simpleLang;
+
 	AstPackage(const std::string& name);
 	void addModule(const std::string& name, AstModule* module);
 	const std::string& name() const { return _name; }

@@ -8,7 +8,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LocalDebuggerDebuggerType>Auto</LocalDebuggerDebuggerType>
-    <LocalDebuggerCommandArguments>test.si</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>test.sl</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerWorkingDirectory>$(SolutionDir)</LocalDebuggerWorkingDirectory>
     <LocalDebuggerEnvironment>INCLUDE_PATH=D:\SDK\llvm-10.0.0\build\include;D:\SDK\llvm-10.0.0\include;D:\SDK\llvm-10.0.0\build\tools\clang\include;D:\SDK\llvm-10.0.0\tools\clang\include;$(VC_IncludePath)</LocalDebuggerEnvironment>

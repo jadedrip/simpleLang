@@ -5,6 +5,8 @@
 #include "Ast/AstNode.h"
 #include "AstContext.h"
 #include "token.h"
+#include <boost/archive/iterators/base64_from_binary.hpp>
+#include <boost/archive/iterators/transform_width.hpp>
 
 using namespace std;
 using namespace llvm;
@@ -95,16 +97,47 @@ std::string operator_to_word(int op)
 }
 
 
-std::string getReadable(llvm::Type *type)
+string base64Encode(const string& input, bool alignment = true)
+{
+	using namespace boost::archive::iterators;
+	typedef base64_from_binary<transform_width<string::const_iterator, 6, 8>> Base64EncodeIterator;
+	stringstream result;
+	try {
+		copy(Base64EncodeIterator(input.begin()),
+			Base64EncodeIterator(input.end()),
+			ostream_iterator<char>(result));
+	}
+	catch (...) {
+		return string();
+	}
+	if (alignment) {
+		size_t equal_count = (3 - input.length() % 3) % 3;
+		for (size_t i = 0; i < equal_count; i++){
+			result.put('=');
+		}
+	}
+	return result.str();
+}
+
+inline void shortStructName(string& name)
+{
+	size_t i = name.find("_");
+	if (i == string::npos) return;
+	name.erase(i, name.size() - 1);
+}
+
+std::string getReadable(const llvm::Type *type)
 {
 	if (type->isVoidTy()) {
-		return "V";
+		return "X";
 	}
 
 	if (type->isStructTy()) {
-		string n = type->getStructName();
+		string n = type->getStructName().str();
 		if (n.substr(0, 7) == "struct.")
 			n = n.substr(7);
+		// shortStructName(n);
+		// normalStructName(n);
 		return n;
 	}
 
@@ -136,6 +169,34 @@ std::string getReadable(llvm::Type *type)
 	type->print(os);
 		
 	throw std::runtime_error("Unknown type" + ss.str());
+}
+
+inline std::string compress(const std::string& name) {
+	if (name.length() < 6) {
+		size_t i = name.find_first_of('_');
+		if (i == name.npos) return name;
+	}
+	string n = base64Encode(name);
+	if (n.length() > 5)
+		n.erase(5, n.length() - 5);
+	return name.at(0) + n;
+}
+
+std::string getCompression(const llvm::Type* type)
+{
+	if (type->isPointerTy()) {
+		string name = getReadable(type->getPointerElementType());
+		return "P" + compress(name);
+	}
+	string name = getReadable(type);
+	if (type->isStructTy()) {
+		return "U" + compress(name);
+	}
+
+	if (type->isFunctionTy()) {
+		return "Z" + compress(name);
+	}
+	return compress(name);
 }
 
 BlockGen * makeCodeGenList(AstContext * parent, std::vector<AstNode*>& lines)

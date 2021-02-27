@@ -1,13 +1,14 @@
 ﻿package org.my
 
-// import si.String
-// import si
+// import sl.String
+// import sl
 
-print("Hello world!")
+int a = 10
+//print("Hello world!")
 
-var c="Ni hao"
-println(c)
-
+//var c="Ni hao"
+//println(c)
+/*
 class Base {
 	int a
 }
@@ -16,7 +17,13 @@ class MyClass : Base {
 	int b
 }
 
+interface Itf {
+	int b
+}
+
 Base xd = MyClass()
+
+Itf ix = xd
 
 func world(){
 	var h = "hello"
@@ -27,12 +34,12 @@ func world(){
 // println("Hello")
 // world()
 
-
+*/
 /*
 go { 
 	println("Hello world:" + c)
 }
-*/
+
 world()
 
 var nice = "Nice"
@@ -51,7 +58,7 @@ func test(String v){
 }
 
 test(15)
-
+*/
 /*
 class Base {
 	int a = 10
@@ -219,7 +226,7 @@ y=y+1
 
 // var o=add( y, 10 )		// Call c function
 
-//int b=si.math.addii( 3, 4 )
+//int b=sl.math.addii( 3, 4 )
 //printf( "b %d\r\n", b )
 //var str = "I want a keyboard."
 

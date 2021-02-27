@@ -55,7 +55,6 @@ void execute(char * const *envp){
 	char *error = NULL;
 
 	std::string ErrStr;
-	llvm::StringRef MCPU = llvm::sys::getHostCPUName();
 
 	Function *mainFunction = currentPackage->getFunc();
 
@@ -116,19 +115,13 @@ int main(int argc, char* argv[],  char * const *envp)
 		return -1;
 	}
 
-	initializeLog("", 1, true);
+	//initializeLog("", 0, true);
 
 	std::string err;
 	//if (sys::DynamicLibrary::LoadLibraryPermanently("msvcp_win.dll", &err)) {
 	//	errs() << "Error loading: "<< err<< "\n";
 	//	// return -1;
 	//}
-
-
-	std::clog << "Triple: " << ::sys::getProcessTriple() << std::endl;
-	std::clog << "HostCpu: " << ::sys::getHostCPUName().str() << std::endl;
-
-	CompilerOptions::instance().triple = ::sys::getProcessTriple();
 
 	llvm::Triple triple;
 	std::clog << "OsName: " << triple.getOSName().str() << std::endl;
@@ -156,9 +149,10 @@ int main(int argc, char* argv[],  char * const *envp)
 	if (b) {
 		try {
 			auto c=new AstContext(m);
-			// 默认导入 si
-			auto package= CLangModule::loadPackage("si");
+			// 默认导入 sl
+			auto package= CLangModule::loadPackage("sl");
 			c->addImport("", package);
+			AstPackage::simpleLang = package;
 			currentPackage->preprocessor(c);
 		}
 		catch (std::runtime_error e) {
@@ -190,7 +184,7 @@ int main(int argc, char* argv[],  char * const *envp)
 
 		execute(envp);
 		// system("lli -force-interpreter out.ll");
-		// clang -lx64\Debug\clib.lib -x ir -o out.exe -g out.ll lib\si\String.ll lib\si\core.ll lib\si\Coroutine.ll
+		// clang -lx64\Debug\clib.lib -x ir -o out.exe -g out.ll lib\sl\String.ll lib\sl\core.ll lib\sl\Coroutine.ll
 	} else {
 		CLangModule::shutdown();
 

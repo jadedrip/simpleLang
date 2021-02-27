@@ -12,6 +12,8 @@ extern "C" {
 	long referenceIncrease(void* object);
 	void* createArray(uint64_t typeId, uint32_t length);
 	void arrayLet(void** arrays, uint64_t index, void* object);
+
+	void initializeReflect();
 #ifdef __cplusplus
 }
 #endif

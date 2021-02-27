@@ -57,6 +57,7 @@ AstNode* makeWhile(AstNode* cond, AstNode* block );
 AstNode* makeFor(AstNode* let, AstNode* cond, AstNode* inc, AstNode* block );
 
 AstNode* createFunction(int funcType, const std::string& name, AstNode*parameters,  AstNode* ret, AstNode* block );
+AstNode* createCFunction(const std::string& name, AstNode* cFunc = nullptr);
 AstNode* addFunctionBlock(AstNode*, AstNode* block, AstNode* annotation = nullptr);
 AstNode* createOperator(int oper, AstNode*variables, AstNode* ret, AstNode* block);
 AstNode* createInterface(char* name, AstNode* block, bool isConcept = false);

@@ -43,6 +43,7 @@ public:
 	AstFunction* clone();
 
 	std::string pathName;
+	std::string cLangFunction;	// c 语言函数名
 
 	bool overload = false;
 	bool isProctected = false;	// 是否被保护成员
@@ -73,10 +74,9 @@ public:
 		std::vector<CodeGen*> variableGen,
 		ClassInstanceType* object = nullptr
 	);
-	FunctionInstance * getFunctionInstance(
+	FunctionInstance * getLLVMFunctionInstance(
 		llvm::LLVMContext& c,
 		std::vector<std::pair<std::string, llvm::Type*>> parameters,
-		AstType* variableGen,
 		ClassInstanceType* object
 	);
 	bool isTemplate() const { return _isTemplate; }

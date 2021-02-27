@@ -14,21 +14,22 @@ referenceIncrease @8
 createArray @9
 arrayLet @10
 
-si_Charset_Init @12
 
-si_String_Init @13
-si_String_Finalize @14
-si_String_Splice @15
+Init__Charset__sl @12
 
-si_String_GET_size @16
-si_String_at @17
+Init__String__sl @13
+Finalize__String__sl @14
+Splice__String__sl @15
 
-si_String_PLUS_si_String @18
-si_String_Init_I32 @19
-si_String_Init_I64 @20
-si_String_Init_M @21
-si_String_Init_N @22
-si_String_Init_si_String @23
+GET_size__String__sl @16
+at__String__sl @17
 
-si_println @24
-si_print_si_String @25
+sl_String_PLUS_sl_String @18
+sl_String_Init_I32 @19
+sl_String_Init_I64 @20
+sl_String_Init_M @21
+sl_String_Init_N @22
+sl_String_Init_sl_String @23
+
+println_X_PSU3Rya__sl @24
+print_X_PSU3Rya__sl @25

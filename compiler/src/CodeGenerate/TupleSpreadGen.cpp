@@ -4,7 +4,7 @@
 using namespace llvm;
 
 TupleSpreadGen::TupleSpreadGen(CodeGen* tuple) : _tuple(tuple) {
-	tuple->valueType = rvalue;
+	tuple->valueType = ValueType::rvalue;
 }
 
 Value * TupleSpreadGen::generateCode(const Generater& generater)

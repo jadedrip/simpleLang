@@ -99,7 +99,7 @@ ClassInstanceType * AstContext::findCompiledClass(const std::string & name)
 
 ClassInstanceType* AstContext::findCompiledClassByLLVMType(const llvm::Type* type)
 {
-	auto i= _compiledClass.find(type->getStructName());
+	auto i= _compiledClass.find(type->getStructName().str());
 	return i != _compiledClass.end() ? i->second : nullptr;
 }
 

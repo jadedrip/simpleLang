@@ -29,6 +29,8 @@ public:
 	llvm::Function* func = nullptr;
 	void setVariable(bool v = true);
 	size_t getParamenterIndex(const std::string& name);
+
+	std::string cName;	// c 语言函数名
 private:
 	bool _body = false;
 	bool _variable = false;

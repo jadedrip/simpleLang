@@ -7,12 +7,12 @@ UnaryIntGen::UnaryIntGen(int op, CodeGen* expr)
 	: _op(op), _expr(expr)
 {
 	// 一元操作的必须是右值
-	_expr->valueType = rvalue;
+	_expr->valueType = ValueType::rvalue;
 }
 
 llvm::Value * UnaryIntGen::generateCode(const Generater& generater)
 {
-	IRBuilder<> builder = generater.builder();
+	IRBuilder<> &builder = generater.builder();
 
 	Value *p = _expr->generate(generater);
 	switch (_op) {

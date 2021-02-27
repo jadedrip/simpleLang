@@ -35,8 +35,7 @@ ClassInstanceType::ClassInstanceType(AstContext* c, const std::string& path, con
 std::string ClassInstanceType::uniqueName()
 {
 	if (_type) {
-		std::string v= _type->getName();
-		return (v.substr(0, 7) == "struct.") ? v.substr(7) : v;
+		return getReadable(_type);
 	}
 	return path + "." + name;
 }

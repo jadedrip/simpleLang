@@ -9,7 +9,7 @@ CodeGen * AstArrayCall::makeGen(AstContext * parent)
 	auto &c = parent->context();
 	CodeGen* obj = expr->makeGen(parent);
 
-	auto *ct=parent->findCompiledClass(obj->type->getStructName());
+	auto *ct=parent->findCompiledClass(obj->type->getStructName().str());
 	auto *l = func->makeGen(parent);
 
 	std::vector<std::pair<std::string, CodeGen*>> args;

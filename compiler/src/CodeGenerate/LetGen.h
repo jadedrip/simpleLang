@@ -6,8 +6,8 @@ class LetGen : public CodeGen
 public:
 	LetGen(CodeGen* left_, CodeGen* right_, bool toArray=false) 
 		: _left(left_), _right(right_),_toArray(toArray) {
-		_left->valueType = lvalue;
-		_right->valueType = rvalue;
+		_left->valueType = ValueType::lvalue;
+		_right->valueType = ValueType::rvalue;
 	}
 protected:
 	virtual llvm::Value* generateCode(const Generater& generater);

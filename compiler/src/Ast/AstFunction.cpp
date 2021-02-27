@@ -191,6 +191,7 @@ CallGen * AstFunction::makeCall(
 	if (!ordered) return nullptr;
 	// 成功
 
+
 	auto *func = _funcInstance ? _funcInstance
 		: getFunctionInstance(c, ordered->parameters, ordered->variableGen, clsType);
 
@@ -258,7 +259,7 @@ CodeGen * AstFunction::makeGen(AstContext * parent)
 		if (_isTemplate) throw std::runtime_error("匿名函数不能是模板的");
 		if (variable)  throw std::runtime_error("匿名函数不允许有可变参数");
 		
-		_funcInstance = getFunctionInstance(c, parameters, nullptr, dynamic_cast<ClassInstanceType*>(parent));
+		_funcInstance = getLLVMFunctionInstance(c, parameters, dynamic_cast<ClassInstanceType*>(parent));
 		return new LambdaGen(this, _funcInstance);
 	}
 
@@ -286,26 +287,15 @@ AstFunction * AstFunction::clone()
 }
 // TODO: 移除，整理模块
 extern std::unique_ptr<Module> module;
-FunctionInstance* AstFunction::getFunctionInstance(
+FunctionInstance* AstFunction::getLLVMFunctionInstance(
 	llvm::LLVMContext& c, 
 	std::vector<std::pair<std::string, llvm::Type*>> parameters,
-	AstType* variableGen,
 	ClassInstanceType* object) {
 
 	if (_funcInstance) return _funcInstance;
-
+	
 	auto *instance = new FunctionInstance();
 	instance->overload = overload || isTemplate();
-
-	// 如果不是匿名函数，定义唯一名称
-	auto clang=annotations["CLang"];
-	if (clang && clang->defaultValue) {
-		instance->name = clang->defaultValue->name;
-	}
-	else if (!name.empty()) {
-		instance->name = object ? object->uniqueName() + "_" + name : (pathName.empty() ? name : pathName + "_" + name);
-		std::for_each(instance->name.begin(), instance->name.end(), [](char& c) {if (c == '.') c = '_'; }); // replace . to _
-	}
 
 	if (object) {
 		instance->packageName = object->path;
@@ -330,6 +320,14 @@ FunctionInstance* AstFunction::getFunctionInstance(
 		}
 	}
 
+	instance->name = name;
+
+	// 如果不是匿名函数，定义唯一名称
+	auto clang = annotations["CLang"];
+	if (clang && clang->defaultValue) {
+		instance->cName = clang->defaultValue->name;
+	}
+
 	// 参数写入环境
 	for (auto &i : parameters) {
 		auto* p = new ParamenterGen();
@@ -340,20 +338,6 @@ FunctionInstance* AstFunction::getFunctionInstance(
 		instance->parameters.push_back(std::make_pair(i.first, p->type));
 	}
 
-	// 可变参数
-	if (variable) {
-		if (AutoType::isAuto(variable)) {	 // 使用可变函数
-			instance->setVariable(true);
-		}
-		else { // 类型确定的情况下，转为一个数组
-			AstType* tp = new SArrayType(variable, 0);
-			auto* p = new ParamenterGen();
-			p->type = tp->llvmType(c);
-			p->name = variableName;
-			s->setSymbolValue(variableName, p);
-			instance->parameters.push_back(std::make_pair(variableName, p->type));
-		}
-	}
 
 	if (isOperator || overload) { // 如果是操作符重载或重载
 		instance->overload = true;
@@ -373,6 +357,7 @@ FunctionInstance* AstFunction::getFunctionInstance(
 		fillFunctionBlock(s, instance);
 		instance->generateCode(module.get(), c);
 	}
+
 	if (!_isTemplate) {
 		_funcInstance = instance;
 	}
@@ -466,6 +451,8 @@ FunctionInstance* AstFunction::getFunctionInstance(
 	std::vector<CodeGen*> variableGen,
 	ClassInstanceType* object)
 {
+	
+
 	// 参数
 	std::vector<std::pair<std::string, llvm::Type*>> params;
 	for (auto&i : parameterGens) {
@@ -476,20 +463,23 @@ FunctionInstance* AstFunction::getFunctionInstance(
 		}
 	}
 
-	// 可变参数
-	AstType* v = variable;
+	// 展开可变参数为结构
+	bool isVar = false;
 	if (!variableGen.empty()) {
-		std::vector<llvm::Type*> types;
-		for (auto& i : variableGen) {
-			types.push_back(i->type);
-			if (AutoType::isAuto(v))
-				dynamic_cast<AutoType*>(v)->setDeductive(i->type);
-			else if (v && !instanceOf( i->type, v->llvmType(c))) {
-				v = nullptr;
+		if (AutoType::isAuto(variable)) {
+			std::vector<llvm::Type*> types;
+			for (auto& i : variableGen) {
+				types.push_back(i->type);
 			}
+			auto tupleType = TupleType::create(c, std::move(types));
+			params.push_back(std::make_pair(variableName, tupleType));
 		}
-		if (!v) v = new LLVMType( TupleType::create(c, std::move(types)));
+		else { // 类型确定的情况下，转为一个指针+长度
+			auto llvmType = llvm::PointerType::get(variable->llvmType(c), 0);
+			params.push_back(std::make_pair(variableName, llvmType));
+			params.push_back(std::make_pair(variableName + "_size", llvm::IntegerType::get(c, 32)));
+		}
 	}
 
-	return getFunctionInstance(c, params, v, object);
+	return getLLVMFunctionInstance(c, params, object);
 }

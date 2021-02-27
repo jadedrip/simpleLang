@@ -17,12 +17,12 @@
 //	return length;
 //}
 
-void si_Charset_Init(struct si_Charset * ptr, uint16_t code)
+void Init__Charset__sl(struct Charset__sl * ptr, uint16_t code)
 {
 	ptr->code = code;
 }
 
-void si_String_Init(String * str, char * data, uint64_t length, uint16_t encode)
+void Init__String__sl(String * str, char * data, uint64_t length, uint16_t encode)
 {
 	str->data = (wchar_t*)data;
 	str->length = length;
@@ -32,17 +32,17 @@ void si_String_Init(String * str, char * data, uint64_t length, uint16_t encode)
 	//}
 
 	// wsprintfW(data);
-	// wprintf(L"\r\nCall String(data, %lld, %d): %.*ls\r\n", length, encode, (int)length, str->data);
+	wprintf(L"\r\nCall String(data, %lld, %d): %.*ls\r\n", length, encode, (int)length, str->data);
 }
 
-void si_String_Finalize(String* str)
+void Finalize__String__sl(String* str)
 {
 	// printf("si_String_Finalize\r\n");
 	if (str && str->alloc)
 		free(str->data);
 }
 
-String* si_String_Splice(String * str, int64_t index, int64_t length)
+String* Splice__String__sl(String * str, int64_t index, int64_t length)
 {
 	if (!str) {
 		// printf("Spilce failed: String is null");
@@ -75,11 +75,11 @@ String* si_String_Splice(String * str, int64_t index, int64_t length)
 	return n;
 }
 
-uint64_t si_String_GET_size(String* s) {
+uint64_t GET_size__String__sl(String* s) {
 	return s->length;
 }
 
-wchar_t si_String_at(String* str, uint64_t index)
+wchar_t at__String__sl(String* str, uint64_t index)
 {
 	if (index >= str->length)
 		return -1;
@@ -88,33 +88,33 @@ wchar_t si_String_at(String* str, uint64_t index)
 	return d[index];
 }
 
-void si_print_si_String(String * str)
+void print_X_PSU3Rya__sl(String * str)
 {
 	if (!str || !str->data) return;
 	wchar_t* data = (wchar_t*)str->data;
 	size_t len = str->length;
 
-	// wprintf(L"\r\nCall print : %ls, %lld\r\n", data, len);
+	wprintf(L"\r\nCall print : %ls, %lld\r\n", data, len);
 	wprintf(L"%.*ls", (int)len, data);
 }
 
-void si_printInt(int v)
+void sl_printInt(int v)
 {
 	wprintf(L"%d", v);
 }
 
-void si_println(String* str)
+void println_X_PSU3Rya__sl(String* str)
 {
 	if (!str || !str->data) return;
 
 	wchar_t* data = (wchar_t*)str->data;
 	size_t len = str->length;
 
-	// wprintf(L"\r\nCall print : %ls, %lld\r\n", data, len);
+	wprintf(L"\r\nCall print : %ls, %lld\r\n", data, len);
 	wprintf(L"%.*ls\r\n", (int)len, data);
 }
 
-String * si_String_PLUS_si_String(String * str, String * right)
+String * sl_String_PLUS_sl_String(String * str, String * right)
 {
 	if (!str) {
 		printf("si_String_PLUS_si_String's str is null!\r\n");
@@ -134,7 +134,7 @@ String * si_String_PLUS_si_String(String * str, String * right)
 	return n;
 }
 
-void si_String_Init_I32(String *n, int32_t v)
+void sl_String_Init_I32(String *n, int32_t v)
 {
 	// printf("Call Init I32 %d\r\n", v);
 	wchar_t *buf = n->data = (wchar_t*)malloc(30);
@@ -143,7 +143,7 @@ void si_String_Init_I32(String *n, int32_t v)
 	n->alloc = 1;
 }
 
-void si_String_Init_I64(String * n, int64_t v)
+void sl_String_Init_I64(String * n, int64_t v)
 {
 	// printf("Call Init I64 %lld: \r\n", v);
 	wchar_t *buf = n->data = (wchar_t*)malloc(50);
@@ -152,12 +152,12 @@ void si_String_Init_I64(String * n, int64_t v)
 	n->alloc = 1;
 }
 
-void si_String_Init_M(String * str, float v)
+void sl_String_Init_M(String * str, float v)
 {
-	si_String_Init_N(str, v);
+	sl_String_Init_N(str, v);
 }
 
-void si_String_Init_N(String * n, double v)
+void sl_String_Init_N(String * n, double v)
 {
 	// printf("Call Init float %f: \r\n", v);
 	wchar_t *buf = n->data = (wchar_t*)malloc(50);
@@ -166,7 +166,7 @@ void si_String_Init_N(String * n, double v)
 	n->alloc = 1;
 }
 
-void si_String_Init_si_String(String * str, String * v)
+void sl_String_Init_sl_String(String * str, String * v)
 {
 	str->data = v->data;
 	str->alloc = 0;

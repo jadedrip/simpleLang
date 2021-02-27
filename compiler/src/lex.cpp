@@ -306,6 +306,14 @@ AstNode * createFunction(int funcType, const string& name, AstNode * parameters,
 	return p;
 }
 
+AstNode* createCFunction(const std::string& name, AstNode* cFunc)
+{
+	auto* p = new AstFunction();
+	p->name = name;
+	if(cFunc)	p->cLangFunction = cFunc->name;
+	return p;
+}
+
 AstNode * addFunctionBlock(AstNode *node, AstNode * block, AstNode* annotation)
 {
 	auto p=dynamic_cast<AstFunction*>(node);

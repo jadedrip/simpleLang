@@ -41,7 +41,7 @@ CodeGen * AstGo::makeGen(AstContext * context)
 	auto* x = func->makeGen(goContext);
 	auto* p = new GoGen(x);
 	p->globles = std::move(goContext->globels);
-	// auto* g = AstImport::loadClass("si", "Coroutine");
+	// auto* g = AstImport::loadClass("sl", "Coroutine");
 	p->type =context->findStruct("si_Coroutine");
 	return p;
 }

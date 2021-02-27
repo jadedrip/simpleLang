@@ -31,8 +31,8 @@ public:
 	bool parameter = false;	// 是否函数参数，或函数参数衍生（成员）变量	
 	bool escape = false;	// 是否逃逸变量
 
-	enum ValueType { ivalue, lvalue, rvalue }; // 无所谓，左值，右值
-	ValueType valueType = ivalue;
+	enum class ValueType { ivalue, lvalue, rvalue }; // 无所谓，左值，右值
+	ValueType valueType = ValueType::ivalue;
 
 	// 期望的类型
 	llvm::Type* hope = nullptr;

@@ -117,7 +117,7 @@ SimpleLang 程序的目录结构是固定的，入口文件被必须为 main.sc�
 
 使用 const 来定义常量：
 
-	const pi=3.1415	// 注意：常量不需要类型定义
+	const pi=3.1415	// 注意：常量如果可以推断，可以不需要类型定义
 
 以及枚举：
 
@@ -152,7 +152,7 @@ SimpleLang 语言中除了内置类型（整数和浮点），其他类型都保
 
 数组
 ------------
-除 singleton 外都可以定义成数组，数组有**固定长度**，并且不能更改长度，有个默认打开的编译选项，会让越界访问抛出异常。数组实际上为 Array<T> 类型，（类型+[]） 只是简写，两者等价。
+数值类型（不是变量）可以定义成普通数组，数组有**固定长度**，并且不能更改长度，有个默认打开的编译选项，会让越界访问抛出异常。数组实际上为 Array<T> 类型，（类型+[]） 只是简写，两者等价。
 数组下标从0开始
 
     int[] a=[ 0, 1 ]			// 数组可以直接初始化
@@ -167,13 +167,42 @@ SimpleLang 语言中除了内置类型（整数和浮点），其他类型都保
 
     func myFunc( int[] array ){ ... }
 
-另外数组也支持切片
+也可以定义多维数组
+
+```
+int[2, 2, 2] vec = [ [ [1,2], [1,2] ], [ [1,2], [1,2] ]  ] 
+int v = vec[0, 1, 1]
+```
+
+另外单维数组也支持切片
 
     int[] s=arr[startIndex:length]
 
 需要注意的是，切片是引用，因此如果源改变了，切片同样会改。
 
-注：如果想使用可变数组，可以使用 Vector 模板类。 
+注：如果想使用可变数组，可以使用 Vector 模板类。
+
+## 对象数组
+
+对象也可以定义为数组，但它有特殊性。
+
+构造数组时，整个数组仅仅初始化内存空间，而不会构造内部的对象，并且空间是紧凑创建的，不会有对象头，内存会被置0，但不会调用构造函数。因此，你无法直接判定数组中的对象是否存在，是否已经被初始化。
+
+而将对象放入数组，是一个**复制**操作，原对象和数组中的对象会脱钩，新对象的生存期完全跟随数组（除非手动从数组中删除），而从数组中取值，同样是一个**复制**概念的操作。当然，编译器会尝试分析生存期进行优化，如果变量没有逃逸，是不会有真正的复制操作的。
+
+```
+MyCls[2] myClss
+var zero=myClss[0].val		// 对象还未构造，但 zero 的值是0，因为内存被置0了
+if(myClss[0]) doSome		// 不能这么判断，表达式永远为真，编译会报错误
+if(myClss[0].exists) doSome	 // 可以在 MyCls 里定义一个 boolean exists=true, 由于数组默认置空的，就可以用来判断对象是否存在了
+myClss[0] = MyCls()		// 可以认为是 myClass[0] = clone(MyCls()), 当然，编译器会进行优化
+var v=myClss[0]			// 原则上等于 v=clone(myClass[0])
+v.val = 11			    // 数组内的对象不受影响
+const x=myClss[0]		// 这样不会进行复制，x 被认为是 myClass[0] 的别名
+x.val = 11				// 数组内的对象被改变
+```
+
+这么设计的目的，是极大的降低对象数组的开销，并把数组交给程序员完全管理，对象数组实际可以被看成一个内存池。对象数组很容易出错，因此使用需要谨慎，如果不追求性能，用容器类吧。
 
 内部类 Any
 -----------
@@ -219,7 +248,7 @@ switch 语法如下，支持多种数据以及多种比较，只要是测试相�
 		"celery": vegetableComment = "Add some raisins and make ants on a log."
 		"cucumber", "watercress": {
 			vegetableComment = "That would make a good tea sandwich."
-			comm : "多行需要大括号"
+			comm = "多行需要大括号"
 		}
 		default: vegetableComment = "Everything tastes good in soup."
 	}
@@ -245,25 +274,21 @@ SimpleLang 语言中支持元组，替代 C++ 中的 pair, tuple。Si 里的元�
 		print( i )
 	}
 	
-	var t=1 :: (10, 20)		// 通过 :: 可以连接两个元组为一个新元组，这里等价于 var t = (1, 10, 20) 
+	var n= (10, "Hello") :+ (20, "你好")  // :+ 可以拼接元组，结果为 (10, "Hello", 20, "你好")
+	var t=1 :+ (10, 20)					// :+ 也可以把元素加入元组成为一个新元组，这里等价于 var t = (1, 10, 20) 
+	PS: var x = you( myFun() + 10 )		 // 考虑到函数返回直接用 + 容易引起二意，还是用 :+，冒号代表操作元组
 	
 	var b0, b1 := a				// 元组的自动解构，注意复制的是引用，变量数量可以比实际的少，但不能多。
-	int c0, float c1 := (10， 10.0)
+	int c0, float c1 := (10, 10.0)
 	
 	var c=(0)			// 这不是元组，c是 int 类型
+	
+	
 
 另外，元组的成员也可以命名：
 
 	var tuple=( key=1, value=2 )
 	print( tuple.key )
-
-元组也支持 -> 操作
-
-	(10, 20) -> myFunc 	// 等价于 myFunc(10, 20)
-	
-	let v = (10, 20) -> firstFunc :: 20 -> second // 等价于 let v = second( firstFunc(10, 20), 20 )
-
-如果你想玩一下函数式编程，这种语法也许会让你的程序更容易阅读
 
 特别的，元组必须放在 = 右边或者接 -> 操作 ，也就是无根的元组是违法的。
 
@@ -357,7 +382,7 @@ remove 的返回值赋值给 i, 重新开始循环体 (continue)
 		if( args.size > 0 )
 			val = args[0]
 		retval = a + b		// 直接操作返回值
-		return	   // 可以省略
+		return	   // 可以省略变量列表
 		int x = 12 // 编译错误，return 必须在块的最后 
 	}
 
@@ -407,7 +432,7 @@ return
 
 传参
 ================
-SimpleLang 语言中，传入的参数（不包括 int 等内部参数）都被视为引用，因此**它的内容**可以在函数中可以被更改。
+SimpleLang 语言中，传入的参数如果是值类型（int 等数字），会被复制，而对象被视为引用，因此**它的内容**可以在函数中可以被更改。
 
 比如：
 
@@ -427,6 +452,16 @@ SimpleLang 语言中，传入的参数（不包括 int 等内部参数）都被�
 	}
 	
 	int x=myFunc( 10, 20 )
+
+特别的，如果参数上加上了 clone 关键字，那么这个对象会被复制进入函数
+
+```
+func myFunc( clone int clonedValue ) {
+	clonedValue.x = xxx	// 不影响原始变量
+}
+```
+
+
 
 函数调用
 -----
@@ -448,6 +483,20 @@ SimpleLang 语言中，传入的参数（不包括 int 等内部参数）都被�
 下面的写法是非法的（除非第一个参数就是 name）：
 
 	var v= fun( name="myname", 10, 20 )
+
+函数另一种调用方法是通过 :: 后置
+
+ ```
+10 :: fun 	// 等价于 func(10)
+ ```
+
+元组也支持 :: 操作
+
+	(10, 20) :: myFunc 	// 等价于 myFunc(10, 20)
+	
+	let v = ((10, 20) :: firstFunc) :+ 30 :: second // 等价于 let v = second( firstFunc(10, 20), 30 )
+
+如果你想玩一下函数式编程，这种语法也许会让你的程序更容易阅读
 
 函数对象、匿名函数
 -------
@@ -498,7 +547,7 @@ SimpleLang 支持的异常。
 	}
 	
 	// 简化的异常处理格式，对函数的异常直接处理，需要注意的是，函数后面的 catch 只能有一个
-	var i=func( 10 ) catch {
+	var i=func( 10 ) catch(e) {
 		print(it)  // it 是 Exception 类型
 	}
 	
@@ -511,7 +560,7 @@ SimpleLang 支持的异常。
 	func nothrow willNotThrow() : int 
 
 注：一个 nothrow 的函数，编译器会**尽量**检查异常情况，如果调用了带异常函数而没捕获，将出现编译错误。
-而如果 nothrow 的函数内抛出了空指针之类的未知异常，将直接转去 **公共异常处理函数**。
+而如果 nothrow 的函数内抛出了空指针之类的未知异常，将无法捕获，而直接转去 **公共异常处理函数**。
 
 空指针
 -------------------
@@ -555,17 +604,6 @@ MyData x(10, "你好")
 ```
 
 纯数据类可以继承，并被一般类继承，但不能从一般类继承。
-
-## 纯数据类数组
-
-纯数据类数组是特殊的，对象数组非空，**不能**保存 null 值，并在创建时初始化，如果需要能保存 null 值的数组，请使用 Vecter。
-
-对象数组内的对象生存期跟随整个数组，而不是单独处理。
-
-    MyData[10] myArray		// 会一次性初始化 10个 MyClass 对象
-    myArray[0].val		
-
-
 
 ## 一般类
 
@@ -622,6 +660,8 @@ MyData x(10, "你好")
 			print(v)
 			virtualFunction(v)	// 调用虚函数
 		}
+		
+		const func(int) constVirtualFunction = null 	// 真纯虚函数
 	}
 	
 	// 类可以继承，只能单继承，但可以有多个接口
@@ -635,13 +675,19 @@ MyData x(10, "你好")
 		}
 	
 		myFunc = func(int v){
-			Base::canOverload(v)		// 强制调用基类函数
+			Base:canOverload(v)		// 强制调用基类函数
+		}
+		
+		constVirtualFunction = func(int v) {
+		
 		}
 	}
 	
 	Interface0 obj = Second()
+	obj.virtualFunction = xxx // 还能改
+	obj.constVirtualFunction = xxx // 编译错误，不能更改
 
-相应的，类没有虚类或者纯虚类，所有类都可以被构造，如果有些类的函数没实现，就是一个空的函数指针，可以通过后期赋值的方式来实现。
+相应的，类没有虚类或者纯虚类，所有类都可以被构造，如果有些类的函数没实现，就是一个空的函数指针，可以通过后期赋值的方式来实现。如果要防止它被构造，可以把构造函数放入  protected 区域。“虚函数”前可以添加 const 关键字，有 const 关键字的变量构造后就不能再更改了，因此编译器对这种变量可以优化实现。
 
 ## Get & Set
 
@@ -1189,7 +1235,7 @@ SimpleLang 通过通道来支持跨协程数据交换，成员函数 await 可�
 
 包 & import
 ============
-SimpleLang 通过 import 导入包，import 只能写在文件头部，简单起见，SimpleLang 总是一次导入包里首层所有的公共对象、函数，而子包内不能在包外访问。
+SimpleLang 通过 import 导入包，import 只能写在文件头部，简单起见，SimpleLang 总是一次导入包里首层所有的变量、类定义、函数等，而其他层不能在包外访问。
 
 	import org.simplelang
 
@@ -1205,7 +1251,9 @@ sl:MyClass my
 
 包只有根目录下函数、接口、类才能被其他模块访问。
 
-
+```
+org.simplelang.inner:StringImp imp	// 编译错误，无法访问
+```
 
 # 其他
 
@@ -1291,7 +1339,7 @@ SimpleLang 支持有限的操作符重载，可以对类重载一元或二元操
 	
 	var conn = Connect()
 	var my = MyObject() link conn
-	var myRef = conn..MyObject 
+	var myRef = (my:conn)
 
 my 对象的生存期将会跟随输入的对象 conn，成为 Connect 的子类。
 
@@ -1314,7 +1362,7 @@ my 对象的生存期将会跟随输入的对象 conn，成为 Connect 的子类
 		func run(String data)
 	}
 	
-	class MyProxyImp{
+	class MyProxyImp {
 		func invoke(String methodName, Any[] args) : Any
 	}
 	

@@ -70,7 +70,7 @@ void* createObject(uint32_t size, uint64_t typeId) {
 	//assert(sizeof(LONG) == 4);
 	//return malloc(size);
 	uint8_t flag = MARK_FLAG_REF;
-	// printf("createObject %ld, %llx\r\n", size, typeId);
+	printf("createObject %ld, %llx\r\n", size, typeId);
 	uint8_t* p = (uint8_t*)malloc((size_t)size + POINTER_SIZE + REF_SIZE);
 	if (!p) return NULL;
 	p = p + POINTER_SIZE + REF_SIZE;

@@ -15,7 +15,7 @@ using namespace llvm;
 FunctionInstance::FunctionInstance(llvm::Function * f) : func(f)
 {
 	if (f) {
-		name = f->getName();
+		name = f->getName().str();
 		returnType = f->getReturnType();
 	}
 }
@@ -61,51 +61,60 @@ void FunctionInstance::generateBody(llvm::Module *m, llvm::LLVMContext & context
 llvm::Function * FunctionInstance::generateCode(llvm::Module *m, llvm::LLVMContext & context)
 {
 	if (func) return func;
+	if (!cName.empty()) {
+		func = m->getFunction(cName);
+		if (func) return func;
+	}
+
+	// 确定参数和函数名
+
 	/*
 		函数：{函数名}_{返回值类型}_{参数名称}__包全名
-		成员函数：{函数名}_{返回值类型}_{参数类型}__{类名}_{包全名}
-		静态函数：A_{函数名}_{返回值类型}_{参数类型}__{类名}_{包全名}
+		成员函数：{函数名}_{返回值类型}_{参数类型}__{类名}__{包全名}
+		静态函数：A_{函数名}_{返回值类型}_{参数类型}__{类名}__{包全名}
 	*/
 	std::string n = name + "_";
-
 	Type* retType = returnType ? returnType : Type::getVoidTy(context);
-	n += getReadable(retType);
+	n += getCompression(retType);
 
 	std::vector<Type*> param;
 	if (object) { // 是成员函数
 		auto *x=PointerType::get(object, 0);
 		param.push_back(x);
+		n = "M_" + n;
 	}
 
-	for (auto i : parameters) {
+	if (parameters.empty()) {
+		n += "_X";
+	} else for (auto i : parameters) {
 		Type* tp = const_cast<Type*>(i.second);
 		// 结构一律用指针传
 		if (tp->isStructTy()) {
 			tp = PointerType::get(tp, 0);
 		}
 		param.push_back(tp);
-		n += getReadable(tp) + "_";
+		n += "_" + getCompression(tp);
 	}
-	n += "_";
-	if (object) n += getReadable(object);
+	n += "__";
+	if (object) n += getCompression(object) + "__";
 
-	if (overload && !parameters.empty()) {
-		for (auto i : parameters) {
-			n.push_back('_');
-			Type* tp = const_cast<Type*>(i.second);
-			n += getReadable(tp);
-		}
-	}
+	n += packageName;
 
+	if (!cName.empty()) n = cName;
+	else cName = n;
 	logger(severity_level::debug) << "Create function: " << n;
+	func = m->getFunction(n);
+	if (func) return func;	// 先考虑已经存在的
+
+	// 先创建定义，PS: 跨模块的情况下需要 link
+	FunctionType* FT = FunctionType::get(retType, param, _variable);
+	func = Function::Create(FT, Function::ExternalLinkage, n, m);
 	// 仅有定义
 	if (block.codes.empty()) {
-		func = CLangModule::getFunction(n);
-		if (!func)
+		auto f = CLangModule::getFunction(n);
+		if (!f)	// 其他模块也找不到？
 			std::clog << "Warning, not find function " << name << std::endl;
 	}else{
-		FunctionType* FT = FunctionType::get(retType, param, _variable);
-		func = Function::Create(FT, Function::ExternalLinkage, n, m);
 		generateBody(m, context);
 	}
 	return func;

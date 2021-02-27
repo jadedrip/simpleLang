@@ -37,6 +37,9 @@
 #include <llvm/ADT/APInt.h>
 #include <llvm/Support/Chrono.h>
 #include <llvm/Support/MathExtras.h>
+#include <llvm/Support/Allocator.h>
+#include <clang/AST/StmtOpenMP.h>
+#include <clang/AST/DeclCXX.h>
 #pragma warning( pop )
 
 #include "../src/logger/logger.h"

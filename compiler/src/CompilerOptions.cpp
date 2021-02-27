@@ -1,8 +1,7 @@
 #include "stdafx.h"
 #include "CompilerOptions.h"
 
-CompilerOptions g_compilerOptions;
-CompilerOptions& CompilerOptions::instance()
-{
-	return g_compilerOptions;
+namespace CompilerOptions {
+	std::string triple;
+	bool directlyExecute = true;	// 是否直接运行
 }

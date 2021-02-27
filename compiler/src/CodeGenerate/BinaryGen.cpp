@@ -13,8 +13,8 @@ BinaryGen::BinaryGen(int op, CodeGen * left, CodeGen * right)
 	: _op(op), _left(left), _right(right)
 {
 	// 二元操作符的操作数都是右值
-	_left->valueType = rvalue;
-	_right->valueType = rvalue;
+	_left->valueType = ValueType::rvalue;
+	_right->valueType = ValueType::rvalue;
 
 	Type* leftType = _left->type;
 	Type* rightType = _right->type;

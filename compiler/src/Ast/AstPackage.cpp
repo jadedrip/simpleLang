@@ -11,10 +11,12 @@ using namespace std;
 using namespace llvm;
 namespace stdfs = filesystem;
 
+AstPackage* AstPackage::simpleLang;
+
 extern llvm::LLVMContext llvmContext;
 void AstPackage::importDll(const std::filesystem::path& base)
 {
-	string& triple = CompilerOptions::instance().triple;
+	string& triple = CompilerOptions::triple;
 	auto dllptr = base / "platform" / triple / "share";
 	if (!stdfs::exists(dllptr)) return;
 	for (auto i : std::filesystem::directory_iterator(dllptr)) {
@@ -46,7 +48,7 @@ void AstPackage::importDll(const std::filesystem::path& base)
 AstPackage::AstPackage(const std::string& packageName) : _name(packageName) {
 	// TODO: 多种匹配查找目录
 	auto base = stdfs::path("lib") / packageName;
-	if (CompilerOptions::instance().directlyExecute) {
+	if (CompilerOptions::directlyExecute) {
 		importDll(base);
 	}
 	auto src = base / "src";
@@ -60,7 +62,7 @@ AstPackage::AstPackage(const std::string& packageName) : _name(packageName) {
 			includes.push_back(includePath.string());
 		_llvmModule = loadCHeader(_name, export_h.string(), includes);
 		for (auto i : _llvmModule->getIdentifiedStructTypes()) {
-			_structs[i->getStructName()] = i;
+			_structs[i->getStructName().str()] = i;
 		}
 	}
 	else {
@@ -94,7 +96,7 @@ void AstPackage::recurvePath(const string& base, const stdfs::path& path)
 		auto& file = i.path();
 		string ex = file.extension().string();
 		std::for_each(ex.begin(), ex.end(), tolower);
-		if (ex == ".si") {
+		if (ex == ".sl") {
 			auto* p = CLangModule::loadSiFile(file, base);
 			string filename = file.filename().string();
 			if (!base.empty())

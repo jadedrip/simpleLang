@@ -29,7 +29,7 @@ void yyerror( const char* error );
 %left '(' ')' 
 %right '~' '!' INC DEC 
 %token BINARY EOL FEOF FUNC DOTS TYPE RGO WHEN_NULL
-%token '{' '}' ';' '[' ']' ':' '`'
+%token '{' '}' ';' '[' ']' ':' '`' '#'
 %token<type>	ITYPE 
 %token<str>		L_IDENTIFIER U_IDENTIFIER 
 %token<expr>	INTEGER FLOAT_TOKEN INT64_TOKEN FLOAT64 BOOLEAN_TOKEN STRING_LITERAL 
@@ -254,9 +254,11 @@ interface_lines
 
 function_def
 	: annotations FUNC L_IDENTIFIER '(' function_parameters ')' function_ret 
-		 { $<expr>$=setAnnotations($<expr>1, createFunction(0, $3, $5, $7, nullptr)); }
-		| FUNC L_IDENTIFIER '(' function_parameters ')' function_ret 
-		 { $<expr>$= createFunction(0, $2, $4, $6, nullptr); }
+		 { $$=setAnnotations($<expr>1, createFunction(0, $3, $5, $7, nullptr)); }
+	| FUNC L_IDENTIFIER '(' function_parameters ')' function_ret 
+		 { $$= createFunction(0, $2, $4, $6, nullptr); }
+	| FUNC '#' L_IDENTIFIER STRING_LITERAL { $$=createCFunction($3,$4); }
+	| FUNC '#' L_IDENTIFIER { $$= createCFunction($3); }
 	;
 
 /**********************************************
