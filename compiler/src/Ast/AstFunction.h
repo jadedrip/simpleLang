@@ -34,10 +34,11 @@ public:
 		ClassInstanceType* clsType = nullptr,
 		std::map<std::string, AstType*>* templateVars = nullptr
 	);
-
+	CallGen* makeCLangCall(AstContext*,
+		const std::vector<std::pair<std::string, CodeGen*>>& types);
 	virtual CodeGen* makeGen(AstContext* parent);
 	std::map<std::string, AstAnnotation*> annotations;
-	enum FunctionType { Func = 0, Method = 1, Constructor = 2, Destructor = 3, Set = 4, Get = 5, Lambda = 6, Operator = 7 };
+	enum class SLFunctionType { Func = 0, Method = 1, Constructor = 2, Destructor = 3, Set = 4, Get = 5, Lambda = 6, Operator = 7, CLangFunc = 8 };
 public:
 	// 对于成员函数，如果类是模板的，那么函数需要复制给固化类
 	AstFunction* clone();
@@ -54,7 +55,7 @@ public:
 	bool isOperator = false;				// 操作符（操作符重载时使用）
 	AstType* variable = nullptr;			// 可变参数的类型
 	std::string variableName;
-	FunctionType funcType;					
+	SLFunctionType funcType;
 
 	struct OrderedParameters {
 		std::vector<std::pair<std::string, CodeGen*>> parameters;

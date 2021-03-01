@@ -25,7 +25,7 @@ CodeGen * AstGo::makeGen(AstContext * context)
 	// 如果不是函数，说明是函数调用，包装为匿名函数
 	if (!func) {
 		func = new AstFunction();
-		func->funcType = AstFunction::Lambda;
+		func->funcType = AstFunction::SLFunctionType::Lambda;
 		func->block.push_back(_node);
 	} 
 	// go 的匿名返回 void*, 我们改造一下

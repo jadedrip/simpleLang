@@ -186,6 +186,11 @@ CallGen * AstFunction::makeCall(
 	std::map<std::string, AstType*>* templateVars
 )
 {
+	if (funcType == SLFunctionType::CLangFunc) {  // 如果是 c 函数
+		assert(object == nullptr && clsType==nullptr && templateVars == nullptr);
+		return makeCLangCall(context, types);
+	}
+
 	llvm::LLVMContext& c = context->context();
 	OrderedParameters *ordered = orderParameters(context, types, templateVars);
 	if (!ordered) return nullptr;
@@ -222,6 +227,16 @@ CallGen * AstFunction::makeCall(
 	return p;
 }
 
+CallGen* AstFunction::makeCLangCall(AstContext* content, const std::vector<std::pair<std::string, CodeGen*>>& types)
+{
+	auto *m=content->module;
+	auto *f=m->getFunction(name);
+	if (!f) throw std::runtime_error("Can't find C language function:" + name);
+	auto fi = new FunctionInstance(f);
+	auto p = new CallGen(fi, types, nullptr);
+	return p;
+}
+
 CodeGen * AstFunction::makeGen(AstContext * parent)
 {
 	if (_parent) return nullptr; // 已经执行过
@@ -255,7 +270,7 @@ CodeGen * AstFunction::makeGen(AstContext * parent)
 
 	// _isTemplate = _cls && _cls->isTemplated();
 
-	if (funcType==Lambda || name.empty()) {// 匿名函数
+	if (funcType==SLFunctionType::Lambda || name.empty()) {// 匿名函数
 		if (_isTemplate) throw std::runtime_error("匿名函数不能是模板的");
 		if (variable)  throw std::runtime_error("匿名函数不允许有可变参数");
 		

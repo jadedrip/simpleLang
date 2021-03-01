@@ -26,9 +26,8 @@ CallGen::CallGen(FunctionInstance * func, std::vector<CodeGen*>&& attrs) : funct
 CallGen::CallGen(FunctionInstance* func, const std::vector<std::pair<std::string, CodeGen*>>& paramters, CodeGen* object)
 	: function(func)
 {
-	if (func) {
-		setRealType(func->returnType);
-	}
+	assert(func);
+	setRealType(func->returnType);	
 
 	const size_t s=func->parameters.size();
 	size_t idx = 0;

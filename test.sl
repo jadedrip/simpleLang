@@ -4,7 +4,7 @@
 // import sl
 
 int a = 10
-//print("Hello world!")
+printf("Hello world!")
 
 //var c="Ni hao"
 //println(c)
