@@ -23,11 +23,6 @@ inline void replaceToSlash(std::string& x)
 	std::for_each(x.begin(), x.end(), [](char &c) { if (c == '.') c = '/'; });
 }
 
-void AstImport::loadPackage(const std::string& packageName)
-{
-	
-}
-
 CodeGen * AstImport::makeGen(AstContext * parent)
 {
 	std::string dir;
@@ -47,46 +42,6 @@ CodeGen * AstImport::makeGen(AstContext * parent)
 
 std::regex baseRegex("([a-z][a-zA-Z_\\d]+)_([A-Z][a-z\\d]+)_(([GS]ET_)?[a-z][A-Za-z\\d]+)$");
 std::regex classRegex("([a-z][a-zA-Z_\\d]+)_([A-Z][a-z\\d]+)$");
-//void AstImport::loadCModule(llvm::Module* m)
-//{
-//	// 导入符合命名规则的类
-//	for (auto *i : m->getIdentifiedStructTypes()) {
-//		string x = i->getName().str();
-//		if (x.find("struct.") == 0)
-//			x = x.substr(7);
-//		if (x.at(0) == '_') continue;
-//		std::smatch classMatch;
-//		if (std::regex_match(x, classMatch, classRegex)) {
-//			string packageName = classMatch[1].str();
-//			replaceToDot(packageName);
-//
-//			auto &map = classesMap[packageName];
-//
-//			string className = classMatch[2].str();
-//			map[className] = new ClassInstanceType(packageName, className, i);
-//		}
-//	}
-//
-//	// packageName _ [大写开头]className _ GET _ fieldName
-//	auto &funs = m->getFunctionList();
-//	for_each(funs.begin(), funs.end(), [](Function& func) {
-//		string x = func.getName();
-//		std::smatch baseMatch;
-//		if (std::regex_match(x, baseMatch, baseRegex)) {
-//			std::ssub_match packageMatch = baseMatch[1];
-//			auto &map = classesMap[packageMatch.str()];
-//			std::ssub_match classNameMatch = baseMatch[2];
-//			auto *p = map[classNameMatch.str()];
-//			std::string name = baseMatch[3].str();
-//			if (p) {
-//				p->funcCache[name] = new FunctionInstance(&func);
-//				for (auto &i : func.getAttributes()) {
-//					i.dump();
-//				}
-//			}
-//		}
-//	});
-//}
 
 void AstImport::draw(std::ostream & os)
 {
@@ -96,14 +51,6 @@ void AstImport::draw(std::ostream & os)
 		os << i << '.';
 	}
 	os << std::endl;
-}
-
-AstClass * AstImport::loadClass(const std::string & path, const std::string & name)
-{
-	loadPackage(path);
-
-	std::string n = path + "." + name;
-	return CLangModule::findClass(n);
 }
 
 void def(ClassInstanceType* instance, int& index, AstContext* context, AstDef* x, Module* m)

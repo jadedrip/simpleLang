@@ -7,7 +7,17 @@ int a = 10
 printf("Hello world!")
 
 var c="Ni hao"
-//println(c)
+println(c)
+
+func world(){
+	var h = "hello"
+	println(h)
+}
+
+world()
+
+
+
 /*
 class Base {
 	int a
@@ -25,14 +35,7 @@ Base xd = MyClass()
 
 Itf ix = xd
 
-func world(){
-	var h = "hello"
-	println(h)
-}
 
-// var data = "Data"
-// println("Hello")
-// world()
 
 */
 /*

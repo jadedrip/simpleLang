@@ -124,21 +124,6 @@ void CLangModule::shutdown() {
 	// _modules.clear();
 }
 
-//llvm::StructType* CLangModule::getStruct(const string& path, const string& name) {
-//	return path.empty() ? getStruct(name) : getStruct(path + "_" + name);
-//}
-//
-//llvm::StructType* CLangModule::getStruct(const string& name)
-//{
-//	auto* p = _structs["struct." + name];
-//	auto v = p ? p : _structs[name];
-//	assert(v && "Can't find struct");
-//	return v;
-//}
-
-map<string, AstClass*> classes;
-map<string, AstFunction*> functions;
-
 using namespace std::filesystem;
 
 AstPackage* CLangModule::loadPackage(const string& packageName)
@@ -152,23 +137,5 @@ AstPackage* CLangModule::loadPackage(const string& packageName)
 	return package;
 }
 
-AstClass* CLangModule::findClass(const string& fullName)
-{
-	auto i = classes.find(fullName);
-	if (i != classes.end()) {
-		return i->second;
-	}
-	return nullptr;
-}
-
-AstFunction* CLangModule::findFunction(const string& fullName)
-{
-	clog << "Find function :" << fullName << endl;
-	auto i = functions.find(fullName);
-	if (i != functions.end()) {
-		return i->second;
-	}
-	return nullptr;
-}
 
 
