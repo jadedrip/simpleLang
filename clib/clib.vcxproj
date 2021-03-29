@@ -125,7 +125,7 @@
       <Command>mkdir $(SolutionDir)lib\sl\src
 mkdir $(SolutionDir)lib\sl\platform\x86_64-pc-windows-msvc\share
 copy /Y $(ProjectDir)sl\*.sl $(SolutionDir)lib\sl\src
-echo $(TargetPath) &gt; $(SolutionDir)lib\si\platform\x86_64-pc-windows-msvc\share\clib.dll.link
+echo $(TargetPath) &gt; $(SolutionDir)lib\sl\platform\x86_64-pc-windows-msvc\share\clib.dll.link
 copy /Y $(ProjectDir)export.h $(SolutionDir)lib\sl
 mkdir $(SolutionDir)lib\sl\include
 copy /Y $(ProjectDir)core.h $(SolutionDir)lib\sl\include

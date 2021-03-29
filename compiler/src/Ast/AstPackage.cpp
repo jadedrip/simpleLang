@@ -41,6 +41,9 @@ void AstPackage::importDll(const std::filesystem::path& base)
 			if (llvm::sys::DynamicLibrary::LoadLibraryPermanently(filename.c_str(), &err)) {
 				cerr << "读取 " << filename << "失败：" << err << endl;
 			}
+			else {
+				cout << "读取 " << filename << "成功" << endl;
+			}
 		}
 	}
 }

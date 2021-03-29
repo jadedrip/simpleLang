@@ -28,7 +28,7 @@ void yyerror( const char* error );
 %left '&' '|' '^'
 %left '(' ')' 
 %right '~' '!' INC DEC 
-%token BINARY EOL FEOF FUNC DOTS TYPE RGO WHEN_NULL
+%token EOL FEOF FUNC DOTS TYPE RGO WHEN_NULL
 %token '{' '}' ';' '[' ']' ':' '`' '#'
 %token<type>	ITYPE 
 %token<str>		L_IDENTIFIER U_IDENTIFIER 
@@ -305,7 +305,7 @@ def_types
 
 def
 	: 	typeLet									{ $$=createDef($1); }
-	|	def ',' L_IDENTIFIER					{ $$=appendDef($1, $3); }
+	|	def ',' L_IDENTIFIER 					{ $$=appendDef($1, $3); }
 	|	def ',' L_IDENTIFIER '=' expr			{ $$=appendDef($1, $3, $5); }
 	|	def_type L_IDENTIFIER AEQ expr			{ $$=tupleResolve(let($2), $<expr>4, true); }	// 单元组解构
 	|	def_type '(' tupleResolveParams ')' AEQ expr	{ $$=tupleResolve($<expr>3, $<expr>5, true); }

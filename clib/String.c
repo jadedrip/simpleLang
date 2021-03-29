@@ -32,7 +32,7 @@ void Init__String__sl(String * str, char * data, uint64_t length, uint16_t encod
 	//}
 
 	// wsprintfW(data);
-	wprintf(L"\r\nCall String(data, %lld, %d): %.*ls\r\n", length, encode, (int)length, str->data);
+	// wprintf(L"\r\nCall String(data, %lld, %d): %.*ls\r\n", length, encode, (int)length, str->data);
 }
 
 void Finalize__String__sl(String* str)
@@ -94,7 +94,7 @@ void print_X_PSU3Rya__sl(String * str)
 	wchar_t* data = (wchar_t*)str->data;
 	size_t len = str->length;
 
-	wprintf(L"\r\nCall print : %ls, %lld\r\n", data, len);
+	// wprintf(L"\r\nCall print : %ls, %lld\r\n", data, len);
 	wprintf(L"%.*ls", (int)len, data);
 }
 
@@ -110,17 +110,17 @@ void println_X_PSU3Rya__sl(String* str)
 	wchar_t* data = (wchar_t*)str->data;
 	size_t len = str->length;
 
-	wprintf(L"\r\nCall print : %ls, %lld\r\n", data, len);
+	// wprintf(L"\r\nCall print : %ls, %lld\r\n", data, len);
 	wprintf(L"%.*ls\r\n", (int)len, data);
 }
 
 String * sl_String_PLUS_sl_String(String * str, String * right)
 {
 	if (!str) {
-		printf("si_String_PLUS_si_String's str is null!\r\n");
+		// printf("si_String_PLUS_si_String's str is null!\r\n");
 		return str;
 	} else if(!right){
-		printf("si_String_PLUS_si_String's right is null!\r\n");
+		// printf("si_String_PLUS_si_String's right is null!\r\n");
 		return str;
 	}
 

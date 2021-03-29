@@ -20,6 +20,7 @@
 #include <llvm/Support/PrettyStackTrace.h>
 #include <llvm/IRReader/IRReader.h>
 #include <llvm/Support/SourceMgr.h>
+#include <llvm/Support/Host.h>
 #include "Ast/AstModule.h"
 #include "modules.h"
 #include "utility.h"
@@ -110,6 +111,11 @@ int main(int argc, char* argv[],  char * const *envp)
 	InitializeNativeTargetAsmPrinter();
 	InitializeNativeTargetAsmParser();
 
+	std::string triple = llvm::sys::getDefaultTargetTriple();
+	std::clog << "Triple: " << triple << std::endl;
+
+	CompilerOptions::triple = triple;
+
 	if (sys::DynamicLibrary::LoadLibraryPermanently(nullptr)) {
 		errs() << "Error loading program symbols.\n";
 		return -1;
@@ -123,8 +129,7 @@ int main(int argc, char* argv[],  char * const *envp)
 	//	// return -1;
 	//}
 
-	llvm::Triple triple;
-	std::clog << "OsName: " << triple.getOSName().str() << std::endl;
+
 
 	std::clog << "========" << std::endl;
 

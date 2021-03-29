@@ -68,58 +68,57 @@ extern int yydebug;
     ARRAY = 269,                   /* ARRAY  */
     INC = 270,                     /* INC  */
     DEC = 271,                     /* DEC  */
-    BINARY = 272,                  /* BINARY  */
-    EOL = 273,                     /* EOL  */
-    FEOF = 274,                    /* FEOF  */
-    FUNC = 275,                    /* FUNC  */
-    DOTS = 276,                    /* DOTS  */
-    TYPE = 277,                    /* TYPE  */
-    RGO = 278,                     /* RGO  */
-    WHEN_NULL = 279,               /* WHEN_NULL  */
-    ITYPE = 280,                   /* ITYPE  */
-    L_IDENTIFIER = 281,            /* L_IDENTIFIER  */
-    U_IDENTIFIER = 282,            /* U_IDENTIFIER  */
-    INTEGER = 283,                 /* INTEGER  */
-    FLOAT_TOKEN = 284,             /* FLOAT_TOKEN  */
-    INT64_TOKEN = 285,             /* INT64_TOKEN  */
-    FLOAT64 = 286,                 /* FLOAT64  */
-    BOOLEAN_TOKEN = 287,           /* BOOLEAN_TOKEN  */
-    STRING_LITERAL = 288,          /* STRING_LITERAL  */
-    CALL = 289,                    /* CALL  */
-    IF = 290,                      /* IF  */
-    ELSE = 291,                    /* ELSE  */
-    WHILE = 292,                   /* WHILE  */
-    FOR = 293,                     /* FOR  */
-    RETURN = 294,                  /* RETURN  */
-    CLASS = 295,                   /* CLASS  */
-    INTERF = 296,                  /* INTERF  */
-    PROTECTED = 297,               /* PROTECTED  */
-    PACKAGE = 298,                 /* PACKAGE  */
-    IMPORT = 299,                  /* IMPORT  */
-    NULLPTR = 300,                 /* NULLPTR  */
-    STATIC = 301,                  /* STATIC  */
-    CONST_TOKEN = 302,             /* CONST_TOKEN  */
-    ENUM = 303,                    /* ENUM  */
-    SWITCH = 304,                  /* SWITCH  */
-    CASE = 305,                    /* CASE  */
-    DEFAULT = 306,                 /* DEFAULT  */
-    SINGLETON = 307,               /* SINGLETON  */
-    TRY_TOKEN = 308,               /* TRY_TOKEN  */
-    CATCH = 309,                   /* CATCH  */
-    FINALLY = 310,                 /* FINALLY  */
-    GET_TOKEN = 311,               /* GET_TOKEN  */
-    SET_TOKEN = 312,               /* SET_TOKEN  */
-    OPERATOR = 313,                /* OPERATOR  */
-    NEW_TOKEN = 314,               /* NEW_TOKEN  */
-    DELETE_TOKEN = 315,            /* DELETE_TOKEN  */
-    INIT_TOKEN = 316,              /* INIT_TOKEN  */
-    FINALIZE_TOKEN = 317,          /* FINALIZE_TOKEN  */
-    GO_TOKEN = 318,                /* GO_TOKEN  */
-    BBRACKETS = 319,               /* BBRACKETS  */
-    CONCEPT = 320,                 /* CONCEPT  */
-    PK = 321,                      /* PK  */
-    AS = 322,                      /* AS  */
-    VOID_TOKEN = 323               /* VOID_TOKEN  */
+    EOL = 272,                     /* EOL  */
+    FEOF = 273,                    /* FEOF  */
+    FUNC = 274,                    /* FUNC  */
+    DOTS = 275,                    /* DOTS  */
+    TYPE = 276,                    /* TYPE  */
+    RGO = 277,                     /* RGO  */
+    WHEN_NULL = 278,               /* WHEN_NULL  */
+    ITYPE = 279,                   /* ITYPE  */
+    L_IDENTIFIER = 280,            /* L_IDENTIFIER  */
+    U_IDENTIFIER = 281,            /* U_IDENTIFIER  */
+    INTEGER = 282,                 /* INTEGER  */
+    FLOAT_TOKEN = 283,             /* FLOAT_TOKEN  */
+    INT64_TOKEN = 284,             /* INT64_TOKEN  */
+    FLOAT64 = 285,                 /* FLOAT64  */
+    BOOLEAN_TOKEN = 286,           /* BOOLEAN_TOKEN  */
+    STRING_LITERAL = 287,          /* STRING_LITERAL  */
+    CALL = 288,                    /* CALL  */
+    IF = 289,                      /* IF  */
+    ELSE = 290,                    /* ELSE  */
+    WHILE = 291,                   /* WHILE  */
+    FOR = 292,                     /* FOR  */
+    RETURN = 293,                  /* RETURN  */
+    CLASS = 294,                   /* CLASS  */
+    INTERF = 295,                  /* INTERF  */
+    PROTECTED = 296,               /* PROTECTED  */
+    PACKAGE = 297,                 /* PACKAGE  */
+    IMPORT = 298,                  /* IMPORT  */
+    NULLPTR = 299,                 /* NULLPTR  */
+    STATIC = 300,                  /* STATIC  */
+    CONST_TOKEN = 301,             /* CONST_TOKEN  */
+    ENUM = 302,                    /* ENUM  */
+    SWITCH = 303,                  /* SWITCH  */
+    CASE = 304,                    /* CASE  */
+    DEFAULT = 305,                 /* DEFAULT  */
+    SINGLETON = 306,               /* SINGLETON  */
+    TRY_TOKEN = 307,               /* TRY_TOKEN  */
+    CATCH = 308,                   /* CATCH  */
+    FINALLY = 309,                 /* FINALLY  */
+    GET_TOKEN = 310,               /* GET_TOKEN  */
+    SET_TOKEN = 311,               /* SET_TOKEN  */
+    OPERATOR = 312,                /* OPERATOR  */
+    NEW_TOKEN = 313,               /* NEW_TOKEN  */
+    DELETE_TOKEN = 314,            /* DELETE_TOKEN  */
+    INIT_TOKEN = 315,              /* INIT_TOKEN  */
+    FINALIZE_TOKEN = 316,          /* FINALIZE_TOKEN  */
+    GO_TOKEN = 317,                /* GO_TOKEN  */
+    BBRACKETS = 318,               /* BBRACKETS  */
+    CONCEPT = 319,                 /* CONCEPT  */
+    PK = 320,                      /* PK  */
+    AS = 321,                      /* AS  */
+    VOID_TOKEN = 322               /* VOID_TOKEN  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -135,7 +134,7 @@ union YYSTYPE
 	char*		str;
 	int			type;
 
-#line 139 "intermediate/silang.tab.hpp"
+#line 138 "intermediate/silang.tab.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

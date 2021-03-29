@@ -46,7 +46,7 @@ Value * NewGen::generateCode(const Generater& generater)
 	initCore();
 
 	raw_os_ostream os(std::clog);
-	std::clog << "new ";
+	// std::clog << "new ";
  	//if (type->isStructTy()) {
 	//	auto *p=dyn_cast<StructType>(type);
 	//	bool zero=p->element_begin() == p->element_end();

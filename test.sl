@@ -6,7 +6,7 @@
 int a = 10
 printf("Hello world!")
 
-//var c="Ni hao"
+var c="Ni hao"
 //println(c)
 /*
 class Base {

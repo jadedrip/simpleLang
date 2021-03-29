@@ -44,7 +44,7 @@ H		[a-fA-F0-9]
 "uint"		    yylval.type=12;	return ITYPE; 
 "ulong"		yylval.type=13;	return ITYPE; 
 	
-"0"[lL]|(\-?[1-9]{D}*)[lL] { yylval.expr=makeValue(yytext,std::stoll(yytext));			return INT64_TOKEN; }
+0[lL]|(\-?[1-9]{D}*)[lL]	{ yylval.expr=makeValue(yytext,std::stoll(yytext));			return INT64_TOKEN; }
 "0"|("-"?[1-9]{D}*)			{ yylval.expr=makeValue(yytext,std::stol(yytext));			return INTEGER;  }
 "0x"{H}[lL]					{ yylval.expr=makeValue(yytext,std::stol(yytext, 0, 16 ));	return INTEGER; }
 "0x"{H}						{ yylval.expr=makeValue(yytext,std::stoll(yytext, 0, 16 ));	return INT64_TOKEN; }
