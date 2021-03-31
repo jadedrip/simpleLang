@@ -75,15 +75,16 @@ public:
 		std::vector<CodeGen*> variableGen,
 		ClassInstanceType* object = nullptr
 	);
-	FunctionInstance * getLLVMFunctionInstance(
+
+	bool isTemplate() const { return _isTemplate; }
+	bool def = false;	// 是否仅仅是定义
+private:
+	void fillFunctionBlock(AstContext *context, FunctionInstance*);
+	FunctionInstance* getLLVMFunctionInstance(
 		llvm::LLVMContext& c,
 		std::vector<std::pair<std::string, llvm::Type*>> parameters,
 		ClassInstanceType* object
 	);
-	bool isTemplate() const { return _isTemplate; }
-	bool def = false;
-private:
-	void fillFunctionBlock(AstContext *context, FunctionInstance*);
 private:
 	AstContext *_parent;
 	AstClass *_cls = nullptr;

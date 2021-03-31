@@ -22,6 +22,7 @@ FunctionInstance::FunctionInstance(llvm::Function * f) : func(f)
 
 void FunctionInstance::generateBody(llvm::Module *m, llvm::LLVMContext & context)
 {
+	if (block.codes.empty()) return;	// 空定义
 	assert(func);
 	// 不是空的，说明以前生成过
 	if (!func->getBasicBlockList().empty()) {
@@ -61,18 +62,17 @@ llvm::Function * FunctionInstance::generateCode(llvm::Module *m, llvm::LLVMConte
 		if (func) return func;
 	}
 
-	// 确定参数和函数名
-
 	/*
+		生成 C 语言函数名 cName
 		函数：{函数名}_{返回值类型}_{参数名称}__包全名
 		成员函数：{函数名}_{返回值类型}_{参数类型}__{类名}__{包全名}
 		静态函数：A_{函数名}_{返回值类型}_{参数类型}__{类名}__{包全名}
 	*/
-	Type* retType = returnType ? returnType : Type::getVoidTy(context);
+	assert(returnType);
 
 	if (cName.empty()) {
 		cName = name + "_";
-		cName += getCompression(retType);
+		cName += getCompression(returnType);
 
 		if (object) { // 是成员函数
 			cName = "M_" + cName;
@@ -93,6 +93,7 @@ llvm::Function * FunctionInstance::generateCode(llvm::Module *m, llvm::LLVMConte
 		if(!packageName.empty()) cName+="__" + packageName;
 	}
 
+	// 确定参数
 	std::vector<Type*> param;
 	if (object) { // 是成员函数
 		auto* x = PointerType::get(object, 0);
@@ -112,7 +113,7 @@ llvm::Function * FunctionInstance::generateCode(llvm::Module *m, llvm::LLVMConte
 	if (func) return func;	// 先考虑已经存在的
 
 	// 先创建定义，PS: 跨模块的情况下需要 link
-	FunctionType* FT = FunctionType::get(retType, param, _variable);
+	FunctionType* FT = FunctionType::get(returnType, param, _variable);
 	func = Function::Create(FT, Function::ExternalLinkage, cName, m);
 	// 仅有定义
 	if (block.codes.empty()) {

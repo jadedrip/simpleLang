@@ -156,7 +156,7 @@ dycast<MyClass>(b){	// 当转换成功时调用区块
 
 # 字符串
 
-原生字符串为 byte[] 类型，默认 utf-8 编码，可以被赋值给 String 类，转换为 Unicode 编码，或者赋值给 Array<byte>。
+原生字符串如果是 ascii，为 byte[] 类型，默认 utf-8 编码，可以被赋值给 String 类，转换为 Unicode 编码，或者赋值给 Array<byte>，如果包含 ascii，那么直接生成 String。
 
 # 类
 

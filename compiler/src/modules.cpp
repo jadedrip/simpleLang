@@ -50,11 +50,11 @@ llvm::Function* CLangModule::getFunction(const string& package, const string& na
 }
 
 void CLangModule::moveAll(llvm::ExecutionEngine* engine) {
-	for (auto& i : _packages) {
-		auto& v = i.second;   
-		std::unique_ptr<llvm::Module> p(v->llvmModule());
-		engine->addModule(std::move(p));
-	}
+	//for (auto& i : _packages) {
+	//	auto& v = i.second;   
+	//	std::unique_ptr<llvm::Module> p(v->llvmModule());
+	//	engine->addModule(std::move(p));
+	//}
 }
 
 string getPackageName(const string& filename) {

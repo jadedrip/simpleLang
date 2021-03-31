@@ -16,6 +16,11 @@ func world(){
 
 world()
 
+func templ(var i){
+	println(i)
+}
+
+templ(c)
 
 
 /*

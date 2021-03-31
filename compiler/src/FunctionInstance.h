@@ -23,7 +23,6 @@ public:
 	llvm::StructType* object = nullptr;
 	bool overload = false;
 	std::set<std::string> excapes; // 逃逸的参数索引
-	void generateBody(llvm::Module *m, llvm::LLVMContext & context);
 public:
 	llvm::Function* generateCode(llvm::Module*, llvm::LLVMContext& context);
 	llvm::Function* func = nullptr;
@@ -31,6 +30,8 @@ public:
 	size_t getParamenterIndex(const std::string& name);
 
 	std::string cName;	// c 语言函数名
+private:
+	void generateBody(llvm::Module* m, llvm::LLVMContext& context);
 private:
 	bool _body = false;
 	bool _variable = false;

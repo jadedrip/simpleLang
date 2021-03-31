@@ -76,10 +76,11 @@ void execute(char * const *envp){
 			JITEventListener::createIntelJITEventListener());
 
 		EE->DisableLazyCompilation(false);
-		CLangModule::moveAll(EE);
+		// CLangModule::moveAll(EE);
 		// Give MCJIT a chance to apply relocations and set page permissions.
-		EE->finalizeObject();
 		// EE->runStaticConstructorsDestructors(false);
+
+		// EE->finalizeObject();
 
 		std::vector<std::string> noargs;
 		EE->runFunctionAsMain(mainFunction, noargs, envp);

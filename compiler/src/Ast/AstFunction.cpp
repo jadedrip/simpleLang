@@ -195,25 +195,14 @@ CallGen * AstFunction::makeCall(
 	OrderedParameters *ordered = orderParameters(context, types, templateVars);
 	if (!ordered) return nullptr;
 	// 成功
-
-
-	auto *func = _funcInstance ? _funcInstance
-		: getFunctionInstance(c, ordered->parameters, ordered->variableGen, clsType);
-
-	if (_funcInstance->block.codes.empty()) { // 如果不存在函数体
-		auto *f = context->getFunction(_funcInstance->name);
-		_funcInstance->func = f;
-	}
+	auto *func = getFunctionInstance(c, ordered->parameters, ordered->variableGen, clsType);
 
 	auto p = new CallGen(func);
-
 	p->object = object;
-	//if (object)
-	//	p->params.push_back(object);
+
 	auto& excapes = func->excapes;
 	// 如果函数是空的，所有参数被认为是会逃逸的
 	bool empty = func->block.codes.empty();
-
 	for (auto &i : ordered->parameters) {
 		assert(!i.first.empty());
 		if (empty || excapes.find(i.first) != excapes.end())
@@ -302,82 +291,6 @@ AstFunction * AstFunction::clone()
 }
 // TODO: 移除，整理模块
 extern std::unique_ptr<Module> module;
-FunctionInstance* AstFunction::getLLVMFunctionInstance(
-	llvm::LLVMContext& c, 
-	std::vector<std::pair<std::string, llvm::Type*>> parameters,
-	ClassInstanceType* object) {
-
-	if (_funcInstance) return _funcInstance;
-	
-	auto *instance = new FunctionInstance();
-	instance->overload = overload || isTemplate();
-
-	if (object) {
-		instance->packageName = object->path;
-	}
-	else {
-		instance->packageName = pathName;
-	}
-	
-	AstContext *s = new AstContext(_parent);
-	// 如果是类，首参为类
-	if (object) {
-		// s = object->makeContext(_parent );
-		Type* v = object->llvmType(c);
-		assert(v);
-		auto t=new ThisGen(v);
-		s->setSymbolValue("this", t);
-		instance->object = llvm::dyn_cast<llvm::StructType>(v);
-
-		for (auto &i : object->memberGens) {
-			auto *p = i.second->clone(t);
-			s->setSymbolValue(i.first, p);
-		}
-	}
-
-	instance->name = name;
-
-	// 如果不是匿名函数，定义唯一名称
-	auto clang = annotations["CLang"];
-	if (clang && clang->defaultValue) {
-		instance->cName = clang->defaultValue->name;
-	}
-
-	// 参数写入环境
-	for (auto &i : parameters) {
-		auto* p = new ParamenterGen();
-		p->type = i.second;
-		p->name = i.first;
-
-		s->setSymbolValue(i.first, p);
-		instance->parameters.push_back(std::make_pair(i.first, p->type));
-	}
-
-
-	if (isOperator || overload) { // 如果是操作符重载或重载
-		instance->overload = true;
-	}
-
-	if (block.empty()) {
-		std::vector<llvm::Type*> types;
-		for (auto i : rets) {
-			if (AutoType::isAuto(i->type))
-				throw std::runtime_error("函数" + name + "无函数体，返回值必须明确定义类型");
-			types.push_back(i->type->llvmType(c));
-		}
-		instance->returnType = TupleType::create(c, std::move(types));
-	} 
-	else {
-		// 生成函数体
-		fillFunctionBlock(s, instance);
-		instance->generateCode(module.get(), c);
-	}
-
-	if (!_isTemplate) {
-		_funcInstance = instance;
-	}
-	return instance;
-}
 
 void AstFunction::fillFunctionBlock(AstContext * s, FunctionInstance *instance)
 {
@@ -466,7 +379,8 @@ FunctionInstance* AstFunction::getFunctionInstance(
 	std::vector<CodeGen*> variableGen,
 	ClassInstanceType* object)
 {
-	
+	if (!_isTemplate && _funcInstance)
+		return _funcInstance;
 
 	// 参数
 	std::vector<std::pair<std::string, llvm::Type*>> params;
@@ -497,4 +411,76 @@ FunctionInstance* AstFunction::getFunctionInstance(
 	}
 
 	return getLLVMFunctionInstance(c, params, object);
+}
+
+FunctionInstance* AstFunction::getLLVMFunctionInstance(
+	llvm::LLVMContext& c,
+	std::vector<std::pair<std::string, llvm::Type*>> parameters,
+	ClassInstanceType* object) {
+	Type* cls = object ? object->llvmType(c) : nullptr;
+	std::string packageName = object ? object->path : pathName;
+
+
+
+	auto* instance = new FunctionInstance();
+	instance->overload = overload || isTemplate();
+	instance->packageName = std::move(packageName);
+
+	AstContext* s = new AstContext(_parent);
+	// 如果是类，首参为类
+	if (object) {
+		// s = object->makeContext(_parent );
+		assert(cls);
+		auto t = new ThisGen(cls);
+		s->setSymbolValue("this", t);
+		instance->object = llvm::dyn_cast<llvm::StructType>(cls);
+
+		for (auto& i : object->memberGens) {
+			auto* p = i.second->clone(t);
+			s->setSymbolValue(i.first, p);
+		}
+	}
+
+	instance->name = name;
+	// 如果不是匿名函数，定义唯一名称
+	auto clang = annotations["CLang"];
+	if (clang && clang->defaultValue) {
+		if (_isTemplate)
+			throw std::runtime_error("模板函数不能定义C函数名");
+		instance->cName = clang->defaultValue->name;
+	}
+
+	// 参数写入环境
+	for (auto& i : parameters) {
+		auto* p = new ParamenterGen();
+		p->type = i.second;
+		p->name = i.first;
+
+		s->setSymbolValue(i.first, p);
+		instance->parameters.push_back(std::make_pair(i.first, p->type));
+	}
+
+	if (isOperator || overload) { // 如果是操作符重载或重载
+		instance->overload = true;
+	}
+
+	if (block.empty()) {
+		std::vector<llvm::Type*> types;
+		for (auto i : rets) {
+			if (AutoType::isAuto(i->type))
+				throw std::runtime_error("函数" + name + "无函数体，返回值必须明确定义类型");
+			types.push_back(i->type->llvmType(c));
+		}
+		instance->returnType = TupleType::create(c, std::move(types));
+	}
+	else {
+		// 生成函数体
+		fillFunctionBlock(s, instance);
+		instance->generateCode(module.get(), c);
+	}
+
+	if (!_isTemplate) {
+		_funcInstance = instance;
+	}
+	return instance;
 }
