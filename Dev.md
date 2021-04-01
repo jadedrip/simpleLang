@@ -1,4 +1,9 @@
+# 备忘录
+
+这里是如何实现的思考，用来备忘。
+
 # CodeGen
+
 CodeGen 用来生成 llvm 代码，CodeGen::type 是 llvm 类型，但和生成的 llvm::Value 有区别，type 可以能是整数、浮点、结构，但返回 Value 固定为指针。
 
 # 对象的数据结构
@@ -18,7 +23,7 @@ CodeGen 用来生成 llvm 代码，CodeGen::type 是 llvm 类型，但和生成�
 
 0~7 位：
 
-	0	是否数组
+	0	是否数组（是否有数组强度）
 	1	是否具有引用计数（没引用计数的话，需要手工释放）
 	3	是否指向数组的指针
 	4	是否有符号(保留)
@@ -58,25 +63,100 @@ CodeGen 用来生成 llvm 代码，CodeGen::type 是 llvm 类型，但和生成�
 
 语法层面规定类必须大写开头，函数（成员函数）、变量必须以小写开头，既保证了风格统一，也帮助语法分析器可以分析 < M > 是否是模板，并且 C 语言中也可以使用 _ 和大小写搞定映射。
 
-llvm ir 中的 struct 被映射为类，而静态函数被映射为 {类全名} _ S_ 函数 _ 后缀。
+llvm ir 中的 struct 被映射为类。
 由于 ir 中 struct 的成员不存在名称，
-因此成员变量的读写全部映射为 {类全名} _ {SET/GET} _ {index} _ {变量名}。
 这样通过 llvm struct 和对应的 SET，GET 函数，就能完全映射类。
 
 静态变量被映射为全局变量，_{类全名} _ {name}。
+
+为了防止编译后的函数名字过长，加入压缩机制，对完整的函数名尾部进行压缩（MD5-16后字符串），保留函数前20个字符，因此函数名称放在最前面，以增加可读性。
+
+## 规格化定义编译后的全名：
+
+* 函数
+
+  {函数名}\_{参数类型表}\__{包名}
+
+* 成员函数
+
+  M\_{函数名}\_{参数类型表}\_\_{类名}\_\_{包名}
+  
+* 静态函数（保留）
+  
+  A\_{函数名}\_{参数类型表}\_\_{类名}\__{包名}
+  
+* 类名
+  
+  {类名称}\_{模板类型表}__{包名}
+  
+* 接口
+
+  I\_{接口名}\_{模板类型表}\_\_{包全名}
+
+* SET
+
+  S\_{变量名}\_{参数类型}\_{类名}\_\_{包全名}
+
+* GET
+
+  G\_{变量名}\_{类名}\_\_{包全名}
+
+* 操作符重载
+
+  O\_{操作符名称}_{参数类型表}\_{类名}\_\_{包全名}
+  
+* 虚函数（保留）
+
+  V\_{函数名}\_{参数类型}\_{类名}\_\_{包全名}
+
+* 元组（函数返回）
+
+  T\_{类型表}
+  
+  **注：上面的类型都是缩写，类型表是依次排列的类型缩写，如果为空填 X**
+  
+  **注2：缩写：如果原始字符数小于6，直接使用原始字符，否则为首字母，再加全名的hash值转base64 后取 5字母 ** 
+
+## 类型缩写
+
+| 缩写前缀 | 类型 |
+| ---- | ---- |
+| X | void  |
+| B | boolean |
+| D | char  |
+| F | short  |
+| H | int  |
+| I | unsigned int |
+| J | long （64bit) |
+| K | unsigned long |
+| M | float  |
+| N | double  |
+| U | class |
+| Z | func 函数指针 |
+
+类型和函数指针后，接一个字符的名称首字母，全名hash值 base64 后前3个字符
 
 # 类继承
 
 class MyClass : Base
 
-在 llvm IR 中， MyClass 作为 Base 的扩展类型（前几个字段是 Base）的类型，Interface 作为模板约束，在 llvm IR 中被抛弃，由于不需要虚表什么的，可以直接使用指针把 MyClass 赋值给 Base.
+在 llvm IR 中， MyClass 作为 Base 的扩展类型（前几个字段是 Base）的类型，Interface 作为模板约束，在 llvm IR 中被抛弃，可以直接使用指针把 MyClass 赋值给 Base.
 如果需要 dycast, 那么需要读取头字节中的类型，然后判断是否可以转换（运行期）。
+
+```
+Base b=new MyClass()
+dycast<MyClass>(b){	// 当转换成功时调用区块
+	it.doSomething()	// 
+}
+```
+
+
 
 编译的时候，需要保存一份继承表，用来判断是否可以赋值和动态转换。
 
 # 字符串
 
-原生字符串为 byte[] 类型，默认 utf-8 编码，可以被赋值给 String 类，转换为 Unicode 编码，或者赋值给 Array<byte>。
+原生字符串如果是 ascii，为 byte[] 类型，默认 utf-8 编码，可以被赋值给 String 类，转换为 Unicode 编码，或者赋值给 Array<byte>，如果包含 ascii，那么直接生成 String。
 
 # 类
 
@@ -188,10 +268,8 @@ new 了以后没被任何参数引用的对象肯定是非逃逸的，可以不�
 注意：除了首层目录，可以用 . 来把几层目录缩减到一层，以简化目录
 
 	[package name]-0.0.1-release ->  包目录(包含版本号)，或者 zip 文件名(zip 改为 spz 后缀名, 7z 改为 sp7 后缀), release 可以省略
-	  └ src							->  源码目录，sl 文件放在这里，所有的文件都会被导入
+	  	└ src						->  源码目录，sl 文件放在这里，所有的文件都会被导入
 		   └ [*.si]					-> src 内部仍然通过目录结构来存放源文件，并且包名会作为前缀
-	   └ overload				-> 重载目录
-	           └ -> [other package(org.si)]  -> 可以注入其他包
 		└ resources				-> 资源目录
 		└ platform				-> 各平台的库
 			└ x86_64-pc-windows-msvc		-> 参见 llvm Triple 
@@ -199,15 +277,19 @@ new 了以后没被任何参数引用的对象肯定是非逃逸的，可以不�
 					└ static				-> 静态库 (lib 文件)
 		└ include							-> .h 头文件(如果有的话)
 		└ export.h			-> 导出头文件，编译器会解析这个文件来导入其他文件，如果没有，说明是纯源码库
-		└ meta.txt			-> 包描述文件      
+		└ meta.yml			-> 包描述文件      
 
-meta.txt 文件
+meta.yml 文件
 
-	version: 1.0.1							-> 3层数字版本号 + 字符，                             前两位表示接口稳定，有接口删除、参数改变的情况必须升级第一位
-											-> 第二位允许接口有增加，但其他接口必须稳定
-											-> 第三位表示 bug 修正，接口稳定
-	configure: release 					-> 如果是 release, 可以省略 
-	dependency: org.other.package-1.3.0	-> 引用包名，每个引用一行，版本号是最低版本，编译器会尝试使用最新稳定接口版本（第一位相同
+	version: 1.0.1			# 3层数字版本号 + 字符，前两位表示接口稳定，有接口删除、参数改变的情况必须升级第一位
+							# 第二位允许接口有增加，但其他接口必须稳定
+							# 第三位表示 bug 修正，接口稳定
+	configure: release 		# 如果是 release, 可以省略 
+	dependency: 			# 引用包名
+		- 
+			name: org.other.package
+			version: 1.3.0		# 版本号是最低版本，编译器会尝试使用最新稳定接口版本（第一位相同）除非添加 
+			version: *1.3.0		# 强制为这个版本
 
 ​                                                               
 
@@ -234,64 +316,43 @@ func youFunc( YouClass you ){}	// 函数带源码的情况下 YouClass 被视作
 youFunc(my)	// 这个调用会当模板函数调用展开
 ```
 
-## 赋值接口、非源码函数的参数
-
-```
-MyInterface inf=myClass
-func myFunc( MyInterface inf )	// 无源码
-```
-
-这种情况下，接口会被创建为一个结构 `struct` <interface_Name>，结构里存放一个 this 指针，所有的成员变量都是 getter, setter 的函数指针，成员函数都是函数指针。这些指针在接口赋值的时候，通过对应的类来创建并赋值。
-
 ## 类定义里的接口
 
 接口在类定义里的时候，仅仅被当成定义约束，仅仅在编译期起作用，以保证所有必要的成员函数都被实现了。
 
-## 接口继承
 
-多个接口依次继承的情况下，所有的成员变量、函数都会被整合到最终接口里
 
-```
-interface Base {
-	int bValue
-}
+## 赋值接口、非源码函数的参数接口的实现
 
-interface MyIntf : Base {
-	int mValue;
-}
-```
-等同于
+这种情况下，接口会被创建为一个结构 `struct` <interface_Name>，结构里存放一个 this 指针，所有的成员变量都是 getter, setter 的函数指针，成员函数都是函数指针。这些指针在接口赋值的时候，通过对应的类来创建并赋值。
 
-```
-interface MyIntf {
-	int bValue
-	int mValue
+二进制情况下，接口被作为一个代理对象生成。
+
+``` 
+interface MyInf {
+	int a
+	func getInfo()
 }
 ```
 
+会被转换为一个对象
 
+```c
+struct MyInf_I {
+    void* _this;
+    int (a_GET)(void*/*this*/);	// 变量 a 的 GET 函数指针
+    void a_SET(void*/*this*/, int);	// 变量 a 的 SET 函数指针
+    void (getInfo)(void*/*this*/);		// getInfo 函数的函数指针
+}
+```
 
-
+ 因此接口如果作为入口函数的参数存在，并且函数不附带源码，那么调用这个函数就需要一点额外的接口转换开销。
 
 # 继承的实现
 
-```
-class Base {
-	int bValue 
-		getter {
-			return bValue
-		}
-}
+在成员函数前添加 const 关键字后，编译器可以优化它。构造完毕的内存里并不会存在这个变量，这样就完美的解决了用函数模拟继承时，构造时要给变量赋值带来的空间浪费和性能下降。
 
-class MyClass : Base {
-	int mValue
-	override int bValue getter {
-		return mValue
-	}
-}
-
-
-```
+编译器会生成一个函数调用，V_标准函数命名，函数内部通过查找 this 指针前的类型标志，通过类型标志 (switch) 去调用实际函数。
 
 # RTTI 运行时类型信息
 
@@ -304,3 +365,4 @@ class ClassType {
 }
  ```
 
+ 
