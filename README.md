@@ -35,9 +35,35 @@ SimpleLang 是拍脑袋的产物，试验性的产品，现在仅仅处于最初
 
 基础语法
 =============
+## 工程目录
+
+SimpleLang 工程有固定的目录结构
+
+```
+[root]
+	└ [doc]				文档目录
+	└ [main]
+		└ [resources]	资源文件目录
+		└ [src]			源码目录，通过目录结构来定义包
+			└ main.sc 	主入口文件（编译为可执行文件时有这个文件）
+	└ [test]
+		└ [src]			测试源码目录，
+		└ [resources]	测试用的资源目录
+	└ [subject]			子工程目录，除了没有 main.sc，其他和主工程一样，也可以在内部通过链接文件连接到其他目录
+			└ 
+	└ config.yml		配置文件
+```
+
+
+
 包
 ------------
+
 文件头部不需要写包名，通过目录结构来确定类的包名
+
+SimpleLang 程序的目录结构是固定的，入口文件被必须为 main.sc，而一个程序可以引入多个包（或者叫模块），包一般被 7z 压缩为 spk 文件，包的目录同样是固定的。
+
+ 
 
 命名
 ------------
@@ -72,8 +98,6 @@ SimpleLang 是拍脑袋的产物，试验性的产品，现在仅仅处于最初
 | class     |                    |
 | interface |                    |
 | singleton | 单例               |
-| TRUE      | 真类型（用于推导） |
-| FALSE     | 假类型（用于推导） |
 
 语言级别支持的内部类
 
@@ -91,7 +115,7 @@ SimpleLang 是拍脑袋的产物，试验性的产品，现在仅仅处于最初
 
 使用 const 来定义常量：
 
-	const pi=3.1415	// 注意：常量不需要类型定义
+	const pi=3.1415	// 注意：常量如果可以推断，可以不需要类型定义
 
 以及枚举：
 
@@ -126,7 +150,7 @@ SimpleLang 语言中除了内置类型（整数和浮点），其他类型都保
 
 数组
 ------------
-除 singleton 外都可以定义成数组，数组有**固定长度**，并且不能更改长度，有个默认打开的编译选项，会让越界访问抛出异常。数组实际上为 Array<T> 类型，（类型+[]） 只是简写，两者等价。
+数值类型（不是变量）可以定义成普通数组，数组有**固定长度**，并且不能更改长度，有个默认打开的编译选项，会让越界访问抛出异常。数组实际上为 Array<T> 类型，（类型+[]） 只是简写，两者等价。
 数组下标从0开始
 
     int[] a=[ 0, 1 ]			// 数组可以直接初始化
@@ -141,13 +165,42 @@ SimpleLang 语言中除了内置类型（整数和浮点），其他类型都保
 
     func myFunc( int[] array ){ ... }
 
-另外数组也支持切片
+也可以定义多维数组
+
+```
+int[2, 2, 2] vec = [ [ [1,2], [1,2] ], [ [1,2], [1,2] ]  ] 
+int v = vec[0, 1, 1]
+```
+
+另外单维数组也支持切片
 
     int[] s=arr[startIndex:length]
 
 需要注意的是，切片是引用，因此如果源改变了，切片同样会改。
 
-注：如果想使用可变数组，可以使用 Vector 模板类。 
+注：如果想使用可变数组，可以使用 Vector 模板类。
+
+## 对象数组
+
+对象也可以定义为数组，但它有特殊性。
+
+构造数组时，整个数组仅仅初始化内存空间，而不会构造内部的对象，并且空间是紧凑创建的，不会有对象头，内存会被置0，但不会调用构造函数。因此，你无法直接判定数组中的对象是否存在，是否已经被初始化。
+
+而将对象放入数组，是一个**复制**操作，原对象和数组中的对象会脱钩，新对象的生存期完全跟随数组（除非手动从数组中删除），而从数组中取值，同样是一个**复制**概念的操作。当然，编译器会尝试分析生存期进行优化，如果变量没有逃逸，是不会有真正的复制操作的。
+
+```
+MyCls[2] myClss
+var zero=myClss[0].val		// 对象还未构造，但 zero 的值是0，因为内存被置0了
+if(myClss[0]) doSome		// 不能这么判断，表达式永远为真，编译会报错误
+if(myClss[0].exists) doSome	 // 可以在 MyCls 里定义一个 boolean exists=true, 由于数组默认置空的，就可以用来判断对象是否存在了
+myClss[0] = MyCls()		// 可以认为是 myClass[0] = clone(MyCls()), 当然，编译器会进行优化
+var v=myClss[0]			// 原则上等于 v=clone(myClass[0])
+v.val = 11			    // 数组内的对象不受影响
+const x=myClss[0]		// 这样不会进行复制，x 被认为是 myClass[0] 的别名
+x.val = 11				// 数组内的对象被改变
+```
+
+这么设计的目的，是极大的降低对象数组的开销，并把数组交给程序员完全管理，对象数组实际可以被看成一个内存池。对象数组很容易出错，因此使用需要谨慎，如果不追求性能，用容器类吧。
 
 内部类 Any
 -----------
@@ -193,7 +246,7 @@ switch 语法如下，支持多种数据以及多种比较，只要是测试相�
 		"celery": vegetableComment = "Add some raisins and make ants on a log."
 		"cucumber", "watercress": {
 			vegetableComment = "That would make a good tea sandwich."
-			comm : "多行需要大括号"
+			comm = "多行需要大括号"
 		}
 		default: vegetableComment = "Everything tastes good in soup."
 	}
@@ -208,7 +261,7 @@ switch 语法如下，支持多种数据以及多种比较，只要是测试相�
 元组
 --------------
 
-SimpleLang 语言中支持元组，替代 C++ 中的 pair, tuple。Si 里的元组用圆括号括起来，必须从明确的值创建，并且创建后 **不可修改**
+SimpleLang 语言中支持元组，类似 C++ 中的 pair, tuple。Si 里的元组用圆括号括起来，必须从明确的值创建，并且创建后 **不可修改**
 元组必须在创建时赋值，并且值不可更改。可以通过 := 来解构，或者使用[]取值，元组可以参与编译期运算。
 
 	var a=(1, "second", x)				// 直接创建
@@ -219,25 +272,22 @@ SimpleLang 语言中支持元组，替代 C++ 中的 pair, tuple。Si 里的元�
 		print( i )
 	}
 	
-	var t=1 :: (10, 20)		// 通过 :: 可以连接两个元组为一个新元组，这里等价于 var t = (1, 10, 20) 
+	var n= (10, "Hello") :+ (20, "你好")  // + 可以拼接元组，结果为 (10, "Hello", 20, "你好")
+	var t=1 :+ (10, 20)					// + 也可以把元素加入元组成为一个新元组，这里等价于 var t = (1, 10, 20) 
+	PS: var x = you( myFun() :+ 10 )		 // 考虑到函数返回直接用 + 容易引起二意，还是用 :+，冒号代表操作元组
 	
 	var b0, b1 := a				// 元组的自动解构，注意复制的是引用，变量数量可以比实际的少，但不能多。
-	int c0, float c1 := (10， 10.0)
+	int c0, float c1 := (10, 10.0)
 	
 	var c=(0)			// 这不是元组，c是 int 类型
+
+
+​	
 
 另外，元组的成员也可以命名：
 
 	var tuple=( key=1, value=2 )
 	print( tuple.key )
-
-元组也支持 -> 操作
-
-	(10, 20) -> myFunc 	// 等价于 myFunc(10, 20)
-	
-	let v = (10, 20) -> firstFunc :: 20 -> second // 等价于 let v = second( firstFunc(10, 20), 20 )
-
-如果你想玩一下函数式编程，这种语法也许会让你的程序更容易阅读
 
 特别的，元组必须放在 = 右边或者接 -> 操作 ，也就是无根的元组是违法的。
 
@@ -261,7 +311,7 @@ SimpleLang 语言中支持元组，替代 C++ 中的 pair, tuple。Si 里的元�
 remove 的返回值赋值给 i, 重新开始循环体 (continue)
 
 	for( var i : list ){
-		free i
+		free i		// 等价于 i=list.remove(i) continue
 	}
 
 特别的，如果列表里保存的是元组（比如 map )，可以使用自动解构的语法
@@ -331,7 +381,7 @@ remove 的返回值赋值给 i, 重新开始循环体 (continue)
 		if( args.size > 0 )
 			val = args[0]
 		retval = a + b		// 直接操作返回值
-		return	   // 可以省略
+		return	   // 可以省略变量列表
 		int x = 12 // 编译错误，return 必须在块的最后 
 	}
 
@@ -381,7 +431,7 @@ return
 
 传参
 ================
-SimpleLang 语言中，传入的参数（不包括 int 等内部参数）都被视为引用，因此**它的内容**可以在函数中可以被更改。
+SimpleLang 语言中，传入的参数如果是值类型（int 等数字），会被复制，而对象被视为引用，因此**它的内容**可以在函数中可以被更改。
 
 比如：
 
@@ -401,6 +451,16 @@ SimpleLang 语言中，传入的参数（不包括 int 等内部参数）都被�
 	}
 	
 	int x=myFunc( 10, 20 )
+
+特别的，如果参数上加上了 clone 关键字，那么这个对象会被复制进入函数
+
+```
+func myFunc( clone int clonedValue ) {
+	clonedValue.x = xxx	// 不影响原始变量
+}
+```
+
+
 
 函数调用
 -----
@@ -472,7 +532,7 @@ SimpleLang 支持的异常。
 	}
 	
 	// 简化的异常处理格式，对函数的异常直接处理，需要注意的是，函数后面的 catch 只能有一个
-	var i=func( 10 ) catch {
+	var i=func( 10 ) catch(e) {
 		print(it)  // it 是 Exception 类型
 	}
 	
@@ -485,7 +545,7 @@ SimpleLang 支持的异常。
 	func nothrow willNotThrow() : int 
 
 注：一个 nothrow 的函数，编译器会**尽量**检查异常情况，如果调用了带异常函数而没捕获，将出现编译错误。
-而如果 nothrow 的函数内抛出了空指针之类的未知异常，将直接转去 **公共异常处理函数**。
+而如果 nothrow 的函数内抛出了空指针之类的未知异常，将无法捕获，而直接转去 **公共异常处理函数**。
 
 空指针
 -------------------
@@ -530,17 +590,6 @@ MyData x(10, "你好")
 
 纯数据类可以继承，并被一般类继承，但不能从一般类继承。
 
-## 纯数据类数组
-
-纯数据类数组是特殊的，对象数组非空，**不能**保存 null 值，并在创建时初始化，如果需要能保存 null 值的数组，请使用 Vecter。
-
-对象数组内的对象生存期跟随整个数组，而不是单独处理。
-
-    MyData[10] myArray		// 会一次性初始化 10个 MyClass 对象
-    myArray[0].val		
-
-
-
 ## 一般类
 
 代码开始
@@ -562,7 +611,7 @@ MyData x(10, "你好")
 	
 		int key = 1			// 创建时初始化（先于构造函数）
 		int value			// 创建时默认为0
-	
+		
 		func do_something(){
 			this.key++  // this 是自己
 		}
@@ -573,27 +622,31 @@ MyData x(10, "你好")
 
 注：成员变量的默认值必须能确定，不能是模板的，也不能是成员函数调用或引用另一个成员变量（这时类还没构造）
 
+类里没有静态变量或方法，请用函数、全局变量来替代。
+
 *设计语：使用 Type name 这样的方式构造，可以帮助 IDE 自动补全（输入 My, IDE可以帮你连变量名一起补全了)*
 
 继承&重载
 -------------------
 
-继承和重载的概念被简化，类可以单一继承，并且**允许**重载方法。类可以有多个接口实现。
+继承和重载的概念被简化，类可以单一继承，可以有多个接口实现。但类不再有虚函数，改用函数对象替代。
 
 	class Base{
 		func cantOverload(){	// 普通函数不可以重载
 	
 		}
 		
-		virtual func virtualFunction(int v) = 0 	// 纯虚函数
-		virtual func canOverload(int v) {
-		
+		func(int) virtualFunction = null 	// 代替纯虚函数
+		func(int) canOverload = func(int v) {
+			doSomethine()
 		}
 	
 		var myFunc = func(int v){		// 函数对象
 			print(v)
 			virtualFunction(v)	// 调用虚函数
 		}
+		
+		const func(int) constVirtualFunction = null 	// 真纯虚函数
 	}
 	
 	// 类可以继承，只能单继承，但可以有多个接口
@@ -602,64 +655,67 @@ MyData x(10, "你好")
 	
 		}
 	
-		virtual func virtualFunction(int v){	// 重载虚函数
+		virtualFunction = func(int v){	// 重载虚函数
 			print(v)
 		}
 	
 		myFunc = func(int v){
-			Base::canOverload(v)		// 强制调用基类函数
+			Base:canOverload(v)		// 强制调用基类函数
+		}
+		
+		constVirtualFunction = func(int v) {
+		
 		}
 	}
 	
 	Interface0 obj = Second()
+	obj.virtualFunction = xxx // 还能改
+	obj.constVirtualFunction = xxx // 编译错误，不能更改
 
-相应的，类没有虚类或者纯虚类，所有类都可以被构造，如果有些类的函数没实现，就是一个空的函数指针，可以通过后期赋值的方式来实现。
+相应的，类没有虚类或者纯虚类，所有类都可以被构造，如果有些类的函数没实现，就是一个空的函数指针，可以通过后期赋值的方式来实现。如果要防止它被构造，可以把构造函数放入  protected 区域。“虚函数”前可以添加 const 关键字，有 const 关键字的变量构造后就不能再更改了，因此编译器对这种变量可以优化实现。
 
 ## Get & Set
 
-SimpleLang 支持成员变量的 Get & Set，它们必须紧接着变量定义，set 方法在变量设置时被调用。
+SimpleLang 支持成员变量的 Get & Set，set 方法在变量设置时被调用，而不会预先设置值。
 
 ```
 class MyCls {
-	int a {
-        get{	// 必须紧跟变量的定义
-            return a
-        } 
-        set(int newValue){  
-        	a = newValue
-        }
+	int valueA;
+    
+    get valueA {	
+        return valueA
+    } 
+    set valueA(int newValue){  
+	    valueA = newValue
+    }
+    
+    get fakeValue: int {		// 可以 let x = myCls.fakeValue 这样调用
+    	return valueA + 10
+    }
+	
+	get virtualValue = func(): int {	// 可以 let x = myCls.virtualValue 这样使用
+									 //   另外可以 get(myCls.virtualValue) = func() -> int {}	这样“重载”
 	}
-	int readonly{
-		set = 0			// 去除 set 函数（变量只读）
-	}
-	int virtualValue{
-		get=func{ return virtualValue }			// get 赋值 func，可以把 get 定义为函数指针，也就是可重写的 a::get 
-		set=func(int newValue){ virtualValue = newValue  }
+	
+	set virtualValue = func(int newValue) {
+	
 	}
 }
 
 class YouCls : MyCls {
-	set(virtualVallue) = ...	// 继承内重写
-	
+	get(virtualValue) = ...	// 继承内重写
 	int b
-	get(a) = func{	// 虽然a没有被定义为函数，但仍然可以重写 get，但不会在基类生效，需要注意
-		return b
-	}
 }
 
 YouCls you
-print(you.a)	// 返回 b值
-MyCls me=you
-print(me.a)		// 返回 a值
+print(you.valueA)	// 返回 b值
 
 MyCls cls
-set(cls.virtualValue)=func(int newValue){ // 外部重写 set 方法
+get(cls.virtualValue)=func(): int{ // 外部重写 set 方法
 
 }
 
-get(cls.virtualValue)=func(): int {		// 外部重写 get 方法
 
-}
 ```
 
 
@@ -815,6 +871,8 @@ get(cls.virtualValue)=func(): int {		// 外部重写 get 方法
 ==================
 **注意：凡是涉及模板的类、函数，都必须通过源码的形式存在导出包里。**
 
+## 模板类
+
 可以通过把类中的成员函数，定义为 var 来创建模板类，模板类必须在构造时，能确定所有模板成员的类型。
 
 	class MyTuple {
@@ -859,20 +917,29 @@ get(cls.virtualValue)=func(): int {		// 外部重写 get 方法
 	
 	var my = MyMap<String,int>("Hello")		// 构造时必须可以推导类中所有类型
 
-由于返回值可以命名，因此命名的返回值也可以用来推导，但优先级比较低，优先使用传入参数来推导。
+## 模板函数/成员函数
+
+当参数使用 var 或者使用类型占位符来定义时，这个 函数/成员函数 就是一个模板函数
 
 ```
-class MyClass{
-	func getVal() : var v{
-		if(v is int) 
-			return 10 // 返回 int
-		else if(v is double) 
-			return 2.0 // 返回 double
-	}
+func templateFunc( var a, int b ) {
+	...
 }
-
-double v = myClass.getVal()	// 通过返回值推导
 ```
+
+**对于模板函数，参数类型确定了以后，返回值类型也就被确定了。**
+
+如果你希望返回值的类型在函数中来推导，那么需要使用 = 来连接函数定义和函数体 
+
+```
+func<T> templateFunc( T a, T b ) = {
+	return a+b
+}
+```
+
+## 内部函数 typeof
+
+虽然 typeof 看起来像函数，但它其实是在编译时起作用，用来推导类型
 
 类型定义 def
 ------------------
@@ -909,7 +976,7 @@ double v = myClass.getVal()	// 通过返回值推导
 
 类型操作符
 -------------------
-SimpleLang 将支持一些类型操作符，结合模板，可以实现编译期编程。因此特别定义了两个内置类型·TRUE·和·FALSE·。
+SimpleLang 将支持一些类型操作符，结合模板，可以实现编译期编程。
 
 操作符 is
 ------------
@@ -919,9 +986,9 @@ SimpleLang 将支持一些类型操作符，结合模板，可以实现编译期
 	A is B
 
 A 允许是变量或者模板变量
-结果将是内置类型 TRUE 或 FALSE。A 可以是变量，或者模板参数，B 为类型或接口。需要注意的是，这里并非要求 A,B
-是完全一致的类型，当 B 是从 A 继承，或A实现了接口B，也将返回 TRUE。
-但相对的，如果 A 和 B 都是模板类型，那么模板参数不一致（即使他们有继承关系），那也返回 FALSE
+结果将是 1 或 0。A 可以是变量，或者模板参数，B 为类型或接口。需要注意的是，这里并非要求 A,B
+是完全一致的类型，当 B 是从 A 继承，或A实现了接口B，也将返回 1。
+但相对的，如果 A 和 B 都是模板类型，那么模板参数不一致（即使他们有继承关系），那也返回 0
 
 操作符 ===
 -------------
@@ -933,7 +1000,7 @@ A 可以是变量或者模板变量，B 必须为类型或接口，和 is 相近
 
 操作符 if
 ------------
-当 if 后的括号内是一个类型，那么它就成为一个编译期的类型操作符，仅当类型为 FALSE 时，编译 else 语句块，
+当 if 后的括号内是一个类型，那么它就成为一个编译期的类型操作符，仅当条件为 0 时，编译 else 语句块，
 其他任何类型都编译 then 语句块。
 
 	if(a is int){		// 当 a 类型为 int 时被编译
@@ -944,7 +1011,7 @@ A 可以是变量或者模板变量，B 必须为类型或接口，和 is 相近
 
 操作符 `（反引号）
 -----------------
-反引号将尝试从类型中按名称取出成员，如果成员不存在返回 FALSE，存在返回成员的类型。 这可以在编译期判断类是否包含某个成员。
+反引号将尝试从类型中按名称取出成员，如果成员不存在返回 0，存在返回成员的类型。 这可以在编译期判断类是否包含某个成员。
 
 	 if( a`name` ) ...
 	 if( a`myfunc` is func(int, String):String ) ...
@@ -966,9 +1033,9 @@ for 可以用来解开通过 ... 传入的多个参数等，也可以解开元�
 
 操作符 ==,!=,||,&&
 ----------------
-当两个常量进行布尔运算，他们也会在编译期运算为 TRUE 或 FALSE。
+当两个常量进行布尔运算，他们也会在编译期运算为 1 或 0。
 
-	var a=(1==1)		// TRUE
+	var a=(1==1)		// 1
 
 ## 模板推导函数
 
@@ -977,9 +1044,9 @@ for 可以用来解开通过 ... 传入的多个参数等，也可以解开元�
 ```
 func TplFunc( var a, var b ) = {
 	if( a is int && b is int)
-		return TRUE()		// 真类型，if( TRUE ) 永远真，并且在编译期就处理
+		return 1		// 真类型，if( TRUE ) 永远真，并且在编译期就处理
 	else
-		return FALSE()
+		return 0
 }
 
 var a = 10, b=10
@@ -1053,46 +1120,12 @@ Optional 可以保存一个内部对象，可以通过
 
 
 
-延迟优化
-----
-
-SimpleLang 的函数参数，允许使用延迟生成的技术以优化效率。它让参数仅在被首次使用的时候，才会被生成它。
-比如：
-
-	trans_data( get_data(), x)
-
-而 trans_data 的代码如下：
-
-	func trans_data( var v, bool x ){
-		if(x) print(v)
-	}
-
-这段代码里，v 通过 get_data() 获取值，但在 trans_data 中，如果 x=false，v根本不会被使用。这个时候 get_data() 的调用
-是完全没有必要的。而通过延迟生成技术，只有在v参数实际被使用时才会尝试“构造”它，因此，如果 x=false，get_data() 会被直接
-放弃，生成的代码类似下面的
-
-	void trans_data( bool x ){
-		if(x) print( get_data() )
-	}
-
-要启用延迟优化，调用代码不用做任何更改，只要函数是模板函数，或者接受 Delay<?> 类型的参数。
-
-	trans_data( get_data(), x)		// trans_data 的第一个参数必须是模板，或者 Delay<?> 类型
-
-注意，默认情况下延迟优化只用于模板函数，因为编译器实际上是生成了一个 Delay 内部模板对象。
-
-其实也不一定用在函数里
-
-	Delay<int> x={ get_data() }		// 这时 get_date() 其实没有被执行
-	var k=x							// 这时才会执行，并且只会执行一次
-	var k2=x						// 注意，这里不会重复执行
-
 线程
 --------------
 
 创建线程由线程库支持，类似 Java
 
-	Thread thread(daemon=true, level=3, loop=false) // loop = true 时线程函数会反复执行，直到线程结束
+	Thread thread(daemon=true, level=3, loop=false) // loop = true 时线程函数会反复执行，直到线程收到中断信号
 	thread->{       // 运行线程
 		aFunc()
 	}
@@ -1114,7 +1147,7 @@ SimpleLang 的函数参数，允许使用延迟生成的技术以优化效率。
 
 另外，如果库是二进制实现（无引用计数），那么可以在函数参数上添加 $ 符号，强制引用，
 由库内来释放它(仅仅在库内处理有多线程等逃逸的情况下有必要），这样编译器在调用函数时，
-会额外增加一次引用计数。
+不会额外增加一次引用计数。
 当然，未来二进制包的函数定义是由编译器来生成的，因此一般情况下用不到。
 
 	func myLibFunc( $MyObject obj ) // 这说明 obj 在函数内会逃逸
@@ -1130,7 +1163,7 @@ SimpleLang 的函数参数，允许使用延迟生成的技术以优化效率。
 	go {	// 通过go来创建一个并行任务
 		print( "go" )
 		yield();  // 放弃 cpu
-		sleep(x); // 放弃 cpu 并等待 x 毫秒后继续
+		sleep(x); // 放弃 cpu 并等待最少 x 毫秒后继续
 	}
 	
 	go dosomthing()		// 并行执行函数
@@ -1142,7 +1175,7 @@ SimpleLang 的函数参数，允许使用延迟生成的技术以优化效率。
 	Coroutine<int> c1=go doSomethine()
 	Coroutine<int> c2=go doSomethine()
 	....
-	var v1= c1.await(4000)  // 等待协程执行完毕，4000 毫秒后还未结束将抛异常
+	var v1= c1.await(4000)  // 等待协程执行完毕，最少 4000 毫秒后还未结束将抛异常
 	var v2= c2.await()
 
 SimpleLang 通过通道来支持跨协程数据交换，成员函数 await 可以把异步操作写得更像同步操作。
@@ -1160,13 +1193,13 @@ SimpleLang 通过通道来支持跨协程数据交换，成员函数 await 可�
 	}
 	chan(10)	// 调用通道，把数据塞进去，这里会阻塞，一直到数据被取走
 	
-	var cachedChan=Chan<int>(10) // 带缓存的通道，缓存满前不会阻塞
+	var cachedChan=CachedChan<int>(10) // 带缓存的通道，缓存满前不会阻塞
 
 特别的，如果一个协程被阻塞，它可能会被调度去干别的事，因此唤醒可能并非“及时”的。
 
 包 & import
 ============
-SimpleLang 通过 import 导入包，import 只能写在文件头部，简单起见，SimpleLang 总是一次导入整个包里的公共对象、函数
+SimpleLang 通过 import 导入包，import 只能写在文件头部，简单起见，SimpleLang 总是一次导入包里首层所有的变量、类定义、函数等，而其他层不能在包外访问。
 
 	import org.simplelang
 
@@ -1182,13 +1215,42 @@ sl:MyClass my
 
 包只有根目录下函数、接口、类才能被其他模块访问。
 
+```
+org.simplelang.inner:StringImp imp	// 编译错误，无法访问
+```
 
+## 反射
+
+SimpleLang 支持**静态**反射
+
+```
+func myTemplateFunc( var param ){
+	for( var i,name of param ){	// 枚举 param 的成员变量、成员函数，它会被展开为代码，name 是它的名称，是个静态字符串，由编译器支持
+		if("open"==name){	// 如果这个字段叫 open
+		
+		}
+		if(name.startWith("my")){ // 
+		
+		}
+		
+		if(i is int){
+		
+		}else if(i is func){	// 如果是成员函数
+		
+		}else if(i is func(int, int)){
+		
+		}
+	}
+}
+```
+
+注意，由于是静态反射，因此模板函数里的代码必须是静态的，另外特别设计静态字符串，支持有限的几个方法。
 
 # 其他
 
-注解、反射
+注解
 ------------------
-SimpleLang 支持注解及反射。(抄 Java)
+SimpleLang 支持注解，未来在插件里支持注解的使用
 
 	class MyClass{
 		@ReflectName( name="value", idx=12 )	// 使用注解对象来进行注解
@@ -1197,19 +1259,6 @@ SimpleLang 支持注解及反射。(抄 Java)
 		void doFun(){
 		}
 	}
-	
-	Package pkg=Reflect.packages["org.example"]		// 获取包
-	Type cls=typeof(MyClass)						      // Type 描述类型
-	
-	Type cls=Reflect.classes["org.example.MyClass"]	// 通过全名获取
-	
-	Type cls=pkg.classes["MyClass"]					           // 通过包获取对象
-	
-	for( String name, field v : cls.fields ){
-		var annotation=v.annotations				// 获取注解
-	}
-
-注：Reflect 其实是一个语言支持的单例，因此如果程序中没有使用到它，那么它并不会初始化。
 
 C 对象定义
 -------------
@@ -1246,6 +1295,62 @@ SimpleLang 支持有限的操作符重载，可以对类重载一元或二元操
 备选（思考中，暂时不实现）
 ==============
 
+延迟优化( Delay 类型)
+----
+
+SimpleLang 的函数参数，允许使用延迟生成的技术以优化效率。它让参数仅在被首次使用的时候，才会被生成它。
+比如：
+
+	trans_data( get_data(), x)
+
+而 trans_data 的代码如下：
+
+	func trans_data( var v, bool x ){
+		if(x) print(v)
+	}
+
+这段代码里，v 通过 get_data() 获取值，但在 trans_data 中，如果 x=false，v根本不会被使用。这个时候 get_data() 的调用
+是完全没有必要的。而通过延迟生成技术，只有在v参数实际被使用时才会尝试“构造”它，因此，如果 x=false，get_data() 会被直接
+放弃，生成的代码类似下面的
+
+	void trans_data( bool x ){
+		if(x) print( get_data() )
+	}
+
+要启用延迟优化，调用代码不用做任何更改，只要函数是接受 Delay<?> 类型的参数。
+
+	trans_data( get_data(), x)		// trans_data 的第一个参数必须是 Delay<?> 类型
+	
+	func<T> trans_data( Delay<T> v, bool x ){
+		if(x) print(v)
+	}
+
+其实也不一定用在函数里
+
+	Delay<int> x={ get_data() }		// 这时 get_date() 其实没有被执行
+	var k=x							// 这时才会执行，并且只会执行一次
+	var k2=x						// 注意，这里不会重复执行
+
+
+--------------
+
+## 后置函数调用
+
+函数另一种调用方法是通过 :: 后置
+
+ ```
+10 :: fun 	// 等价于 func(10)
+ ```
+
+元组也支持 :: 操作
+
+	(10, 20) :: myFunc 	// 等价于 myFunc(10, 20)
+	let tuple=(10, 20)
+	tuple :: myFunc		// 等价于 myFunc(10,  20)
+	let v = ((10, 20) :: firstFunc) :+ 30 :: second // 等价于 let v = second( firstFunc(10, 20), 30 )
+
+如果你想玩一下函数式编程，这种语法也许会让你的程序更容易阅读
+
 非托管对象
 --------------
 
@@ -1268,7 +1373,7 @@ SimpleLang 支持有限的操作符重载，可以对类重载一元或二元操
 	
 	var conn = Connect()
 	var my = MyObject() link conn
-	var myRef = conn..MyObject 
+	var myRef = (my:conn)
 
 my 对象的生存期将会跟随输入的对象 conn，成为 Connect 的子类。
 
@@ -1291,7 +1396,7 @@ my 对象的生存期将会跟随输入的对象 conn，成为 Connect 的子类
 		func run(String data)
 	}
 	
-	class MyProxyImp{
+	class MyProxyImp {
 		func invoke(String methodName, Any[] args) : Any
 	}
 	
