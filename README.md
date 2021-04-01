@@ -871,6 +871,8 @@ get(cls.virtualValue)=func(): int{ // 外部重写 set 方法
 ==================
 **注意：凡是涉及模板的类、函数，都必须通过源码的形式存在导出包里。**
 
+## 模板类
+
 可以通过把类中的成员函数，定义为 var 来创建模板类，模板类必须在构造时，能确定所有模板成员的类型。
 
 	class MyTuple {
@@ -915,20 +917,29 @@ get(cls.virtualValue)=func(): int{ // 外部重写 set 方法
 	
 	var my = MyMap<String,int>("Hello")		// 构造时必须可以推导类中所有类型
 
-由于返回值可以命名，因此命名的返回值也可以用来推导，但优先级比较低，优先使用传入参数来推导。
+## 模板函数/成员函数
+
+当参数使用 var 或者使用类型占位符来定义时，这个 函数/成员函数 就是一个模板函数
 
 ```
-class MyClass{
-	func getVal() : var v{
-		if(v is int) 
-			return 10 // 返回 int
-		else if(v is double) 
-			return 2.0 // 返回 double
-	}
+func templateFunc( var a, int b ) {
+	...
 }
-
-double v = myClass.getVal()	// 通过返回值推导
 ```
+
+**对于模板函数，参数类型确定了以后，返回值类型也就被确定了。**
+
+如果你希望返回值的类型在函数中来推导，那么需要使用 = 来连接函数定义和函数体 
+
+```
+func<T> templateFunc( T a, T b ) = {
+	return a+b
+}
+```
+
+## 内部函数 typeof
+
+虽然 typeof 看起来像函数，但它其实是在编译时起作用，用来推导类型
 
 类型定义 def
 ------------------
@@ -1109,38 +1120,6 @@ Optional 可以保存一个内部对象，可以通过
 
 
 
-延迟优化( Delay 类型)
-----
-
-SimpleLang 的函数参数，允许使用延迟生成的技术以优化效率。它让参数仅在被首次使用的时候，才会被生成它。
-比如：
-
-	trans_data( get_data(), x)
-
-而 trans_data 的代码如下：
-
-	func trans_data( var v, bool x ){
-		if(x) print(v)
-	}
-
-这段代码里，v 通过 get_data() 获取值，但在 trans_data 中，如果 x=false，v根本不会被使用。这个时候 get_data() 的调用
-是完全没有必要的。而通过延迟生成技术，只有在v参数实际被使用时才会尝试“构造”它，因此，如果 x=false，get_data() 会被直接
-放弃，生成的代码类似下面的
-
-	void trans_data( bool x ){
-		if(x) print( get_data() )
-	}
-
-要启用延迟优化，调用代码不用做任何更改，只要函数是接受 Delay<?> 类型的参数。
-
-	trans_data( get_data(), x)		// trans_data 的第一个参数必须是模 Delay<?> 类型
-
-其实也不一定用在函数里
-
-	Delay<int> x={ get_data() }		// 这时 get_date() 其实没有被执行
-	var k=x							// 这时才会执行，并且只会执行一次
-	var k2=x						// 注意，这里不会重复执行
-
 线程
 --------------
 
@@ -1240,11 +1219,38 @@ sl:MyClass my
 org.simplelang.inner:StringImp imp	// 编译错误，无法访问
 ```
 
+## 反射
+
+SimpleLang 支持**静态**反射
+
+```
+func myTemplateFunc( var param ){
+	for( var i,name of param ){	// 枚举 param 的成员变量、成员函数，它会被展开为代码，name 是它的名称，是个静态字符串，由编译器支持
+		if("open"==name){	// 如果这个字段叫 open
+		
+		}
+		if(name.startWith("my")){ // 
+		
+		}
+		
+		if(i is int){
+		
+		}else if(i is func){	// 如果是成员函数
+		
+		}else if(i is func(int, int)){
+		
+		}
+	}
+}
+```
+
+注意，由于是静态反射，因此模板函数里的代码必须是静态的，另外特别设计静态字符串，支持有限的几个方法。
+
 # 其他
 
-注解、反射
+注解
 ------------------
-SimpleLang 支持注解及反射。(抄 Java)
+SimpleLang 支持注解，未来在插件里支持注解的使用
 
 	class MyClass{
 		@ReflectName( name="value", idx=12 )	// 使用注解对象来进行注解
@@ -1253,19 +1259,6 @@ SimpleLang 支持注解及反射。(抄 Java)
 		void doFun(){
 		}
 	}
-	
-	Package pkg=Reflect.packages["org.example"]		// 获取包
-	Type cls=typeof(MyClass)						      // Type 描述类型
-	
-	Type cls=Reflect.classes["org.example.MyClass"]	// 通过全名获取
-	
-	Type cls=pkg.classes["MyClass"]					           // 通过包获取对象
-	
-	for( String name, field v : cls.fields ){
-		var annotation=v.annotations				// 获取注解
-	}
-
-注：Reflect 其实是一个语言支持的单例，因此如果程序中没有使用到它，那么它并不会初始化。
 
 C 对象定义
 -------------
@@ -1301,6 +1294,45 @@ SimpleLang 支持有限的操作符重载，可以对类重载一元或二元操
 
 备选（思考中，暂时不实现）
 ==============
+
+延迟优化( Delay 类型)
+----
+
+SimpleLang 的函数参数，允许使用延迟生成的技术以优化效率。它让参数仅在被首次使用的时候，才会被生成它。
+比如：
+
+	trans_data( get_data(), x)
+
+而 trans_data 的代码如下：
+
+	func trans_data( var v, bool x ){
+		if(x) print(v)
+	}
+
+这段代码里，v 通过 get_data() 获取值，但在 trans_data 中，如果 x=false，v根本不会被使用。这个时候 get_data() 的调用
+是完全没有必要的。而通过延迟生成技术，只有在v参数实际被使用时才会尝试“构造”它，因此，如果 x=false，get_data() 会被直接
+放弃，生成的代码类似下面的
+
+	void trans_data( bool x ){
+		if(x) print( get_data() )
+	}
+
+要启用延迟优化，调用代码不用做任何更改，只要函数是接受 Delay<?> 类型的参数。
+
+	trans_data( get_data(), x)		// trans_data 的第一个参数必须是 Delay<?> 类型
+	
+	func<T> trans_data( Delay<T> v, bool x ){
+		if(x) print(v)
+	}
+
+其实也不一定用在函数里
+
+	Delay<int> x={ get_data() }		// 这时 get_date() 其实没有被执行
+	var k=x							// 这时才会执行，并且只会执行一次
+	var k2=x						// 注意，这里不会重复执行
+
+
+--------------
 
 ## 后置函数调用
 
