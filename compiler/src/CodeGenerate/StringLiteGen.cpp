@@ -16,26 +16,26 @@ extern bool utf8File;
 StringLiteGen::StringLiteGen(AstContext* c, const std::string & s) : _str(s)
 {
 	// ±àÂë±ä»Ã
-	//UINT code = utf8File ? CP_UTF8 : CP_ACP;
-	//int  len = (int)_str.length();
-	//int  unicodeLen = ::MultiByteToWideChar(code,
-	//										0,
-	//										_str.c_str(),
-	//										-1,
-	//										NULL,
-	//										0);
-	//wchar_t *  pUnicode = new  wchar_t[unicodeLen + 1];
-	//memset(pUnicode, 0, (unicodeLen + 1) * sizeof(wchar_t));
-	//::MultiByteToWideChar(code,
-	//					  0,
-	//					  _str.c_str(),
-	//					  -1,
-	//					  (LPWSTR)pUnicode,
-	//					  unicodeLen);
-	//int ulen = unicodeLen * sizeof(wchar_t);
+	UINT code = utf8File ? CP_UTF8 : CP_ACP;
+	int  len = (int)_str.length();
+	int  unicodeLen = ::MultiByteToWideChar(code,
+											0,
+											_str.c_str(),
+											-1,
+											NULL,
+											0);
+	wchar_t *  pUnicode = new  wchar_t[unicodeLen + 1];
+	memset(pUnicode, 0, (unicodeLen + 1) * sizeof(wchar_t));
+	::MultiByteToWideChar(code,
+						  0,
+						  _str.c_str(),
+						  -1,
+						  (LPWSTR)pUnicode,
+						  unicodeLen);
+	int ulen = unicodeLen * sizeof(wchar_t);
 
-	//_data.assign(pUnicode, unicodeLen-1);
-	//delete[]  pUnicode;
+	_data.assign(pUnicode, unicodeLen-1);
+	delete[]  pUnicode;
 
 	//auto charset = c->findClass("Charset");
 	//vector<pair<string, CodeGen*>> vec = { pair(string(), new IntegerGen(c->context(), 65001)) };
@@ -43,6 +43,7 @@ StringLiteGen::StringLiteGen(AstContext* c, const std::string & s) : _str(s)
 
 	//auto* str = c->findClass("String");
 	//str->makeNew(c, s.c_str(), )
+	
 	type = c->findStruct("struct.String__sl");
 	assert(type);
 	_init= c->getFunction("Init__String__sl");

@@ -420,7 +420,7 @@ FunctionInstance* AstFunction::getLLVMFunctionInstance(
 	Type* cls = object ? object->llvmType(c) : nullptr;
 	std::string packageName = object ? object->path : pathName;
 
-
+	 
 
 	auto* instance = new FunctionInstance();
 	instance->overload = overload || isTemplate();
