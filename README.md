@@ -851,13 +851,10 @@ get(cls.virtualValue)=func(): int{ // 外部重写 set 方法
 --------------------
 除了默认类型转换，还可以使用下面的显式转换，如果后面接操作符，显式转换优先进行.
 
-	var a=(MyClass)b			// 尝试将 b 转换为 MyClass 类型
-	(MyClass)b.funcInMyClass()	// 先转换在调用
-	(MyClass)b{					// 转换再调用对象作用区
-		funcInMyclass()
-	}
+	MyClass a=b						  // 尝试将 b 转换为 MyClass 类型，如果转换失败会抛出异常
+	if(b is MyClass) b.funcInMyClass()	// 先转换在调用，由于有 if, 转换失败不会抛异常
 
-但显式转换也是有限制的，比如你并不能把 int 转为一个不兼容对象。显式类型转换仅能用于基类转换，等同 c++ 的 dynamic_cast
+但显式转换并不能把 int 转为一个不兼容对象。显式类型转换仅能用于基类转换，类似 c++ 的 dynamic_cast
 
 单例
 ---------------------
@@ -982,7 +979,7 @@ func<T> templateFunc( T a, T b ) = {
 
 类型操作符
 -------------------
-SimpleLang 将支持一些类型操作符，结合模板，可以实现编译期编程。
+SimpleLang 将支持一些类型操作符，结合模板，可以实现编译期编程。另外，模板推导时， true 等于 1。
 
 操作符 is
 ------------
