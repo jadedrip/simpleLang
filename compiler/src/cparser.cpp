@@ -18,7 +18,6 @@
 #include <clang/Lex/Preprocessor.h>
 #include <clang/CodeGen/ModuleBuilder.h>
 #include <clang/Parse/ParseAST.h>
-#include <clang/../../lib/CodeGen/CodeGenModule.h>
 #include <llvm/Support/Host.h>    
 #include <llvm/Support/raw_ostream.h>
 
@@ -45,19 +44,18 @@ public:
 		auto returnType = f->getReturnType();
 
 		auto& cgm = codeGenerator->CGM();
-		auto& codeGenTypes = cgm.getTypes();
 
 		// Can't convert templated function.
 		if (f->isTemplated()) return true;
-		if (codeGenTypes.isFuncTypeConvertible(f->getFunctionType())) {
-			llvm::Type* ft = codeGenTypes.ConvertType(f->getType());
-			// std::clog << "  Find c function: " << name << std::endl;
-			assert(ft);
-			auto* x = dyn_cast<llvm::FunctionType>(ft);
-			assert(x);
-			auto* func = llvm::Function::Create(x, llvm::Function::ExternalLinkage, f->getName(), _module);
-			assert(func);
-		}
+		//if (codeGenTypes.isFuncTypeConvertible(f->getFunctionType())) {
+		//	llvm::Type* ft = codeGenTypes.ConvertType(f->getType());
+		//	// std::clog << "  Find c function: " << name << std::endl;
+		//	assert(ft);
+		//	auto* x = dyn_cast<llvm::FunctionType>(ft);
+		//	assert(x);
+		//	auto* func = llvm::Function::Create(x, llvm::Function::ExternalLinkage, f->getName(), _module);
+		//	assert(func);
+		//}
 		return true;
 	}
 private:

@@ -37,7 +37,7 @@ llvm::Value* ReturnGen::generateCode(const Generater& generater)
 		}
 
 		llvm::Value* v = p->generate(generater);
-		v = builder.CreateLoad(v, "return");
+		v = builder.CreateLoad(v->getType(), v, "return");
 
 		jump(builder, generater.deallocate);
 		return builder.CreateRet(v);	// 返回 Tuple 的对象

@@ -82,7 +82,7 @@ Value * CallGen::generateCode(const Generater& generater)
 				// 函数是作为指针保存的
 				Type* t = PointerType::get(pointerGen->type, 0);
 				// v = builder.CreateBitOrPointerCast(v, t);
-				llvmFunction = builder.CreateLoad(v);
+				llvmFunction = builder.CreateLoad(pointerGen->type, v);
 			} else {
 				llvmFunction = v;
 			}

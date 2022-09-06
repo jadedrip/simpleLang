@@ -6,8 +6,6 @@
 #include <boost/lexical_cast.hpp>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <tbb/concurrent_queue.h>
-
 
 enum severity_level
 {

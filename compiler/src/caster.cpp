@@ -57,7 +57,7 @@ Value* try_cast(IRBuilder<>& builder, Type* dest, Value *v)
 	if (r->isPointerTy()) {
 		r = r->getPointerElementType();
 		if (r == dest)
-			return builder.CreateLoad(v);
+			return builder.CreateLoad(r, v);
 		if (r->isStructTy()) {
 			return structCast(builder, dest, v);
 		}

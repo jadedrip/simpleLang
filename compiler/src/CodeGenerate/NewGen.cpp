@@ -129,7 +129,7 @@ Value * NewGen::generateCode(const Generater& generater)
 			std::vector<Value*> args;
 			args.push_back(zero);
 			args.push_back(idx);
-			Value* memberPointer = builder2.CreateInBoundsGEP(obj, args);
+			Value* memberPointer = builder2.CreateInBoundsGEP(obj->getType(), obj, args);
 			//Value* x=builder.CreateBitOrPointerCast(memberPointer, pt);
 			builder2.CreateStore(v, memberPointer);
 		}

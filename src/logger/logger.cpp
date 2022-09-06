@@ -5,19 +5,18 @@
 #include <boost/bind.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <tbb/concurrent_queue.h>
+#include <boost/lockfree/queue.hpp>
 #include "logger.h"
 
 severity_level _filter;
 bool _to_terminal;
-tbb::concurrent_queue<std::string> _queue;
+boost::lockfree::queue<std::string*, boost::lockfree::fixed_sized<true>> _queue(10000);
 
 size_t sustain;
 time_t laset_reset;
 std::string log_filename;
 std::shared_ptr< std::ostream > logfile;
 
-std::mutex _mutex;
 std::map< uint32_t, std::string > _delay_routines;
 
 typedef std::vector< std::pair< severity_level, std::string > > routine_data;
@@ -33,20 +32,21 @@ void log_work()
 {
 	using namespace boost;
 	using namespace boost::posix_time;
-	std::string log_info;
+	std::string* log_info;
 
 	int x = 0; // 防止队列始终满的情况下无法进入超时保护
 	while (true) {
-		if ((x++ < 10000) && _queue.try_pop(log_info)) {
+		if ((x++ < 10000) && _queue.pop(log_info)) {
 			std::shared_ptr< std::ostream > f = logfile;
 			if (f) {
 				if (!f->good()) { reset(); f->clear(); }
-				*f << log_info << std::endl;
+				*f << *log_info << std::endl;
 			}
 
 			if (!f || _to_terminal) { // 输出到控制台（低效）
-				std::cout << log_info << std::endl;
+				std::cout << *log_info << std::endl;
 			}
+			delete log_info;
 		}
 		else {
 			x = 0;
@@ -58,10 +58,9 @@ void log_work()
 	}
 }
 
-void print_line(const std::string& str)
+void print_line(std::string* str)
 {
-	if (_queue.unsafe_size() < 10000)
-		_queue.push(str);
+	_queue.push(str);
 }
 
 void reset()
@@ -137,5 +136,8 @@ logger::logger(severity_level level) : _end(false)
 
 logger::~logger()
 {
-	if (_active) print_line(_ss.str());
+	if (_active) {
+		std::string s=_ss.str();
+		print_line(new std::string( std::move(s) ));
+	}
 }

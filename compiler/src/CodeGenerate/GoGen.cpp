@@ -31,7 +31,7 @@ llvm::Value* GoGen::generateCode(const Generater& generater)
 		auto *v=i->generate(generater);
 		Value* func = nullptr;
 		if (!i->type->isStructTy()) {
-			v = builder.CreateLoad(v, i);
+			// v = builder.CreateLoad(v, i);
 			func = ConstantInt::get(c, APInt(-1, 64));
 		}
 		else {

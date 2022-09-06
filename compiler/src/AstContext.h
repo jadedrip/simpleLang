@@ -50,12 +50,12 @@ public:
 	static AstClass* loadClass(const std::string& path, const std::string& name);
 
 	llvm::StructType* findStruct(const std::string& path) {
-		if (module) {
-			auto p=module->getTypeByName(path);
-			if (p) return p;
-			p = module->getTypeByName("struct." + path);
-			if (p) return p;
-		}
+		//if (module) {
+		//	auto p=module->getTypeByName(path);
+		//	if (p) return p;
+		//	p = module->getTypeByName("struct." + path);
+		//	if (p) return p;
+		//}
 
 		for (auto& i : _anonymousModules) {
 			auto *p=i->findStruct(path);

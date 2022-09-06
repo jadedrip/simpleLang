@@ -16,6 +16,6 @@ llvm::Value * CodeGen::load(llvm::IRBuilder<>& builder, llvm::Value * v)
 
 	auto *t=v->getType();
 	if (t->isPointerTy() && !t->getPointerElementType()->isStructTy() )
-		return builder.CreateLoad(v);
+		return builder.CreateLoad(t->getPointerElementType(), v);
 	return v;
 }

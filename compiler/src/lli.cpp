@@ -8,8 +8,6 @@
 #include "llvm/ExecutionEngine/JITEventListener.h"
 #include "llvm/ExecutionEngine/MCJIT.h"
 #include "llvm/ExecutionEngine/ObjectCache.h"
-#include "llvm/ExecutionEngine/Orc/OrcRemoteTargetClient.h"
-#include "llvm/ExecutionEngine/OrcMCJITReplacement.h"
 #include "llvm/ExecutionEngine/SectionMemoryManager.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/LLVMContext.h"
@@ -42,7 +40,6 @@ using namespace llvm;
 
 #define DEBUG_TYPE "lli"
 
-LLVM_ATTRIBUTE_NORETURN
 static void reportError(SMDiagnostic Err, const char *ProgName) {
   Err.print(ProgName, errs());
   exit(1);
@@ -67,7 +64,6 @@ ExecutionEngine* buildEngine(std::unique_ptr<Module> Owner) {
   //  builder.setCodeModel(CMModel);
   builder.setErrorStr(&ErrorMsg);
   builder.setEngineKind(EngineKind::JIT);
-  builder.setUseOrcMCJITReplacement(false);
 
   // Enable MCJIT if desired.
 

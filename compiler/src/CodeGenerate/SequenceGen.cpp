@@ -15,11 +15,8 @@ Value* SequenceGen::generateCode(const Generater& generater)
 	auto idx = 0;
 	for (auto i : values) {
 		auto v = i->generate(generater);
-		auto x = builder.CreateGEP(p, ConstantInt::getSigned(ITy, idx++));
+		auto x = builder.CreateGEP(p->getType(), p, ConstantInt::getSigned(ITy, idx++));
 
-		if (v->getType()->isPointerTy()) {
-			v = builder.CreateLoad(v);
-		}
 		v = try_cast(builder, type, v);
 		builder.CreateStore(v, x);
 	}

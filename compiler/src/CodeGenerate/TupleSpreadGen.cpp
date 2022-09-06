@@ -25,7 +25,7 @@ Value * TupleSpreadGen::generateCode(const Generater& generater)
 			0, 
 			(unsigned int)i
 		);
-		Value* gv = builder.CreateLoad(g);
+		Value* gv = builder.CreateLoad(g->getType(), g);
 
 		assert(v->getType()->isPointerTy());
 		builder.CreateStore(gv, v);

@@ -50,8 +50,10 @@ llvm::Value* CLangCallGen::call(
 		Value* v = i->generate(generater);
 		// 如果是基本类型
 		if (i->type->isIntegerTy() || i->type->isFloatingPointTy()) {
-			if (v->getType()->isPointerTy())
-				v = builder.CreateLoad(v);
+			if (v->getType()->isPointerTy()) {
+				auto p = dyn_cast<PointerType>(v-> getType());
+				v = builder.CreateLoad(p->getElementType(), v);
+			}
 			putBack(builder, a, v, iter, end);
 		}
 		else if (i->type->isArrayTy()) {

@@ -18,7 +18,8 @@ llvm::Value* GoWrapValue::generateCode(const Generater& generater)
 	//os.flush();
 	auto* v = CallGen::call(builder, "GetCoroutineParams", _index);
 	if (!type->isStructTy()) {
-		return builder.CreateLoad(v);
+		auto x=llvm::PointerType::get(type, 0);
+		return builder.CreateLoad(x, v);
 	}
 	else {
 		return v;
