@@ -23,6 +23,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\Ast\AstPackage.cpp" />
+    <ClCompile Include="src\CodeGenerate\FileGen.cpp" />
     <ClCompile Include="src\CompilerOptions.cpp" />
     <ClCompile Include="src\Ast\AstArrayCall.cpp" />
     <ClCompile Include="src\Ast\AstGetClass.cpp" />
@@ -144,6 +145,7 @@
   <ItemGroup>
     <ClInclude Include="..\src\logger\logger.h" />
     <ClInclude Include="src\Ast\AstPackage.h" />
+    <ClInclude Include="src\CodeGenerate\FileGen.h" />
     <ClInclude Include="src\CompilerOptions.h" />
     <ClInclude Include="src\Exception\LoadFileException.h" />
     <ClInclude Include="src\Ast\AstArrayCall.h" />

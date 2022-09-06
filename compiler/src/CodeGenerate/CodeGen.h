@@ -19,6 +19,12 @@ public:
 	}
 };
 
+struct GenContent {
+	std::map<std::string, ClassInstanceType* > classes;
+	std::map<std::string, FunctionInstance* > functions;
+	std::map<std::string, ValueGen* > values;						// 全局变量
+};
+
 class CodeGen {
 public:
 	CodeGen(llvm::Type* t = nullptr);
@@ -36,6 +42,8 @@ public:
 
 	// 期望的类型
 	llvm::Type* hope = nullptr;
+
+	virtual void run(GenContent & content) {}
 protected:
 	virtual llvm::Value* generateCode(const Generater& generater) = 0;
 };

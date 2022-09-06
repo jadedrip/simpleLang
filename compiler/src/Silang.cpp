@@ -159,7 +159,11 @@ int main(int argc, char* argv[],  char * const *envp)
 			auto package= CLangModule::loadPackage("sl");
 			c->addImport("", package);
 			AstPackage::simpleLang = package;
-			currentPackage->preprocessor(c);
+			auto gens = currentPackage->preprocessor(c);
+			GenContent content;
+			gens->run(content);
+
+			auto mainFunc = gens->generateCode(m);
 		}
 		catch (std::runtime_error e) {
 			std::cerr << "发生异常：" << e.what() << std::endl;
@@ -175,8 +179,6 @@ int main(int argc, char* argv[],  char * const *envp)
 		of << "}";
 		of.close();
 
-		currentPackage->generateCode(m);
-	
 		{
 			std::ofstream file("out.ll");
 			llvm::raw_os_ostream os(file);

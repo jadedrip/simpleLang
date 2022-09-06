@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <vector>
 #include "AstContext.h"
+#include "CodeGenerate/FileGen.h"
 
 class AstImport;
 class AstNode;
@@ -15,12 +16,10 @@ public:
 	std::vector<AstNode*> lines;
 public:
 	virtual void draw(std::ostream& os);
-	void preprocessor(AstContext* context);
-	void generateCode(llvm::Module* m);
+	FileGen* preprocessor(AstContext* context);
 	llvm::Function* getFunc() { return _func;  }
 
 	std::string name;
 private:
 	llvm::Function* _func = nullptr;
-	std::vector<CodeGen* > _gens;
 };
