@@ -63,6 +63,8 @@ SimpleLang 工程有固定的目录结构
 
 SimpleLang 程序的目录结构是固定的，入口文件被必须为 main.sc，而一个程序可以引入多个包（或者叫模块），包一般被 7z 压缩为 spk 文件，包的目录同样是固定的。
 
+对整个程序来说，整个包被视为一个名字空间。
+
  
 
 命名
@@ -148,6 +150,14 @@ SimpleLang 语言中除了内置类型（整数和浮点），其他类型都保
 
 另外，内部变量有初始值。
 
+## 全局变量
+
+SimpleLang 里允许有全局变量，但全局变量的作用域是包内部
+
+要使用其他包内的全局变量，必须导入或者使用带包路径的全名。
+
+
+
 空指针
 -------------------
 
@@ -160,9 +170,9 @@ SimpleLang 语言中除了内置类型（整数和浮点），其他类型都保
 	k = "20"
 
 
-| 操作符可以在指针值为空时提供默认值
+?: 操作符可以在指针值为空时提供默认值
 
-​	`var val = getValue() | defaultValue`
+​	`var val = getValue() ?: defaultValue`
 
 可为空的变量实际上是  Optional<T> 类型，下面两种写法相同
 
@@ -171,8 +181,22 @@ Optional<int> v = null
 int? v = null
 ```
 
+## Optional<T> 对象
+
+Optional 可以保存一个内部对象，可以通过
+
+    Optional<int> opt=12
+    opt.isPresent()	// 是否存在
+    
+    opt { // 当值存在时被调用
+    	print(it)
+    }
+    
+    int? optInt	// 其实是  Optional<int> 的简化写法
+
 数组
 ------------
+
 数值类型（不是变量）可以定义成普通数组，数组有**固定长度**，并且不能更改长度，有个默认打开的编译选项，会让越界访问抛出异常。数组实际上为 Array<T> 类型，（类型+[]） 只是简写，两者等价。
 数组下标从0开始
 
@@ -453,7 +477,7 @@ return
 	}
 
 传参
-================
+----------------
 SimpleLang 语言中，传入的参数如果是值类型（int 等数字），会被复制，而对象被视为引用，因此**它的内容**可以在函数中可以被更改。
 
 比如：
@@ -506,6 +530,28 @@ func myFunc( clone int clonedValue ) {
 
 	var v= fun( name="myname", 10, 20 )
 
+一行中仅仅有函数调用并且无返回值的情况下，允许省略括号
+
+```
+print "myName"
+```
+
+另一种调用方式是后置函数调用，通过 :: 后置
+
+ ```
+10 :: fun 	// 等价于 func(10)
+ ```
+
+元组也支持 :: 操作，并且元组被作为参数时，成员会被自动展开
+
+	(10, 20) :: myFunc 	// 等价于 myFunc(10, 20)
+	(10, 20) :: next("a", $, $) // 等价于 next("a", 10, 20)，$ 是占位符
+	var tuple=(10, 20)
+	myFunc(tuple)		// 不合法，元组不能直接作为参数
+	tuple :: myFunc		// 合法，等价于 myFunc(10,  20)
+
+如果你想玩一下函数式编程，这种语法也许会让你的程序更容易阅读
+
 函数对象、匿名函数
 -------
 
@@ -520,16 +566,19 @@ SimpleLang 在语言级别支持函数对象、匿名函数，匿名函数**不�
 	var my4={ return 20 }				// 语法糖: 无参数时 = 后面 func 可以省略， 返回值类型自动推导
 	func(int):float itIsAFunctor		// 明确的类型
 
-同时，匿名函数可以引用外部变量（作为引用）：
+同时，匿名函数可以引用外部变量（作为引用），但如果引用的是内部数值型变量，那么会复制值，如果是对象，那么会使用引用：
 
 	int myVal = 10
-	var x=func(int a){ return a+myVal }		// 注意这个 myVal 是引用，在匿名函数调用时取*当前*值
-	
+	var x=func(int a){ return a+myVal }		// 注意这个 myVal 是复制，永远等于10
 	assert( x(20)==30 )
+	
+	int? myInt = 20
+	var x1=func(int a) { return a+myInt }	// myInt 实际上是 Optional<int> 类型了，因此在匿名函数调用时取*当前*值
+	myInt = 44
+	assert(x1(1)==45)
+	
 
-上面的代码演示了简单闭包，不过要注意的是，并行的情况下，myVal 可能被更改、互斥，这时候使用闭包需要特别小心。
-另外，匿名函数里包含的是对象引用，因此如果在匿名函数里修改 myVal 的值，当匿名函数被调用时，myVal 就会被更改。
-这点需要注意。
+上面的代码演示了简单闭包，不过要注意的是，并行的情况下，对象可能被更改、互斥，这时候使用闭包需要特别小心。
 
 异常
 -------
@@ -568,12 +617,14 @@ SimpleLang 支持的异常。
 	func nothrow willNotThrow() : int 
 
 注：一个 nothrow 的函数，编译器会**尽量**检查异常情况，如果调用了带异常函数而没捕获，将出现编译错误。
-而如果 nothrow 的函数内抛出了空指针之类的未知异常，将无法捕获，而直接转去 **公共异常处理函数**。类
+而如果 nothrow 的函数内抛出了空指针之类的未知异常，将无法捕获，而直接转去 **公共异常处理函数**。
+
+# 类
 
 基础
 ----------------
-每个文件（.sc）可以定义一个或多个类。
-访问控制被简化，si 中的类类似 Java。成员变量、方法只有**公开**和**包内**的，公开的可以被包外访问，
+每个文件（.sl）可以定义一个或多个类，但推荐只写一个类。
+访问控制被简化，sl 中的类类似 Java。成员变量、方法只有**公开**和**包内**的，公开的可以被包外访问，
 否则只允许同名包或者*子包* 或者继承的类来访问。
 
 *包 org.first.second 是 org.first 的子包*
@@ -588,7 +639,7 @@ data MyData{
 	String str;
 	
 	// 默认生成
-	init(int val=0, string str=null);
+	init(int val=0, String str="");
 }
 
 MyData x(10, "你好")
@@ -765,17 +816,6 @@ get(cls.virtualValue)=func(): int{ // 外部重写 set 方法
 
 *设计语:操作符重载有可能引起歧义，需要谨慎思考*
 
-类外部方法增强
-----------------
-通过在类外部定义额外方法，可以增强类
-
-	fun MyCls.other(){	// 本函数定义在外部，通过 import org.other 引入
-		this.val++
-	}
-	
-	MyCls cls()
-	cls.other()			// 可以像内部方法一样使用
-
 循环解偶
 -----------------
 两个类互相引用对方的情况是被禁止的（即使是间接引用）。但可以定义子类。
@@ -814,6 +854,8 @@ get(cls.virtualValue)=func(): int{ // 外部重写 set 方法
 	
 	var unsafe = new Unsafe()
 	free(unsafe)			// 析构
+
+另外，类也可以强制自身以引用计数的方式来gou
 
 语法糖：对象作用区
 ----------------
@@ -1062,37 +1104,18 @@ if( TplFunc(a,b) ){	// 静态语句，在编译期展开
 
 SimpleLang 可以通过 interface 关键字定义接口，是一个抽象类型，是抽象方法的集合，接口所有的方法、变量都是公开的。
 
-接口必须以源码的形式导出。
+接口其实是一种特殊的模板，所以必须以源码的形式导出。
 
-接口可以带默认方法、变量默认值，但需要注意的是，接口的方法会被认为是函数对象，接口内如果包含模板变量、方法，它只能被用在使用源码导出的函数里，事实上，如果函数体是使用源码导出的，编译器会按模板函数的方式来编译带接口的函数。
+接口不可以带默认方法、变量默认值。
 
-比如
+接口有两种用法，其一是当成模板函数的约束，指示函数需要什么样的类参数
 
 	interface MyInterface{
 		int value
 		func getSome():int	// 这是个函数定义
 	}
-	func notTemplateFunc( MyInterface inc ) // 函数体通过二进制（c函数）方式导出 	
-
-有且只有几个简单条件的接口，可以通过尖括号在参数中直接定义（匿名模板接口）
-
-	void aFunc( <int a, String b> inc ){ // 传入对象必须有个int型成员变量a, 一个 String型变量b
-		inc.a++
-	}
-
-接口无法被实例化，但是可以被实现。实现接口的类会生成接口定义的成员变量和函数指针。
-
-	class MyClass : Base, MyInterface{	   
-	}
+	func templateFunc( MyInterface inc ) // 这其实是一个模板函数，表示传入的inc 对象必须要符合接口所具有的变量和方法 	
 	
-	MyInterface i=MyClass()		// i 被认为是 MyClass 的基类
-	
-	void bFunc(MyInterface v){  // 必须从 MyInterface 继承的对象，才能传入
-	                            
-	}
-
-或者，接口也可以隐式实现：
-
 	class MyClass {
 		int value;
 		func getSome(): int {
@@ -1104,24 +1127,16 @@ SimpleLang 可以通过 interface 关键字定义接口，是一个抽象类型�
 	MyClass x
 	myFunc(x)	
 
+另一种就是被类继承，这可以指示类具有的变量和方法。接口无法被实例化。
+
+	class MyClass : Base, MyInterface{	   
+	}
+	
+	MyInterface i=MyClass()		// 等同于 var i=MyClass(), 只是更清晰的指示 i 的特性
+
 另外，和 Go 不同，纯空的接口是非法的。
 
 # 语言特性
-
-## Optional<T> 对象
-
-Optional 可以保存一个内部对象，可以通过
-
-    Optional<int> opt=12
-    opt.isPresent()	// 是否存在
-    
-    opt->(int v){ // 当值存在时被调用
-    
-    }
-    
-    int? optInt	// 其实是  Optional<int> 的简化写法
-
-
 
 线程
 --------------
@@ -1137,8 +1152,7 @@ Optional 可以保存一个内部对象，可以通过
 
 如果需要锁，代码如下
 
-	Mutex myMutex=Mutex()			// 定义一个锁
-	myMutex -> {
+	Mutex()	-> {		// 定义一个锁
 		// 锁内
 	}													// 这里解锁
 
@@ -1335,24 +1349,6 @@ SimpleLang 的函数参数，允许使用延迟生成的技术以优化效率。
 	var k2=x						// 注意，这里不会重复执行
 
 
---------------
-
-## 后置函数调用
-
-函数另一种调用方法是通过 :: 后置
-
- ```
-10 :: fun 	// 等价于 func(10)
- ```
-
-元组也支持 :: 操作
-
-	(10, 20) :: myFunc 	// 等价于 myFunc(10, 20)
-	let tuple=(10, 20)
-	tuple :: myFunc		// 等价于 myFunc(10,  20)
-	let v = ((10, 20) :: firstFunc) :+ 30 :: second // 等价于 let v = second( firstFunc(10, 20), 30 )
-
-如果你想玩一下函数式编程，这种语法也许会让你的程序更容易阅读
 
 非托管对象
 --------------
