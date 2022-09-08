@@ -576,7 +576,7 @@ SimpleLang 在语言级别支持函数对象、匿名函数，匿名函数**不�
 	var x1=func(int a) { return a+myInt }	// myInt 实际上是 Optional<int> 类型了，因此在匿名函数调用时取*当前*值
 	myInt = 44
 	assert(x1(1)==45)
-	
+
 
 上面的代码演示了简单闭包，不过要注意的是，并行的情况下，对象可能被更改、互斥，这时候使用闭包需要特别小心。
 
@@ -1214,8 +1214,37 @@ SimpleLang 通过通道来支持跨协程数据交换，成员函数 await 可�
 
 特别的，如果一个协程被阻塞，它可能会被调度去干别的事，因此唤醒可能并非“及时”的。
 
+延迟优化( Delay 类型)
+----
+
+SimpleLang 的函数参数，允许使用延迟生成的技术以优化效率。它让参数仅在被首次使用的时候，才会被生成它。在参数类型后添加 ! 会让参数变为延迟类型，接受一个带返回的函数调用作为参数。
+比如：
+
+	func trans_data( String! v, bool x ){
+		if(x) print(v)		// v 实际上被转换为 Delay<String> 对象，只有 x 为真才会调用 v 对象，并且内部会缓存结果，不过调用多次传入函数
+						   // 如果条件 x=false，get_data() 函数根本不会被调用
+	}
+	
+	trans_data( get_data(), x)	// 这里 get_data() 函数不会被调用
+	trans_data( "hello", true )	// 传入常量的场合，就是普通函数调用
+
+
+
+	void trans_data( bool x ){
+		if(x) print( get_data() )
+	}
+
+其实也不一定用在函数里
+
+	int! x=get_data()		 // 这时 get_date() 其实没有被执行, 另外这等同于 Delay<int> x = get_data()
+	var k=x					// 这时才会执行，并且只会执行一次
+	var k2=x				// 注意，这里不会重复执行
+
+另外，Delay 对象允许函数返回值为 null，所以它使用时也支持 Optional 类型的操作
+
 包 & import
 ============
+
 SimpleLang 通过 import 导入包，import 只能写在文件头部，简单起见，SimpleLang 总是一次导入包里首层所有的变量、类定义、函数等，而其他层不能在包外访问。
 
 	import org.simplelang
@@ -1311,42 +1340,6 @@ SimpleLang 支持有限的操作符重载，可以对类重载一元或二元操
 
 备选（思考中，暂时不实现）
 ==============
-
-延迟优化( Delay 类型)
-----
-
-SimpleLang 的函数参数，允许使用延迟生成的技术以优化效率。它让参数仅在被首次使用的时候，才会被生成它。
-比如：
-
-	trans_data( get_data(), x)
-
-而 trans_data 的代码如下：
-
-	func trans_data( var v, bool x ){
-		if(x) print(v)
-	}
-
-这段代码里，v 通过 get_data() 获取值，但在 trans_data 中，如果 x=false，v根本不会被使用。这个时候 get_data() 的调用
-是完全没有必要的。而通过延迟生成技术，只有在v参数实际被使用时才会尝试“构造”它，因此，如果 x=false，get_data() 会被直接
-放弃，生成的代码类似下面的
-
-	void trans_data( bool x ){
-		if(x) print( get_data() )
-	}
-
-要启用延迟优化，调用代码不用做任何更改，只要函数是接受 Delay<?> 类型的参数。
-
-	trans_data( get_data(), x)		// trans_data 的第一个参数必须是 Delay<?> 类型
-	
-	func<T> trans_data( Delay<T> v, bool x ){
-		if(x) print(v)
-	}
-
-其实也不一定用在函数里
-
-	Delay<int> x={ get_data() }		// 这时 get_date() 其实没有被执行
-	var k=x							// 这时才会执行，并且只会执行一次
-	var k2=x						// 注意，这里不会重复执行
 
 
 
