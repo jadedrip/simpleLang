@@ -530,12 +530,6 @@ func myFunc( clone int clonedValue ) {
 
 	var v= fun( name="myname", 10, 20 )
 
-一行中仅仅有函数调用并且无返回值的情况下，允许省略括号
-
-```
-print "myName"
-```
-
 另一种调用方式是后置函数调用，通过 :: 后置
 
  ```
@@ -1433,3 +1427,12 @@ print( "Hello %t World" )
 "Hello %t World"="你好 %t 世界"
 
 通过 Lang.set("zhCN") 切换文本
+
+## 无括号函数调用
+
+一行中仅仅有函数调用并且无返回值的情况下，允许省略括号
+
+```
+print "myName"
+```
+
