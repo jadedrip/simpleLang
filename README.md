@@ -552,6 +552,14 @@ print "myName"
 
 如果你想玩一下函数式编程，这种语法也许会让你的程序更容易阅读
 
+另一个语法糖是对象结构式函数调用
+
+```
+func myFunc( String name, int value ) { ... }
+MyClass my
+myFunc( :my )	// 等效于 myFunc( my.name, my.value )
+```
+
 函数对象、匿名函数
 -------
 
@@ -1104,17 +1112,13 @@ if( TplFunc(a,b) ){	// 静态语句，在编译期展开
 
 SimpleLang 可以通过 interface 关键字定义接口，是一个抽象类型，是抽象方法的集合，接口所有的方法、变量都是公开的。
 
-接口其实是一种特殊的模板，所以必须以源码的形式导出。
-
 接口不可以带默认方法、变量默认值。
-
-接口有两种用法，其一是当成模板函数的约束，指示函数需要什么样的类参数
 
 	interface MyInterface{
 		int value
 		func getSome():int	// 这是个函数定义
 	}
-	func templateFunc( MyInterface inc ) // 这其实是一个模板函数，表示传入的inc 对象必须要符合接口所具有的变量和方法 	
+	func templateFunc( MyInterface inc ) // 表示传入的inc 对象必须要符合接口所具有的变量和方法 	
 	
 	class MyClass {
 		int value;
@@ -1132,9 +1136,11 @@ SimpleLang 可以通过 interface 关键字定义接口，是一个抽象类型�
 	class MyClass : Base, MyInterface{	   
 	}
 	
-	MyInterface i=MyClass()		// 等同于 var i=MyClass(), 只是更清晰的指示 i 的特性
+	MyInterface i=MyClass()		// 会通过 MyClass 对象创建一个接口
 
 另外，和 Go 不同，纯空的接口是非法的。
+
+对象转接口会产生一个接口对象，有一定消耗，需要注意。
 
 # 语言特性
 
