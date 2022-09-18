@@ -24,7 +24,7 @@ map<string, AstPackage*> _packages;
 Module* _clib;
 
 extern unique_ptr<Module> module;
-extern llvm::LLVMContext llvmContext;
+extern thread_local llvm::LLVMContext llvmContext;
 
 llvm::Function* CLangModule::getFunction(const string& name) {
 	auto *p=module->getFunction(name);

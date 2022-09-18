@@ -3,11 +3,14 @@
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/Function.h>
 #include "../token.h"
-#include "BinaryGen.h"
 #include "caster.h"
 #include "utility.h"
+#include "GenUtils.h"
+#include "BinaryGen.h"
+#include "FloatPointerGen.h"
 
 using namespace llvm;
+extern thread_local llvm::LLVMContext llvmContext;
 
 BinaryGen::BinaryGen(int op, CodeGen * left, CodeGen * right)
 	: _op(op), _left(left), _right(right)
@@ -77,4 +80,28 @@ llvm::Value* BinaryGen::generateCode(const Generater& generater)
 		// 不支持的浮点运算符
 		throw std::runtime_error("Unknown operator: " + operator_to_str(_op));
 	}
+}
+
+CodeGen* BinaryGen::run(GenContent& content)
+{
+	CodeGen* l = _left->run(content);
+	CodeGen* r = _right->run(content);
+
+	assert(l->type && r->type);
+	if (l->type->isStructTy() || r->type->isStructTy()) {
+		// 
+	}
+
+	if( l->type->isDoubleTy() || r->type->isDoubleTy() ){
+		double vl = getDouble(l);
+		double vr = getDouble(r);
+		double v = oper(vl, vr, _op);
+		return new FloatPointerGen(llvmContext, v, true);
+	}
+	else if (l->type->isFloatTy() || r->type->isFloatTy()) {
+
+	}
+
+
+	return nullptr;
 }

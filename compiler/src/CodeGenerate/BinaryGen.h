@@ -14,6 +14,7 @@ private:
 	CodeGen *_right;
 protected:
 	llvm::Value* generateCode(const Generater& generater);
+	virtual CodeGen* run(GenContent& content);
 private:
 	//llvm::Value* genBooleanCode(llvm::IRBuilder<>& builder, llvm::Value* l, llvm::Value* r);
 	//llvm::Value* classBinary(llvm::IRBuilder<>& builder);

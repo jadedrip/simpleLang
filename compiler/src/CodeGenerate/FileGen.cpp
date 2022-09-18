@@ -3,7 +3,7 @@
 
 using namespace llvm;
 
-extern LLVMContext llvmContext;
+extern thread_local llvm::LLVMContext llvmContext;
 llvm::Function* FileGen::generateCode(llvm::Module* m) {
 	 m->getContext();
 	Type* type = Type::getVoidTy(llvmContext);

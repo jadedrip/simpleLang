@@ -2,6 +2,9 @@
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Value.h>
 #include <llvm/IR/IRBuilder.h>
+#include "..\Type\ClassInstanceType.h"
+
+class ValueGen;
 
 struct Generater {
 	llvm::Module* module;
@@ -29,7 +32,7 @@ class CodeGen {
 public:
 	CodeGen(llvm::Type* t = nullptr);
 	virtual ~CodeGen(){}
-	llvm::Type* type = nullptr;
+	llvm::Type* type = nullptr;	// 出于简化考虑，直接使用 llvm 的类型
 	llvm::Value* value = nullptr;
 	virtual llvm::Value* generate(const Generater& generater);
 		
@@ -43,7 +46,7 @@ public:
 	// 期望的类型
 	llvm::Type* hope = nullptr;
 
-	virtual void run(GenContent & content) {}
+	virtual CodeGen* run(GenContent& content) { return this; }
 protected:
 	virtual llvm::Value* generateCode(const Generater& generater) = 0;
 };

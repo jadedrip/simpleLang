@@ -42,7 +42,7 @@ bool parse() {
 }
 
 using namespace llvm;
-LLVMContext llvmContext;
+thread_local llvm::LLVMContext llvmContext;     // heavy
 std::unique_ptr<Module> module;
 
 AstModule* currentPackage = new AstModule();

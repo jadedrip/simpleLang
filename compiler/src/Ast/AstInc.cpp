@@ -5,7 +5,7 @@
 #include "CodeGenerate/LetGen.h"
 
 using namespace llvm;
-extern LLVMContext llvmContext;
+extern thread_local llvm::LLVMContext llvmContext;
 CodeGen * AstInc::makeGen(AstContext * parent)
 {
 	auto l = expr->makeGen(parent);

@@ -13,6 +13,8 @@
 using namespace std;
 using namespace llvm;
 extern bool utf8File;
+extern thread_local llvm::LLVMContext llvmContext;
+
 StringLiteGen::StringLiteGen(AstContext* c, const std::string & s) : _str(s)
 {
 	// ±àÂë±ä»Ã
@@ -43,8 +45,9 @@ StringLiteGen::StringLiteGen(AstContext* c, const std::string & s) : _str(s)
 
 	//auto* str = c->findClass("String");
 	//str->makeNew(c, s.c_str(), )
-	
-	type = c->findStruct("struct.String__sl");
+
+	type = llvm::StructType::create(llvmContext, "struct.String__sl");
+	// type = c->findStruct("struct.String__sl");
 	assert(type);
 	_init= c->getFunction("Init__String__sl");
 	assert(_init);

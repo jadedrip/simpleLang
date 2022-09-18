@@ -2,6 +2,8 @@
 #include "CodeGen.h"
 
 using namespace llvm;
+extern thread_local llvm::LLVMContext llvmContext;
+
 CodeGen::CodeGen(llvm::Type * t) : type(t) {}
 llvm::Value * CodeGen::generate(const Generater& generater)
 {

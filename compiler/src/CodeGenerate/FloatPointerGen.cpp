@@ -2,13 +2,14 @@
 #include "FloatPointerGen.h"
 using namespace llvm;
 
-FloatPointerGen::FloatPointerGen(llvm::LLVMContext & c, double v, bool isDouble) {
-	APFloat ap = isDouble ? APFloat(v) : APFloat((float)v);
-	_value = ConstantFP::get(c, ap);
-	type = _value->getType();
+FloatPointerGen::FloatPointerGen(llvm::LLVMContext& c, double v, bool isDouble) : _value(v), _isDouble(isDouble) {
+	type = isDouble ? llvm::Type::getDoubleTy(c) : llvm::Type::getFloatTy(c);
 }
 
 llvm::Value * FloatPointerGen::generateCode(const Generater& generater)
 {
-	return _value;
+	APFloat ap = _isDouble ? APFloat(_value) : APFloat((float)_value);
+	auto &c=generater.context();
+	auto v = ConstantFP::get(c, ap);
+	return v;
 }
