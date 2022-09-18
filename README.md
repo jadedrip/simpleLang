@@ -530,12 +530,6 @@ func myFunc( clone int clonedValue ) {
 
 	var v= fun( name="myname", 10, 20 )
 
-一行中仅仅有函数调用并且无返回值的情况下，允许省略括号
-
-```
-print "myName"
-```
-
 另一种调用方式是后置函数调用，通过 :: 后置
 
  ```
@@ -551,6 +545,14 @@ print "myName"
 	tuple :: myFunc		// 合法，等价于 myFunc(10,  20)
 
 如果你想玩一下函数式编程，这种语法也许会让你的程序更容易阅读
+
+另一个语法糖是对象结构式函数调用
+
+```
+func myFunc( String name, int value ) { ... }
+MyClass my
+myFunc( :my )	// 等效于 myFunc( my.name, my.value )
+```
 
 函数对象、匿名函数
 -------
@@ -576,7 +578,7 @@ SimpleLang 在语言级别支持函数对象、匿名函数，匿名函数**不�
 	var x1=func(int a) { return a+myInt }	// myInt 实际上是 Optional<int> 类型了，因此在匿名函数调用时取*当前*值
 	myInt = 44
 	assert(x1(1)==45)
-	
+
 
 上面的代码演示了简单闭包，不过要注意的是，并行的情况下，对象可能被更改、互斥，这时候使用闭包需要特别小心。
 
@@ -1104,17 +1106,13 @@ if( TplFunc(a,b) ){	// 静态语句，在编译期展开
 
 SimpleLang 可以通过 interface 关键字定义接口，是一个抽象类型，是抽象方法的集合，接口所有的方法、变量都是公开的。
 
-接口其实是一种特殊的模板，所以必须以源码的形式导出。
-
 接口不可以带默认方法、变量默认值。
-
-接口有两种用法，其一是当成模板函数的约束，指示函数需要什么样的类参数
 
 	interface MyInterface{
 		int value
 		func getSome():int	// 这是个函数定义
 	}
-	func templateFunc( MyInterface inc ) // 这其实是一个模板函数，表示传入的inc 对象必须要符合接口所具有的变量和方法 	
+	func templateFunc( MyInterface inc ) // 表示传入的inc 对象必须要符合接口所具有的变量和方法 	
 	
 	class MyClass {
 		int value;
@@ -1132,9 +1130,11 @@ SimpleLang 可以通过 interface 关键字定义接口，是一个抽象类型�
 	class MyClass : Base, MyInterface{	   
 	}
 	
-	MyInterface i=MyClass()		// 等同于 var i=MyClass(), 只是更清晰的指示 i 的特性
+	MyInterface i=MyClass()		// 会通过 MyClass 对象创建一个接口
 
 另外，和 Go 不同，纯空的接口是非法的。
+
+对象转接口会产生一个接口对象，有一定消耗，需要注意。
 
 # 语言特性
 
@@ -1214,8 +1214,37 @@ SimpleLang 通过通道来支持跨协程数据交换，成员函数 await 可�
 
 特别的，如果一个协程被阻塞，它可能会被调度去干别的事，因此唤醒可能并非“及时”的。
 
+延迟优化( Delay 类型)
+----
+
+SimpleLang 的函数参数，允许使用延迟生成的技术以优化效率。它让参数仅在被首次使用的时候，才会被生成它。在参数类型后添加 ! 会让参数变为延迟类型，接受一个带返回的函数调用作为参数。
+比如：
+
+	func trans_data( String! v, bool x ){
+		if(x) print(v)		// v 实际上被转换为 Delay<String> 对象，只有 x 为真才会调用 v 对象，并且内部会缓存结果，不过调用多次传入函数
+						   // 如果条件 x=false，get_data() 函数根本不会被调用
+	}
+	
+	trans_data( get_data(), x)	// 这里 get_data() 函数不会被调用
+	trans_data( "hello", true )	// 传入常量的场合，就是普通函数调用
+
+
+
+	void trans_data( bool x ){
+		if(x) print( get_data() )
+	}
+
+其实也不一定用在函数里
+
+	int! x=get_data()		 // 这时 get_date() 其实没有被执行, 另外这等同于 Delay<int> x = get_data()
+	var k=x					// 这时才会执行，并且只会执行一次
+	var k2=x				// 注意，这里不会重复执行
+
+另外，Delay 对象允许函数返回值为 null，所以它使用时也支持 Optional 类型的操作
+
 包 & import
 ============
+
 SimpleLang 通过 import 导入包，import 只能写在文件头部，简单起见，SimpleLang 总是一次导入包里首层所有的变量、类定义、函数等，而其他层不能在包外访问。
 
 	import org.simplelang
@@ -1312,42 +1341,6 @@ SimpleLang 支持有限的操作符重载，可以对类重载一元或二元操
 备选（思考中，暂时不实现）
 ==============
 
-延迟优化( Delay 类型)
-----
-
-SimpleLang 的函数参数，允许使用延迟生成的技术以优化效率。它让参数仅在被首次使用的时候，才会被生成它。
-比如：
-
-	trans_data( get_data(), x)
-
-而 trans_data 的代码如下：
-
-	func trans_data( var v, bool x ){
-		if(x) print(v)
-	}
-
-这段代码里，v 通过 get_data() 获取值，但在 trans_data 中，如果 x=false，v根本不会被使用。这个时候 get_data() 的调用
-是完全没有必要的。而通过延迟生成技术，只有在v参数实际被使用时才会尝试“构造”它，因此，如果 x=false，get_data() 会被直接
-放弃，生成的代码类似下面的
-
-	void trans_data( bool x ){
-		if(x) print( get_data() )
-	}
-
-要启用延迟优化，调用代码不用做任何更改，只要函数是接受 Delay<?> 类型的参数。
-
-	trans_data( get_data(), x)		// trans_data 的第一个参数必须是 Delay<?> 类型
-	
-	func<T> trans_data( Delay<T> v, bool x ){
-		if(x) print(v)
-	}
-
-其实也不一定用在函数里
-
-	Delay<int> x={ get_data() }		// 这时 get_date() 其实没有被执行
-	var k=x							// 这时才会执行，并且只会执行一次
-	var k2=x						// 注意，这里不会重复执行
-
 
 
 非托管对象
@@ -1434,3 +1427,12 @@ print( "Hello %t World" )
 "Hello %t World"="你好 %t 世界"
 
 通过 Lang.set("zhCN") 切换文本
+
+## 无括号函数调用
+
+一行中仅仅有函数调用并且无返回值的情况下，允许省略括号
+
+```
+print "myName"
+```
+
