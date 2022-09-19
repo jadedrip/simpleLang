@@ -89,19 +89,56 @@ CodeGen* BinaryGen::run(GenContent& content)
 
 	assert(l->type && r->type);
 	if (l->type->isStructTy() || r->type->isStructTy()) {
-		// 
+		return runByStruct(content);
 	}
 
 	if( l->type->isDoubleTy() || r->type->isDoubleTy() ){
 		double vl = getDouble(l);
 		double vr = getDouble(r);
-		double v = oper(vl, vr, _op);
+		double v = operDouble(vl, vr);
 		return new FloatPointerGen(llvmContext, v, true);
 	}
 	else if (l->type->isFloatTy() || r->type->isFloatTy()) {
-
+		double vl = getDouble(l);
+		double vr = getDouble(r);
+		double v = operDouble(vl, vr);
+		return new FloatPointerGen(llvmContext, v, false);
 	}
 
 
 	return nullptr;
+}
+
+CodeGen* BinaryGen::runByStruct(GenContent& content)
+{
+	return nullptr;
+}
+
+double BinaryGen::operDouble(double l, double r)
+{
+	switch (_op) {
+	case '+':
+		return l + r;
+	case '-':
+		return l - r;
+	case '*':
+		return l * r;
+	case '/':
+		return l / r;
+	case '>':
+		return l > r;
+	case '<':
+		return l < r;
+	case EQ:	// ==
+		return l == r;
+	case NOEQ:	// !=
+		return l != r;
+	case REQ:	// >=
+		return l >= r;
+	case LEQ:	// <=
+		return l <= r;
+	default:
+		// 不支持的浮点运算符
+		throw std::runtime_error("Unknown operator: " + operator_to_str(_op));
+	}
 }

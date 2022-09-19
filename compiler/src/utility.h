@@ -45,7 +45,7 @@ inline bool instanceOf(llvm::Type* a, llvm::Type* b)
 	return a->getTypeID() == b->getTypeID();
 }
 
-extern llvm::LLVMContext llvmContext;
+extern thread_local llvm::LLVMContext llvmContext;
 template< typename T >
 inline llvm::Value* toLLValue(T v);
 
