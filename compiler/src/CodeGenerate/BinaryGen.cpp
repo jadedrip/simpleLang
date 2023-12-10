@@ -103,6 +103,10 @@ CodeGen* BinaryGen::run(GenContent& content)
 		double vr = getDouble(r);
 		double v = operDouble(vl, vr);
 		return new FloatPointerGen(llvmContext, v, false);
+	} 
+	else if (l->type->isIntegerTy() && r->type->isIntegerTy()) {
+		int64_t vl = getInteger(l);
+		int64_t rl = getInteger(r);
 	}
 
 

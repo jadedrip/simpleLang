@@ -7,6 +7,7 @@ class FloatPointerGen : public CodeGen
 {
 public:
 	FloatPointerGen(llvm::LLVMContext& c, double v, bool is);
+	double getDouble() const { return _value; }
 protected:
 	llvm::Value* generateCode(const Generater& generater);
 private:

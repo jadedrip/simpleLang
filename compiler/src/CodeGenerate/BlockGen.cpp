@@ -29,3 +29,13 @@ Value * BlockGen::generateCode(const Generater& generater)
 	}
 	return builder.GetInsertBlock();
 }
+
+
+CodeGen* BlockGen::run(GenContent& content)
+{
+	CodeGen* gen = nullptr;
+	for (auto i : codes) {
+		gen=i->run(content);
+	}
+	return gen;
+}

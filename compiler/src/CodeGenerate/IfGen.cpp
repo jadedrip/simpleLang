@@ -32,3 +32,10 @@ llvm::Value * IfGen::generateCode(const Generater& generater)
 	builder.SetInsertPoint(outBB);
 	return outBB;
 }
+
+CodeGen* IfGen::run(GenContent& content)
+{
+
+	return nullptr;
+}
+

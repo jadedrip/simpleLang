@@ -59,3 +59,4 @@ x64
 /compiler/intermediate/silang.yy.cpp
 
 *.pdb
+/.vscode

@@ -12,4 +12,5 @@ public:
 	void add(CodeGen* gen) { codes.push_back(gen); }
 public:
 	virtual llvm::Value* generateCode(const Generater& generater);
+	virtual CodeGen* run(GenContent& content);
 };
